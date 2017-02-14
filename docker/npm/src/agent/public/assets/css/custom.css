@@ -124,3 +124,15 @@ table.table td.account-td {
   margin-top: 5px;
   margin-bottom: 0;
 }
+
+.dropdown-menu img {
+  height: 15px;
+}
+
+.f-s-20{
+  font-size: 20px;
+}
+.align-middle{
+  vertical-align: middle;
+  line-height: 32px;
+}

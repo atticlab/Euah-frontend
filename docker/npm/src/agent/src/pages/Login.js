@@ -26,39 +26,60 @@ var Login = module.exports = {
     },
 
     view: function (ctrl) {
-        return <div class="wrapper-page">
+        return <div>
+            <ul class="nav navbar-nav navbar-right pull-right hidden-xs lang-switcher">
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                        <img src={"/assets/img/flags/" + Conf.tr('en') + ".png"} alt=""/>
+                        &nbsp;
+                        <i class="fa fa-caret-down"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-user">
+                        <li>
+                            <a onclick={Conf.loc.changeLocale.bind(ctrl, 'en')} href="#"><img
+                                src="/assets/img/flags/en.png"/> English</a>
+                            <a onclick={Conf.loc.changeLocale.bind(ctrl, 'ua')} href="#"><img
+                                src="/assets/img/flags/ua.png"/> Українська</a>
+                            <a onclick={Conf.loc.changeLocale.bind(ctrl, 'ru')} href="#"><img
+                                src="/assets/img/flags/ru.png"/> Русский</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
 
-            <div class="text-center">
-                <h1 class="text-primary">SmartMoney</h1>
-                <div class="text-muted">{Conf.tr('Agent dashboard')}</div>
+            <div class="wrapper-page">
+                <div class="text-center">
+                    <h1 class="text-primary">SmartMoney</h1>
+                    <div class="text-muted">{Conf.tr('Agent dashboard')}</div>
+                </div>
+
+                <form class="form-horizontal m-t-20" onsubmit={ctrl.login.bind(ctrl)}>
+
+                    <div class="form-group">
+                        <div class="col-xs-12">
+                            <input class="form-control" type="text" required="required" placeholder={Conf.tr("Username")}
+                                   autocapitalize="none"
+                                   name="login"/>
+                            <i class="md md-account-circle form-control-feedback l-h-34"></i>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-xs-12">
+                            <input class="form-control" type="password" required="required" autocapitalize="none"
+                                   placeholder={Conf.tr("Password")}
+                                   name="password"/>
+                            <i class="md md-vpn-key form-control-feedback l-h-34"></i>
+                        </div>
+                    </div>
+
+                    <div class="form-group m-t-20 text-center">
+                        <button class="btn btn-inverse btn-lg btn-custom waves-effect w-md waves-light m-b-5"
+                                type="submit">{Conf.tr("Log in")}
+                        </button>
+                    </div>
+                </form>
             </div>
-
-            <form class="form-horizontal m-t-20" onsubmit={ctrl.login.bind(ctrl)}>
-
-                <div class="form-group">
-                    <div class="col-xs-12">
-                        <input class="form-control" type="text" required="required" placeholder={Conf.tr("Username")}
-                               autocapitalize="none"
-                               name="login"/>
-                        <i class="md md-account-circle form-control-feedback l-h-34"></i>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <div class="col-xs-12">
-                        <input class="form-control" type="password" required="required" autocapitalize="none"
-                               placeholder={Conf.tr("Password")}
-                               name="password"/>
-                        <i class="md md-vpn-key form-control-feedback l-h-34"></i>
-                    </div>
-                </div>
-
-                <div class="form-group m-t-20 text-center">
-                    <button class="btn btn-inverse btn-lg btn-custom waves-effect w-md waves-light m-b-5"
-                            type="submit">{Conf.tr("Log in")}
-                    </button>
-                </div>
-            </form>
         </div>
     }
 };

@@ -50,6 +50,7 @@ m.getPromptValue = function (label, errMsg = false) {
 m.route.mode = 'pathname';
 m.route(document.getElementById('app'), "/", {
     "/": require('./pages/Login.js'),
-    "/cards": require('./pages/Cards.js'),
-    "/cards/generate": require('./pages/Generate.js'),
+    "/transfer": require('./pages/Transfer/Transfer.js'),
+    "/cards": require('./pages/Cards/CardsList.js'),
+    "/cards/generate": require('./pages/Cards/CardsGenerate.js'),
 });

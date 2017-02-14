@@ -8,42 +8,26 @@ module.exports = {
     controller: function () {
         var ctrl = this;
         this.ttl = m.prop(false);
-        this.css_class = m.prop('');
 
         this.refreshPage = function () {
             m.route(m.route());
         };
-        var spinner_interval = setInterval(function(){
-            var ttl = Auth.api().getNonceTTL();
-            var time_live = Auth.api().getTimeLive();
-            if (ttl <= 1) {
-                Auth.destroySession();
-                clearInterval(spinner_interval);
-            }
 
-            var percent = Math.round(100 - (ttl * 100) / time_live);
-            var css_class = "c100 p" + percent + " small small-cust green";
-            document.getElementById('spinner-progress').className = css_class;
-            document.getElementById('spinner-time').innerHTML = Helpers.getTimeFromSeconds(ttl);
+        setInterval(function() {
+            if (Auth.api().getNonceTTL() <= 1) {
+                Auth.logout();
+            }
+            m.startComputation();
+            ctrl.ttl(Auth.api().getNonceTTL());
+            m.endComputation();
+
         }, 1000);
 
         // check that it runs only once
         this.updateTTL = function () {
-            Auth.api().initNonce()
-                .then(function(ttl){
-                });
+            Auth.api().initNonce();
         };
 
-        this.initSpinner = function () {
-            var ttl = Auth.ttl();
-            var css_class = "0";
-            m.startComputation();
-            ctrl.ttl(ttl);
-            ctrl.css_class(css_class);
-            m.endComputation();
-        };
-
-        this.initSpinner();
     },
 
     view: function (ctrl, data) {
@@ -89,123 +73,160 @@ module.exports = {
             }
 
             <div id="wrapper">
-
-            <div class="topbar">
-                <div class="topbar-left hidden-xs">
-                    <div class="text-center">
-                        <a href="/" class="logo"><span>SmartMoney {Conf.tr("Agent")}</span> </a>
+                <div class="topbar">
+                    <div class="topbar-left hidden-xs">
+                        <div class="text-center">
+                            <a href="/" class="logo"><svg class="logo-img"></svg></a>
+                        </div>
                     </div>
-                </div>
-
-                <div class="navbar navbar-default" role="navigation">
-                    <div class="container">
-                        <div class="">
-                            <div class="pull-left">
-                                <button class="button-menu-mobile open-left waves-effect">
-                                    <i class="md md-menu"></i>
-                                </button>
-                                <span class="clearfix"></span>
-                            </div>
-                            <ul class="nav navbar-nav navbar-right pull-right hidden-xs">
-                                <li>
-                                    <a href="#" onclick={Auth.logout}><i class="fa fa-power-off m-r-5"></i>
-                                        {Conf.tr("Logout")}
-                                    </a>
-                                </li>
-                            </ul>
-                            <ul class="nav navbar-nav navbar-right pull-right hidden-xs">
-                                <li class="dropdown">
-                                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                                        <i class="fa fa-language fa-fw"></i> <i class="fa fa-caret-down"></i>
-                                    </a>
-                                    <ul class="dropdown-menu dropdown-user">
-                                        <li>
-                                            <a onclick={Conf.loc.changeLocale.bind(ctrl, 'en')} href="#"><img src="/assets/img/flags/en.png" /> English</a>
-                                            <a onclick={Conf.loc.changeLocale.bind(ctrl, 'ua')} href="#"><img src="/assets/img/flags/ua.png" /> Українська</a>
-                                            <a onclick={Conf.loc.changeLocale.bind(ctrl, 'ru')} href="#"><img src="/assets/img/flags/ru.png" /> Русский</a>
-                                        </li>
-                                    </ul>
-                                </li>
-                            </ul>
-                            <ul class="nav navbar-nav navbar-right pull-right hidden-xs">
-                                <li>
-                                    <a href="#" onclick={ctrl.updateTTL.bind(ctrl)} title={Conf.tr('Time before the session close')}>
-                                        <div id="spinner-progress" class={"c100 small small-cust green p" + ctrl.css_class()}>
-                                            <span id="spinner-time">
+                    <div class="navbar navbar-default" role="navigation">
+                        <div class="container">
+                            <div class="">
+                                <div class="pull-left">
+                                    <button class="button-menu-mobile open-left waves-effect">
+                                        <i class="md md-menu"></i>
+                                    </button>
+                                    <span class="clearfix"></span>
+                                </div>
+                                <ul class="nav navbar-nav navbar-right pull-right hidden-xs">
+                                    <li>
+                                        <a href="#" onclick={Auth.logout}>
+                                            <span class="fa fa-power-off align-middle m-r-5 f-s-20"></span>
+                                            <span class="align-middle">{Conf.tr("Logout")}</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                                <ul class="nav navbar-nav navbar-right pull-right hidden-xs">
+                                    <li class="dropdown">
+                                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                            <span class="fa fa-language align-middle m-r-5 f-s-20"></span>
+                                            <span class="align-middle">{Conf.current_language}</span>
+                                            &nbsp;
+                                            <span class="fa fa-caret-down align-middle f-s-20"></span>
+                                        </a>
+                                        <ul class="dropdown-menu dropdown-user">
+                                            <li>
+                                                <a onclick={Conf.loc.changeLocale.bind(ctrl, 'en')} href="#"><img
+                                                    src="/assets/img/flags/en.png"/> English</a>
+                                                <a onclick={Conf.loc.changeLocale.bind(ctrl, 'ua')} href="#"><img
+                                                    src="/assets/img/flags/ua.png"/> Українська</a>
+                                                <a onclick={Conf.loc.changeLocale.bind(ctrl, 'ru')} href="#"><img
+                                                    src="/assets/img/flags/ru.png"/> Русский</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                                <ul class="nav navbar-nav navbar-right pull-right hidden-xs">
+                                    <li>
+                                        <a
+                                            href="#"
+                                            onclick={ctrl.updateTTL.bind(ctrl)}
+                                            title={Conf.tr('Time before the session close. Click to update session.')}
+                                        >
+                                            <span class="fa fa-clock-o m-r-5 align-middle f-s-20"></span>
+                                            <span class="align-middle">
                                             {
-                                            !ctrl.ttl() ?
-                                                ''
-                                            :
-                                                Helpers.getTimeFromSeconds(ctrl.ttl())
+                                                !ctrl.ttl() ?
+                                                    ''
+                                                    :
+                                                    Helpers.getTimeFromSeconds(ctrl.ttl())
                                             }
                                             </span>
-                                            <div class="slice">
-                                                <div class="bar"></div>
-                                                <div class="fill"></div>
+                                        </a>
+                                    </li>
+                                </ul>
+                                <ul class="nav navbar-nav navbar-right pull-right hidden-xs">
+                                    <li>
+                                        <a
+                                            href="#"
+                                            onclick={ctrl.refreshPage.bind(ctrl)}
+                                            title={Conf.tr('Click for update page.')}
+                                        >
+                                            <span class="fa fa-refresh align-middle f-s-20"></span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="left side-menu">
+                    <div class="sidebar-inner slimscrollleft">
+                        <div id="sidebar-menu">
+                            {
+                                Auth.balances().length ?
+                                    <div class="col-lg-12">
+                                        <div class="panel panel-border panel-primary">
+                                            <div class="panel-body">
+                                                <h5 class="m-l-5">{Conf.tr('Balances')}</h5>
+                                                <div class="table-responsive">
+                                                    <table class="table table-striped">
+                                                        <tbody>
+                                                        {
+                                                            Auth.balances().map(function (balance) {
+                                                                return <tr>
+                                                                    <td>{parseFloat(balance.balance).toFixed(2)}</td>
+                                                                    <td>{balance.asset_code}</td>
+                                                                    </tr>
+                                                            })
+                                                        }
+                                                        </tbody>
+                                                    </table>
+                                                </div>
                                             </div>
                                         </div>
+                                    </div>
+                                    :
+                                    ''
+                            }
+                            <ul>
+                                <li>
+                                    <a href="/cards" config={m.route} class="waves-effect waves-primary">
+                                        <i class="fa fa-credit-card"></i> <span>{Conf.tr("Scratch cards")}</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="/cards/generate" config={m.route} class="waves-effect waves-primary">
+                                        <i class="fa fa-credit-card"></i> <span>{Conf.tr("Create scratch cards")}</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="/transfer" config={m.route} class="waves-effect waves-primary">
+                                        <i class="fa fa-money"></i> <span>{Conf.tr("Transfer money")}</span>
                                     </a>
                                 </li>
                             </ul>
-                            <ul class="nav navbar-nav navbar-right pull-right hidden-xs">
-                                <li>
-                                <button class="refresh btn btn-icon waves-effect waves-light btn-purple m-b-5"
-                                        onclick={ctrl.refreshPage.bind(ctrl)}> <i class="fa fa-refresh"></i> </button>
-                                </li>
-                            </ul>
+                            <div class="clearfix"></div>
                         </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="left side-menu">
-                <div class="sidebar-inner slimscrollleft">
-                    <div id="sidebar-menu">
-                        <ul>
-                            <li>
-                                <a href="/cards" config={m.route} class="waves-effect waves-primary">
-                                    <i class="md  md-dns"></i> <span>{Conf.tr("Scratch cards")}</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="/cards/generate" config={m.route} class="waves-effect waves-primary">
-                                    <i class="md  md-dns"></i> <span>{Conf.tr("Create scratch cards")}</span>
-                                </a>
-                            </li>
-                        </ul>
                         <div class="clearfix"></div>
                     </div>
-                    <div class="clearfix"></div>
                 </div>
-            </div>
-
-            <div class="content-page">
-                <div class="content">
-                    <div class="container">
-                        <div class="row">
-                            <div class="col-sm-12">
-                                <div class="page-title-box">
-                                    <ol class="breadcrumb pull-right">
-                                        <li class="active">Smartmoney</li>
-                                        <li class="active">{title}</li>
-                                    </ol>
-                                    <h4 class="page-title">{title}</h4>
-                                    {data.subtitle ?
-                                        <p class="page-sub-title font-13">{data.subtitle}</p>
-                                    :
-                                    ''
-                                    }
+                <div class="content-page">
+                    <div class="content">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="page-title-box">
+                                        <ol class="breadcrumb pull-right">
+                                            <li class="active">Smartmoney</li>
+                                            <li class="active">{title}</li>
+                                        </ol>
+                                        <h4 class="page-title">{title}</h4>
+                                        {data.subtitle ?
+                                            <p class="page-sub-title font-13">{data.subtitle}</p>
+                                            :
+                                            ''
+                                        }
+                                    </div>
                                 </div>
                             </div>
+                            {content}
                         </div>
-                        {content}
                     </div>
-                </div>
-
-                <footer class="footer text-right">
-                    2016 © AtticLab
-                </footer>
-
+                    <footer class="footer text-right">
+                        2016 - {new Date().getFullYear()} © AtticLab
+                    </footer>
                 </div>
             </div>
         </div>

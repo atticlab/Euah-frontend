@@ -1,7 +1,7 @@
-var Conf = require('../config/Config.js');
-var Wrapper = require('../components/Wrapper.js');
-var Helpers = require('../components/Helpers.js');
-var Auth = require('../models/Auth.js');
+var Conf = require('../../config/Config.js');
+var Wrapper = require('../../components/Wrapper.js');
+var Helpers = require('../../components/Helpers.js');
+var Auth = require('../../models/Auth.js');
 
 Array.prototype.last = function() {
     return this[this.length-1];
@@ -16,47 +16,13 @@ module.exports = {
         }
 
         this.cards_count    = m.prop(1);
-        this.cards_amount   = m.prop(1);
+        this.cards_amount   = m.prop(100);
         this.cards_sum      = m.prop(this.cards_count() * this.cards_amount());
-
-        this.agent_balances = m.prop([]);
-        this.agent_assets   = m.prop([]);
-
-        this.initAgentAssets = function () {
-
-            return Auth.loadAccountById(Auth.keypair().accountId())
-                .then(account_data => {
-                    m.startComputation();
-                    ctrl.agent_assets([]);
-                    account_data.balances.map(function(balance) {
-                        if (typeof balance.asset_code != 'undefined') {
-                            ctrl.agent_assets().push(balance.asset_code);
-                        }
-                    });
-                    m.endComputation();
-                })
-        };
-
-        this.initAgentBalances = function () {
-
-            return Auth.loadAccountById(Auth.keypair().accountId())
-                .then(account_data => {
-                    m.startComputation();
-                    ctrl.agent_balances([]);
-                    account_data.balances.map(function(balance) {
-                        if (typeof balance.asset_code != 'undefined') {
-                            ctrl.agent_balances().push(balance);
-                        }
-                    });
-                    m.endComputation();
-                })
-        };
 
         this.getBalanceByAsset = function (asset_code) {
 
             var asset_balance = 0;
-
-            ctrl.agent_balances().every(function(balance) {
+            Auth.balances().every(function(balance) {
                 if (balance.asset_code == asset_code) {
                     asset_balance = balance.balance;
                     return false;
@@ -66,17 +32,6 @@ module.exports = {
 
             return asset_balance;
         };
-
-        //init agent data
-        m.onLoadingStart();
-        this.initAgentAssets()
-            .then(() => {
-                ctrl.initAgentBalances();
-            })
-            .then(() => {
-                m.onLoadingEnd();
-            });
-
 
         this.updateCardsSum = function (e) {
             m.startComputation();
@@ -104,11 +59,11 @@ module.exports = {
             }
 
             var amount          = ctrl.cards_amount();
-            var asset           = Conf.asset;
+            var asset           = e.target.asset.value;
             var accounts_data   = {};
-            ctrl.initAgentBalances()
+            Auth.initAgentBalances()
                 .then(() => {
-                    var balance = ctrl.getBalanceByAsset(Conf.asset);
+                    var balance = ctrl.getBalanceByAsset(e.target.asset.value);
                     if (balance < ctrl.cards_sum()) {
                         return Promise.reject(Conf.tr('Not enough balance'));
                     }
@@ -116,36 +71,35 @@ module.exports = {
                     return Conf.horizon.loadAccount(Auth.keypair().accountId());
                 })
                 .then(function (source) {
-                    //var memo = StellarSdk.Memo.text("card_creation");
+                    var memo = StellarSdk.Memo.text("card_creation");
                     var accountKeypair = null;
-                    var txBuilder = new StellarSdk.TransactionBuilder(source); //, {memo: memo});
+                    var txBuilder = new StellarSdk.TransactionBuilder(source, {memo: memo});
 
                     for (var c = 0; c < ctrl.cards_count(); c++) {
                         accountKeypair = StellarSdk.Keypair.random();
 
                         accounts_data[accountKeypair.accountId()] = btoa(sjcl.encrypt(Auth.wallet().getKeychainData(), accountKeypair.seed()));
-                        txBuilder.addOperation(StellarSdk.Operation.createAccount({
+
+                        txBuilder.addOperation(StellarSdk.Operation.payment({
                             destination: accountKeypair.accountId(),
-                            accountType: StellarSdk.xdr.AccountType.accountScratchCard().value,
-                            asset: new StellarSdk.Asset(asset, Conf.master_key),
-                            amount: amount.toString()
+                            amount: amount.toString(),
+                            asset: new StellarSdk.Asset(asset, Conf.master_key)
                         }));
                     }
 
                     var tx = txBuilder.build();
-                    tx.sign(Auth.keypair());//StellarSdk.Keypair.fromSeed(Auth.wallet().getKeychainData()));
-                    console.log(tx.toEnvelope().toXDR().toString("base64"));
-                    //return Conf.horizon.submitTransaction(tx);
+                    tx.sign(StellarSdk.Keypair.fromSeed(Auth.wallet().getKeychainData()));
+
                     return Auth.api().createCards({
                         tx: tx.toEnvelope().toXDR().toString("base64"),
                         data: JSON.stringify(accounts_data)
-                    });
+                    })
                 })
                 .then(function() {
                     return m.flashSuccess(Conf.tr('Success. Cards will be confirmed in few moments'))
                 })
                 .then(function(){
-                    return ctrl.initAgentBalances();
+                    return Auth.initAgentBalances();
                 })
                 .catch(error => {
                     console.error(error);
@@ -165,20 +119,6 @@ module.exports = {
             title: Conf.tr('Cards'),
             subtitle: Conf.tr('This page allows to create prepaid cards that can be distributed physically'),
             tpl: <div class="row">
-                    <div class="col-lg-12">
-                        <div class="panel panel-border panel-primary">
-                            <div class="panel-heading">
-                                <h3 class="panel-title">{Conf.tr('Agent balances')}</h3>
-                            </div>
-                            <div class="panel-body">
-                                {
-                                    ctrl.agent_balances().map(function (balance) {
-                                        return <p>{parseFloat(balance.balance).toFixed(2)+" "+balance.asset_code}</p>
-                                    })
-                                }
-                            </div>
-                        </div>
-                    </div>
                 <div class="col-lg-12">
                     <div class="panel panel-color panel-primary">
                         <div class="panel-heading">
@@ -188,6 +128,18 @@ module.exports = {
                             <div id="card_form">
                                 <form role="form" onsubmit={ctrl.generateCards.bind(ctrl)}>
                                     <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="select" class="control-label">{Conf.tr("Currency")}</label>
+                                                    <select class="form-control" name="asset" id="asset">
+                                                        {
+                                                            Auth.assets().map(function (asset) {
+                                                                return <option value={asset}>{asset}</option>
+                                                            })
+                                                        }
+                                                    </select>
+                                            </div>
+                                        </div>
                                         <div class="col-md-2">
                                             <div class="form-group">
                                                 <label class="control-label"
