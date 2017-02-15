@@ -20,7 +20,7 @@ module.exports = {
         this.page = (m.route.param('page')) ? m.prop(Number(m.route.param('page'))) : m.prop(1);
         this.limit = Conf.pagination.limit;
         this.offset = (ctrl.page() - 1) * ctrl.limit;
-        this.pagination_data = m.prop({func: "getEnrollmentsList", page: ctrl.page()});
+        this.pagination_data = m.prop({func: "getEnrollmentsList", page: ctrl.page(), params: {type: 'agent'}});
 
         this.enrollments   = m.prop([]);
 
@@ -65,18 +65,21 @@ module.exports = {
                             {(ctrl.enrollments().length) ?
                                 <div class="panel panel-color panel-primary">
                                     <div class="panel-heading">
-                                        <h3 class="panel-title">{Conf.tr('Enrollments')}</h3>
+                                        <h3 class="panel-title">{Conf.tr('Agent enrollments')}</h3>
                                     </div>
                                     <div class="panel-body">
+                                        <div class="alert alert-info">
+                                            {Conf.tr('This page allows to approve or reject applications from new agents')}
+                                        </div>
                                         <table class="table table-bordered">
                                             <thead>
                                             <tr>
                                                 <th>{Conf.tr('Enrollment ID')}</th>
-                                                <th>{Conf.tr('Company code')}</th>
+                                                <th>{Conf.tr('Company ID')}</th>
                                                 <th>{Conf.tr('Agent type')}</th>
-                                                <th>{Conf.tr('Show agent data')}</th>
+                                                <th>{Conf.tr('Agent details')}</th>
                                                 <th>{Conf.tr('Enrollment status')}</th>
-                                                <th>{Conf.tr('Approve status')}</th>
+                                                <th>{Conf.tr('Approval status')}</th>
                                             </tr>
                                             </thead>
                                             <tbody>
@@ -103,7 +106,7 @@ module.exports = {
                                                     </td>
                                                     <td>
                                                         {
-                                                            enrollment.login ?
+                                                            enrollment.stage == Conf.enrollment_approved ?
                                                                 <button
                                                                     class="btn-xs btn-primary waves-effect waves-light"
                                                                     onclick={function(){
@@ -111,7 +114,7 @@ module.exports = {
                                                                             <table class="table">
                                                                                 <tr>
                                                                                     <td>{Conf.tr('Login')}:</td>
-                                                                                    <td><code>{enrollment.login}</code></td>
+                                                                                    <td><code>{enrollment.login || Conf.tr('Agent create mnemonic phrase only')}</code></td>
                                                                                 </tr>
                                                                                 <tr>
                                                                                     <td>{Conf.tr('Account ID')}:</td>
@@ -122,7 +125,10 @@ module.exports = {
                                                                     }}
                                                                 >{Conf.tr('Show')}</button>
                                                                 :
-                                                                Conf.tr("Not created yet")
+                                                                enrollment.stage == Conf.enrollment_declined ?
+                                                                    Conf.tr("Agent decline enrollment")
+                                                                    :
+                                                                    Conf.tr("Wait for enrollment approve")
                                                         }
                                                     </td>
                                                     <td>

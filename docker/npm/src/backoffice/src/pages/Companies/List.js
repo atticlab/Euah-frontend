@@ -2,6 +2,7 @@ var Conf    = require('../../config/Config.js'),
     Navbar  = require('../../components/Navbar.js'),
     Footer  = require('../../components/Footer.js'),
     Sidebar = require('../../components/Sidebar.js'),
+    Helpers = require('../../models/Helpers'),
     Auth    = require('../../models/Auth'),
     Pagination  = require('../../components/Pagination.js');
 
@@ -63,6 +64,7 @@ module.exports = {
                                                 <table class="table table-bordered">
                                                     <thead>
                                                     <tr>
+                                                        <th>{Conf.tr('Created')}</th>
                                                         <th>{Conf.tr('Code')}</th>
                                                         <th>{Conf.tr('Title')}</th>
                                                         <th>{Conf.tr('Address')}</th>
@@ -73,6 +75,9 @@ module.exports = {
                                                     <tbody>
                                                     {ctrl.companies().map(function (company) {
                                                         return <tr>
+                                                            <td>
+                                                                <span title={Conf.tr("Created")}>{Helpers.getDateFromTimestamp(company.created_date)}</span>
+                                                            </td>
                                                             <td>
                                                                 <span title={Conf.tr("Code")}>{company.code}</span>
                                                             </td>

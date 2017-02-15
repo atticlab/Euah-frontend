@@ -9,9 +9,10 @@ module.exports = {
     view: function(ctrl) {
         return <div>
                 {Session.modalMessage()?
+
                     m('div', {
                         style: {
-                            position: 'absolute',
+                            position: 'fixed',
                             top: 0,
                             left: 0,
                             padding: '7.5%',
@@ -24,7 +25,7 @@ module.exports = {
                         },
                     },[
                         m(".row", [
-                            m(".col-md-4.col-md-offset-4", [
+                            m(".col-md-" + Session.modalSize() + ".col-md-offset-" + ((12 - Session.modalSize())/2).toString(), [
                                 [m(".portlet", [
                                     m(".portlet-heading.bg-primary", {style: {borderRadius: 0}}, [
                                         m("h3.portlet-title", Session.modalTitle() || Conf.tr('Message')),
@@ -48,10 +49,11 @@ module.exports = {
                     <div class="container">
                         <div class="row">
                             <div class="col-xs-12">
-                                © 2016 made by <a href="http://atticlab.net">AtticLab</a>
+                                © 2016 - {new Date().getFullYear()} made by <a href="http://atticlab.net">AtticLab</a>
                             </div>
                         </div>
                     </div>
+
                 </footer>
             </div>
     }

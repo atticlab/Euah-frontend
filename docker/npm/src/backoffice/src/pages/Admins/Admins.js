@@ -49,6 +49,19 @@ module.exports = {
             });
         };
 
+        this.deleteAdminKey = function(account_id, e) {
+            Helpers.deleteMasterSigner(account_id)
+                .then(function(){
+                    m.route(m.route())
+                })
+                .then(function(){
+                    return swal(Conf.tr("Deleted") + "!",
+                        Conf.tr("Administrator key successfully deleted"),
+                        "success"
+                    );
+                })
+        };
+
         this.getAdmins();
     },
 
@@ -64,9 +77,13 @@ module.exports = {
                                 <h3 class="panel-title">{Conf.tr('Admins')}</h3>
                             </div>
                             <div class="panel-body">
+                                <div class="alert alert-info">
+                                    {Conf.tr('This page allows to manage accounts of administrators. They are able to approve emission accounts, agents, change limits and permissions, ban accounts, view statistics.')}
+                                </div>
                                 <table class="table table-bordered">
                                     <thead>
                                     <tr>
+                                        <th>#</th>
                                         <th>{Conf.tr('Account ID')}</th>
                                         <th>{Conf.tr('Name')}</th>
                                         <th>{Conf.tr('Position')}</th>
@@ -75,10 +92,10 @@ module.exports = {
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    {ctrl.admins_data().map(function (account_data) {
-
+                                    {ctrl.admins_data().map(function(account_data, index) {
                                         var additional_data = account_data.data || {};
                                         return <tr>
+                                            <th scope="row">{index + 1}</th>
                                             <td>
                                                 <span title={account_data.account_id}>{account_data.account_id}</span>
                                             </td>
@@ -94,7 +111,7 @@ module.exports = {
                                             <td>
                                                 { account_data.account_id != Auth.keypair().accountId() ?
                                                     <button type="submit"
-                                                            onclick={Helpers.deleteMasterSigner.bind(ctrl, account_data.account_id)}
+                                                            onclick={ctrl.deleteAdminKey.bind(ctrl, account_data.account_id)}
                                                             class="btn btn-danger btn-xs waves-effect waves-light">{Conf.tr('Delete')}</button>
                                                     :
                                                     Conf.tr('Your account')

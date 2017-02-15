@@ -12,11 +12,12 @@ module.exports = {
             return m.route('/');
         }
 
+        this.assets    = m.prop([]);
         this.companies = m.prop([]);
 
         this.getCompanies = function () {
             m.onLoadingStart();
-            Auth.api().getCompaniesList()
+            return Auth.api().getCompaniesList()
                 .then(function(companies){
                     if (typeof companies.items != 'undefined') {
                         if (companies.items.length > 0) {
@@ -37,7 +38,26 @@ module.exports = {
                 });
         };
 
-        this.getCompanies();
+        this.getAssets = function () {
+            m.onLoadingStart();
+
+            return Conf.horizon.assets()
+                .call()
+                .then((assets) => {
+                    m.startComputation();
+                    ctrl.assets(assets.records);
+                    m.endComputation();
+                })
+                .catch(() => {
+                    m.flashError(Conf.tr("Error requesting currencies"));
+                })
+                .then(function() {
+                    m.onLoadingEnd();
+                });
+        };
+
+        this.getCompanies().then(ctrl.getAssets());
+
 
         this.createAgent = function (e) {
             e.preventDefault();
@@ -47,18 +67,12 @@ module.exports = {
             var form_data = {
                 company_code : e.target.cmp_code.value,
                 type         : parseInt(e.target.type.value),
-                asset        : Conf.asset
+                asset        : e.target.asset.value
             };
 
             Auth.api().createAgent(form_data)
-                .then(function(result){
-                    if (typeof result.message != 'undefined' && result.message == 'success') {
-                        m.flashSuccess(Conf.tr('Success') + '. ' + Conf.tr('Enrollment was sent to email'));
-                    } else {
-                        console.error('Unexpected response');
-                        console.error(result);
-                        m.flashError(Conf.tr(Conf.errors.service_error));
-                    }
+                .then(function(){
+                    m.flashSuccess(Conf.tr('Success') + '. ' + Conf.tr('Enrollment was sent to email'));
                 })
                 .catch(function(error) {
                     console.error(error);
@@ -76,10 +90,10 @@ module.exports = {
             <div class="content-page">
                 <div class="content">
                     <div class="container">
-                        {(ctrl.companies().length) ?
+                        {(ctrl.companies().length && ctrl.assets().length) ?
                             <div class="panel panel-primary panel-border">
                                 <div class="panel-heading">
-                                    <h3 class="panel-title">{Conf.tr("Create new agent")}</h3>
+                                    <h3 class="panel-title">{Conf.tr("Create a new agent")}</h3>
                                 </div>
                                 <div class="panel-body">
                                     <div class="col-lg-6">
@@ -105,11 +119,23 @@ module.exports = {
                                                         <option
                                                             value={StellarSdk.xdr.AccountType.accountMerchant().value}>{Conf.tr("Merchant")}</option>
                                                         <option
-                                                            value={StellarSdk.xdr.AccountType.accountDistributionAgent().value}>{Conf.tr("Distrubution")}</option>
+                                                            value={StellarSdk.xdr.AccountType.accountDistributionAgent().value}>{Conf.tr("Distribution")}</option>
                                                         <option
                                                             value={StellarSdk.xdr.AccountType.accountSettlementAgent().value}>{Conf.tr("Settlement")}</option>
                                                         <option
                                                             value={StellarSdk.xdr.AccountType.accountExchangeAgent().value}>{Conf.tr("Exchange")}</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label for="select"
+                                                       class="col-lg-2 control-label">{Conf.tr("Currency")}</label>
+                                                <div class="col-lg-6">
+                                                    <select class="form-control" name="asset" id="asset">
+                                                        {ctrl.assets().map(function (asset) {
+                                                            return <option value={asset.asset_code}>{asset.asset_code}</option>
+                                                        })}
                                                     </select>
                                                 </div>
                                             </div>
@@ -151,6 +177,32 @@ module.exports = {
                                     </div>
                                     :
                                     ''
+                                }
+                                {(!ctrl.assets().length) ?
+                                        <div class="portlet">
+                                            <div class="portlet-heading bg-warning">
+                                                <h3 class="portlet-title">
+                                                    {Conf.tr('No assets found')}
+                                                </h3>
+                                                <div class="portlet-widgets">
+                                                    <a data-toggle="collapse" data-parent="#accordion1"
+                                                       href="#bg-warning">
+                                                        <i class="ion-minus-round"></i>
+                                                    </a>
+                                                    <span class="divider"></span>
+                                                    <a href="#" data-toggle="remove"><i class="ion-close-round"></i></a>
+                                                </div>
+                                                <div class="clearfix"></div>
+                                            </div>
+                                            <div id="bg-warning" class="panel-collapse collapse in">
+                                                <div class="portlet-body">
+                                                    {Conf.tr('Please')}<a href='/currencies/create'
+                                                                          config={m.route}> {Conf.tr("create")}</a>!
+                                                </div>
+                                            </div>
+                                        </div>
+                                        :
+                                        ''
                                 }
                             </div>
                         }

@@ -17,10 +17,10 @@ module.exports = {
 
         this.getCommissionAccountBalances = function () {
             m.onLoadingStart();
-            m.getPromptValue(Conf.tr("Enter commission account mnemonic phrase"))
-                .then(function (comm_mnemonic) {
+            m.getPromptValue(Conf.tr("Enter commission account seed"))
+                .then(function (comm_seed) {
                     m.startComputation();
-                    ctrl.comm_keypair(StellarSdk.Keypair.fromSeed(StellarSdk.getSeedFromMnemonic(comm_mnemonic)));
+                    ctrl.comm_keypair(StellarSdk.Keypair.fromSeed(comm_seed));
                     m.endComputation();
                     return Auth.loadAccountById(ctrl.comm_keypair().accountId());
                 })
@@ -52,9 +52,11 @@ module.exports = {
             if (!StellarSdk.Keypair.isValidPublicKey(e.target.to_account.value)) {
                 return m.flashError(Conf.tr('Bad account id'));
             }
+            // TODO use special method from nbu branch
             return Conf.horizon.loadAccount(ctrl.comm_keypair().accountId())
                 .then(function (source) {
-                    var tx = new StellarSdk.TransactionBuilder(source)
+                    var memo = StellarSdk.Memo.text('wd_commission');
+                    var tx = new StellarSdk.TransactionBuilder(source, {memo: memo})
                         .addOperation(StellarSdk.Operation.payment({
                             destination: e.target.to_account.value,
                             amount: parseFloat(e.target.amount.value).toFixed(2).toString(),
@@ -62,7 +64,7 @@ module.exports = {
                         }))
                         .build();
 
-                    tx.sign(ctrl.comm_keypair());
+                    tx.sign(Auth.keypair());
 
                     return Conf.horizon.submitTransaction(tx);
                 })

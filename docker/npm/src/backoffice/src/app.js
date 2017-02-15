@@ -1,5 +1,3 @@
-StellarSdk.Network.use(new StellarSdk.Network(process.env.STELLAR_NETWORK));
-
 var Conf = require('./config/Config.js');
 var queue = require('queue');
 var q = queue();
@@ -58,7 +56,6 @@ m.route(document.getElementById('app'), "/", {
     "/admins" : require('./pages/Admins/Admins.js'),
     "/emission" : require('./pages/Emission/List.js'),
     "/emission/generate" : require('./pages/Emission/Generate.js'),
-    "/emission/process" : require('./pages/Emission/Process.js'),
     "/companies" : require('./pages/Companies/List.js'),
     "/companies/create" : require('./pages/Companies/Create.js'),
     "/analytics" : require('./pages/Analytics/Index.js'),
@@ -67,12 +64,16 @@ m.route(document.getElementById('app'), "/", {
     "/commissions/types" : require('./pages/Commission/Types.js'),
     "/commissions/accounts" : require('./pages/Commission/Accounts.js'),
     "/commissions/manage" : require('./pages/Commission/Manage.js'),
+    "/currencies" : require('./pages/Currencies/List.js'),
+    "/currencies/create" : require('./pages/Currencies/Create.js'),
     "/invoices/statistics" : require('./pages/Invoices/Statistics'),
     "/bans/list" : require('./pages/Bans/List.js'),
     "/bans/create" : require('./pages/Bans/Create.js'),
     "/agents/manage" : require('./pages/Agents/Manage.js'),
     "/agents/create" : require('./pages/Agents/Create.js'),
     "/agents/enrollments" : require('./pages/Agents/Enrollments.js'),
-    "/generalagent" : require('./pages/GeneralAgent/List.js'),
-    "/generalagent/distribution" : require('./pages/GeneralAgent/Distribution.js'),
+    "/registered" : require('./pages/Registered/List.js'),
+    "/registered/create" : require('./pages/Registered/Create.js'),
+    "/registered/enrollments" : require('./pages/Registered/Enrollments.js'),
+    "/emission/quickemission" : require('./pages/Emission/Quickemission.js'),
 });

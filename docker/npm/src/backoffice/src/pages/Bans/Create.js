@@ -34,15 +34,9 @@ module.exports = {
             };            
 
             Auth.api().banIp(form_data)
-                .then(function(result){
-                    if (typeof result.message != 'undefined' && result.message == 'success') {
-                        ctrl.clearForm();
-                        m.flashSuccess(Conf.tr(result.message));
-                    } else {
-                        console.error('Unexpected response');
-                        console.error(result);
-                        m.flashError(Conf.tr(Conf.errors.service_error));
-                    }
+                .then(function(){
+                    ctrl.clearForm();
+                    m.flashSuccess(Conf.tr('IP was successfully banned'));
                 })
                 .catch(function(error) {
                     console.log(error);

@@ -13,7 +13,7 @@ module.exports = {
             return m.route('/');
         }
 
-        this.emission_mnemonic = m.prop(false);
+        this.encrypted_key = m.prop(false);
 
         this.parseFile = function (result) {
             return new Promise(function(resolve, reject) {
@@ -48,7 +48,7 @@ module.exports = {
             var user_password = '';
             var user_repassword = '';
 
-            m.getPromptValue(Conf.tr("Enter password to crypt emission"))
+            m.getPromptValue(Conf.tr("Enter password to encrypt emission"))
                 .then(function (user_password_answer) {
                     user_password = user_password_answer;
                     return m.getPromptValue(Conf.tr("Repeat password"));
@@ -106,11 +106,6 @@ module.exports = {
                 ctrl.parseFile(evt.target.result)
                     .then(function(file_data){
                         data = file_data;
-
-                        return m.getPromptValue(Conf.tr("Enter password to decrypt emission"))
-
-                    }).then(function(password){
-                        data.seed = sjcl.decrypt(password, atob(data.seed));
                         var tx = new StellarSdk.Transaction(data.tx);
 
                         return Conf.horizon.submitTransaction(tx)
@@ -151,7 +146,7 @@ module.exports = {
                         m.onLoadingEnd();
                         $(e.target).trigger('reset');
                         m.startComputation();
-                        ctrl.emission_mnemonic(StellarSdk.getMnemonicFromSeed(seed));
+                        ctrl.encrypted_key(seed);
                         m.endComputation();
                     })
                     .catch(function (err) {
@@ -178,7 +173,7 @@ module.exports = {
                                 <h3 class="panel-title">{Conf.tr('Generate Emission Keys')}</h3>
                             </div>
                             <div class="panel-body">
-                                {!ctrl.emission_mnemonic() ?
+                                {!ctrl.encrypted_key() ?
                                     <div class="buttons" id="emission_buttons">
                                         <button class="btn btn-default" onclick={ctrl.generateTx.bind(ctrl)}
                                                 id="generate_tx">{Conf.tr('Generate Emission Key')}</button>
@@ -190,8 +185,8 @@ module.exports = {
                                     </div>
                                 :
                                     <div id="emission_form">
-                                        <h4>{Conf.tr('Remember - mnemonic phrase is NOT recoverable')}</h4>
-                                        <kbd id="emission_encrypted_key" style="word-break: break-word; display: block;">{ctrl.emission_mnemonic()}</kbd>
+                                        <h4>{Conf.tr('Please insert encrypted key to Emission Daemon. Do not forget password!! Remember - password is NOT recoverable')}</h4>
+                                        <kbd id="emission_encrypted_key" style="word-break: break-word; display: block;">{ctrl.encrypted_key()}</kbd>
                                     </div>
                                 }
                             </div>

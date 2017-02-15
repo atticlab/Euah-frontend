@@ -1,6 +1,5 @@
-@import "variables.less";
+@import "theme.less";
 @import "elements.less";
-
 
 /*
 Template Name: Minton Dashboard
@@ -17,8 +16,7 @@ File: Topbar,Left-sidebar,Right-sidebar
   top: 0px;
   z-index: 999;
   .topbar-left {
-    background: @primary;
-    border-bottom: 1px solid @primary;
+    background: @topbar-left-color;
     float: left;
     height: 70px;
     position: relative;
@@ -28,7 +26,7 @@ File: Topbar,Left-sidebar,Right-sidebar
 }
 
 .logo {
-  color: @white !important;
+  color: #fff;
   font-size: 18px;
   font-weight: 700;
   letter-spacing: .02em;
@@ -39,13 +37,13 @@ File: Topbar,Left-sidebar,Right-sidebar
     text-align: center;
   }
 
-  i {
+  &:hover {
     color: @white;
   }
 }
 
 .navbar-default {
-  background-color: @primary;
+  background-color: darken(@topbar-color,12%);
   border-radius: 0px;
   border: none;
   margin-bottom: 0px;
@@ -61,7 +59,7 @@ File: Topbar,Left-sidebar,Right-sidebar
 }
 
 .nav > li > a {
-  color: @white !important;
+  color: @topbar-menu-text-color !important;
   line-height: 70px;
   padding: 0px 15px;
   position: relative;
@@ -73,7 +71,10 @@ File: Topbar,Left-sidebar,Right-sidebar
     right: 10px;
     top: 18px;
   }
+}
 
+.nav > li > button {
+  margin-top: 18px;
 }
 
 .profile {
@@ -235,8 +236,8 @@ input.app-search-input {
 }
 
 .side-menu.left {
-  background: @white;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  background: @side-menu-color;
+  box-shadow: -4px 4px 40px rgba(0, 0, 0, 0.15);
   position: absolute;
   top: 70px;
 }
@@ -290,8 +291,9 @@ body.fixed-left {
   text-decoration: none;
 }
 
+
 #sidebar-menu {
-  background-color: @white;
+  background-color: @side-menu-color;
   padding-top: 30px;
   padding-bottom: 50px;
   width: 100%;
@@ -299,6 +301,37 @@ body.fixed-left {
     line-height: 1.3;
   }
   ul {
+    li {
+      .menu-arrow {
+        -webkit-transition: -webkit-transform .15s;
+        -o-transition: -o-transform .15s;
+        transition: transform .15s;
+        position: absolute;
+        right: 25px;
+        display: inline-block;
+        font-family: 'Material Design Iconic Font';
+        text-rendering: auto;
+        line-height: 18px;
+        font-size: 16px;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        -webkit-transform: translate(0, 0);
+        -ms-transform: translate(0, 0);
+        -o-transform: translate(0, 0);
+        transform: translate(0, 0);
+        color: @muted;
+
+        &:before {
+          content: "\f1b6";
+        }
+      }
+      a.subdrop .menu-arrow {
+        -ms-transform: rotate(90deg);
+        -webkit-transform: rotate(90deg);
+        -o-transform: rotate(90deg);
+        transform: rotate(90deg);
+      }
+    }
     ul {
       display: none;
       li {
@@ -310,7 +343,7 @@ body.fixed-left {
         }
       }
       a {
-        color: #75767B;
+        color: @side-menu-text-color;
         display: block;
         padding: 10px 25px 10px 65px;
         &:hover {
@@ -330,12 +363,12 @@ body.fixed-left {
 }
 
 #sidebar-menu > ul > li > a {
-  color: #565b5e;
+  color: @side-menu-text-color;
   border-left: 2px solid transparent;
   display: block;
   padding: 12px 25px;
   &:hover {
-    background: @light5;
+    background: @side-menu-hover-color;
     border-left: 2px solid @primary !important;
     i {
       color: @primary !important;
@@ -356,7 +389,7 @@ body.fixed-left {
   line-height: 17px;
   margin-left: 3px;
   margin-right: 12px;
-  color: #565b5e;
+  color: @side-menu-text-color;
   text-align: center;
   vertical-align: middle;
   width: 20px;
@@ -368,7 +401,7 @@ body.fixed-left {
 }
 
 #sidebar-menu > ul > li > a.active {
-  background: @light5;
+  background: @side-menu-active-element;
   border-left: 2px solid @primary !important;
   i {
     color: @primary !important;
@@ -385,7 +418,7 @@ body.fixed-left {
     cursor: default;
     text-transform: uppercase;
     font-size: 12px;
-    color: #565b5e;
+    color: @side-menu-text-color;
   margin-top: 20px !important;
     font-weight: 600 !important;
   padding-left: 32px !important;
@@ -393,7 +426,7 @@ body.fixed-left {
 
 
 #sidebar-menu > ul > li > a.active.subdrop {
-  background: @light5 !important;
+  background: @side-menu-active-element !important;
   border-left: 2px solid @primary;
   i {
     color: @primary;
@@ -401,7 +434,7 @@ body.fixed-left {
 }
 
 .subdrop {
-  background: @light5;
+  background: @side-menu-active-element;
   border-left: 2px solid @primary !important;
   i {
     color: @primary !important;
@@ -423,14 +456,23 @@ body.fixed-left {
     float: left;
     margin-right: 12px;
   }
-  h5{
-    color: @inverse;
+  .profile {
+    img {
+      border: 2px solid #edf0f0;
+      height: 36px;
+      width: 36px;
+      float: left;
+    }
+  }
+  .user-info-span {
+    display: inline-block;
+    padding-left: 10px;
   }
 }
 
 #wrapper.enlarged {
-  .menu-title {
-    display: none;
+  .menu-title ,.menu-arrow{
+    display: none !important;
   }
   #sidebar-menu {
     ul {
@@ -445,7 +487,7 @@ body.fixed-left {
     #sidebar-menu > ul > li > a {
       padding-left: 10px;
       &:hover {
-        background-color: @light5 !important;
+        background-color: @side-menu-hover-color !important;
       }
     }
     span.pull-right {
@@ -456,7 +498,7 @@ body.fixed-left {
         position: relative;
         white-space: nowrap;
         &:hover > a {
-          background: @light5;
+          background: @side-menu-hover-color;
           position: relative;
           width: 260px;
         }
@@ -531,7 +573,7 @@ body.fixed-left {
   .left.side-menu #sidebar-menu ul > li:hover > a {
     position: relative;
     width: 260px;
-    background: @light5;
+    background: @side-menu-hover-color;
     color: @primary;
     border-color: @primary;
 
@@ -554,6 +596,10 @@ body.fixed-left {
           margin-right: 0px;
         }
       }
+      svg.logo-img {
+        width: 43px;
+        height: 43px;
+      }
     }
   }
   #sidebar-menu > ul > li {
@@ -571,21 +617,22 @@ body.fixed-left {
 
   .user-detail {
     bottom: 0px;
+    padding: 13px 0px;
+    width: 70px;
+    text-align: center;
 
     .dropup {
       margin: 0px auto;
       margin-left: 17px;
     }
-    padding: 15px 0px;
-    width: 70px;
-    text-align: center;
+
     h5{
       display: none;
     }
     p {
       position: absolute;
-      right: 15px;
-      top: 32px;
+      right: 12px;
+      top: 22px;
       span{
         display: none;
       }
@@ -644,6 +691,7 @@ body.fixed-left {
     font-weight: 600;
   }
 }
+
 
 .right-bar {
   background: @white !important;

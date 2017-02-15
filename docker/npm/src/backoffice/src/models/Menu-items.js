@@ -1,6 +1,6 @@
 module.exports = [
     {
-        name: 'Main',
+        name: 'Home',
         route: '/home',
         icon: 'md md-dashboard',
         subItems: null
@@ -21,27 +21,12 @@ module.exports = [
                 route: '/emission'
             },
             {
-                name: 'Generate key',
+                name: 'Generate',
                 route: '/emission/generate'
             },
             {
-                name: 'Emission process',
-                route: '/emission/process'
-            }
-        ]
-    },
-    {
-        name: 'General agent',
-        route: '',
-        icon: 'md md-people',
-        subItems: [
-            {
-                name: 'List',
-                route: '/generalagent'
-            },
-            {
-                name: 'Distribution',
-                route: '/generalagent/distribution'
+                name: 'Quick emission',
+                route: '/emission/quickemission'
             }
         ]
     },
@@ -72,7 +57,7 @@ module.exports = [
         icon: 'md md-content-cut',
         subItems: [
             {
-                name: 'For asset (EUAH)',
+                name: 'For assets (globally)',
                 route: '/commissions/assets'
             },
             {
@@ -83,9 +68,24 @@ module.exports = [
                 name: 'For accounts',
                 route: '/commissions/accounts'
             },
+            // {
+            //     name: 'Fee account',
+            //     route: '/commissions/manage'
+            // }
+        ]
+    },
+    {
+        name: 'Currencies',
+        route: '',
+        icon: 'md md-import-export',
+        subItems: [
             {
-                name: 'Fee account',
-                route: '/commissions/manage'
+                name: 'List',
+                route: '/currencies'
+            },
+            {
+                name: 'Create',
+                route: '/currencies/create'
             }
         ]
     },
@@ -133,5 +133,24 @@ module.exports = [
                 route: '/agents/manage'
             }
         ]
-    }
+    },
+    {
+        name: 'Registered',
+        route: '',
+        icon: 'md md-verified-user',
+        subItems: [
+            {
+                name: 'List',
+                route: '/registered'
+            },
+            {
+                name: 'Create',
+                route: '/registered/create'
+            },
+            {
+                name: 'Enrollments',
+                route: '/registered/enrollments'
+            }
+        ]
+    },
 ];

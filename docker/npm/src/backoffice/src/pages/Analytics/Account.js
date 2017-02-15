@@ -1,8 +1,9 @@
-var Conf = require('../../config/Config.js'),
-    Navbar = require('../../components/Navbar.js'),
-    Footer = require('../../components/Footer.js'),
+var Conf     = require('../../config/Config.js'),
+    Navbar   = require('../../components/Navbar.js'),
+    Footer   = require('../../components/Footer.js'),
     Payments = require('../../components/Payments.js'),
-    Sidebar = require('../../components/Sidebar.js');
+    Sidebar  = require('../../components/Sidebar.js'),
+    Auth     = require('../../models/Auth');
 
 module.exports = {
     controller: function () {

@@ -3,37 +3,18 @@ var Auth = require('../models/Auth');
 
 var Helpers = {
 
-    getDateFromTimestamp: function (timestamp) {
-        if (timestamp) {
-            var pad = "00";
-            var a = new Date(timestamp * 1000);
-            var year    = a.getFullYear();
-            var month   = Number(pad.substring(0, pad.length - a.getMonth().toString().length)    + a.getMonth().toString()) + 1;
-            var date    = pad.substring(0, pad.length - a.getDate().toString().length)     + a.getDate().toString();
-            var hour    = pad.substring(0, pad.length - a.getHours().toString().length)    + a.getHours().toString();
-            var min     = pad.substring(0, pad.length - a.getMinutes().toString().length)  + a.getMinutes().toString();
-            var sec     = pad.substring(0, pad.length - a.getSeconds().toString().length)  + a.getSeconds().toString();
-            var date_format = date + '.' + month + '.' + year + ' ' + hour + ':' + min + ':' + sec ;
-            return date_format;
-        } else {
-            return '';
-        }
-    },
-
     getDateOnlyFromTimestamp: function (timestamp) {
 
-        if (timestamp) {
-            var pad = "00";
-            var a = new Date(timestamp * 1000);
-            var year    = a.getFullYear();
-            var month   = Number(pad.substring(0, pad.length - a.getMonth().toString().length)    + a.getMonth().toString()) + 1;
-            var date    = pad.substring(0, pad.length - a.getDate().toString().length)     + a.getDate().toString();
-            var date_format = date + '.' + month + '.' + year;
-            return date_format;
-        } else {
+        if (!timestamp || !parseInt(timestamp)) {
             return '';
         }
 
+        var d = new Date(timestamp * 1000);
+        var year = d.getFullYear();
+        var month = this.transformToTwoDigits(d.getMonth() + 1);
+        var day = this.transformToTwoDigits(d.getDate());
+
+        return [day, month, year].join('.');
     },
 
     getTimeFromSeconds: function (sec) {
@@ -48,6 +29,27 @@ var Helpers = {
             seconds = "0" + seconds;
         }
         return minutes + ":" + seconds;
+    },
+
+    getDateFromTimestamp: function (timestamp) {
+
+        if (!timestamp || !parseInt(timestamp)) {
+            return '';
+        }
+
+        var d = new Date(timestamp * 1000);
+        var year = d.getFullYear();
+        var month = this.transformToTwoDigits(d.getMonth() + 1);
+        var day = this.transformToTwoDigits(d.getDate());
+        var hours = this.transformToTwoDigits(d.getHours());
+        var minutes = this.transformToTwoDigits(d.getMinutes());
+        var seconds = this.transformToTwoDigits(d.getSeconds());
+
+        return [day, month, year].join('.') + " " + [hours, minutes, seconds].join(':');
+    },
+
+    transformToTwoDigits: function (number) {
+        return number.toString().length < 2 ? '0' + number : number;
     },
 
     getTextAgentType: function (type) {
@@ -68,10 +70,7 @@ var Helpers = {
                     }
                     data.signers.forEach(function (signer) {
                         if (signer.weight == Conf.roles.admin) {
-                            //don't add master account
-                            if (signer.signertype > 0 ) {
-                                admins.push(signer.public_key);
-                            }
+                            admins.push(signer.public_key);
                         }
                     });
                     resolve(admins);
@@ -102,34 +101,11 @@ var Helpers = {
                 })
         });
     },
-    getGeneralAgentKeysList: function () {
-        var gagent_keys = [];
-        return new Promise(function (resolve, reject) {
-            Conf.horizon.accounts().accountId(Conf.g_agent_pub)
-                .call()
-                .then(function (data) {
-                    if (typeof data.signers == 'undefined') {
-                        reject('Unexpected response');
-                    }
-                    data.signers.forEach(function (signer) {
-                        if (signer.weight == Conf.general_agent_signer_weight) {
-                            if (signer.public_key != Conf.g_agent_pub) {
-                                gagent_keys.push(signer.public_key);
-                            }
-                        }
-                    });
-                    resolve(gagent_keys);
-                })
-                .catch(function (error) {
-                    reject(error);
-                })
-        });
-    },
 
-    deleteMasterSigner: function (account_id, e) {
+    deleteMasterSigner: function (account_id) {
             m.onLoadingStart();
             var adminKeyPair = null;
-            m.getPromptValue(Conf.tr("Enter password"))
+            return m.getPromptValue(Conf.tr("Enter password"))
                 .then(function (pwd) {
                     return StellarWallet.getWallet({
                         server: Conf.keyserver_host + '/v2',
@@ -155,43 +131,7 @@ var Helpers = {
                     return Conf.horizon.submitTransaction(tx);
                 })
                 .then(function () {
-                    $(e.target).closest('tr').fadeOut();
-                    m.onLoadingEnd();
-                })
-                .catch(function (e) {
-                    m.flashError(Conf.tr("Cannot delete signer"));
-                    console.log(e);
-                });
-        },
-
-    deleteGeneralAgentSigner: function (account_id, e) {
-            m.onLoadingStart();
-            var g_agent_keypair = null;
-            m.getPromptValue(Conf.tr("Enter mnemonic of general agent"))
-                .then(function (mnemonic) {
-                    return StellarSdk.Keypair.fromSeed(StellarSdk.getSeedFromMnemonic(mnemonic));
-                })
-                .then(function (g_agent) {
-                    g_agent_keypair = g_agent;
-                    return Conf.horizon.loadAccount(g_agent_keypair.accountId());
-                })
-
-                .then(source => {
-                    var tx = new StellarSdk.TransactionBuilder(source)
-                        .addOperation(StellarSdk.Operation.setOptions({
-                            signer: {
-                                pubKey: account_id,
-                                weight: 0,
-                                signerType: StellarSdk.xdr.SignerType.signerGeneral().value
-                            }
-                        }))
-                        .build();
-                    tx.sign(g_agent_keypair);
-                    return Conf.horizon.submitTransaction(tx);
-                })
-                .then(function () {
-                    $(e.target).closest('tr').fadeOut();
-                    m.onLoadingEnd();
+                    return m.onLoadingEnd();
                 })
                 .catch(function (e) {
                     m.flashError(Conf.tr("Cannot delete signer"));
@@ -273,27 +213,16 @@ var Helpers = {
                     return Conf.horizon.submitTransaction(tx);
                 })
                 .then(function () {
-
                     return Conf.horizon.submitTransaction(new StellarSdk.Transaction(tx_trust));
                 })
                 .then(function () {
-
                     return Auth.api().enrollmentApprove({id:enrollment_id});
                 })
-                .then(function (response) {
-                    if (typeof response.message != 'undefined' && response.message == 'success') {
-
-                        return m.flashSuccess(Conf.tr(response.message));
-                    } else {
-                        console.error('Unexpected response');
-                        console.error(response);
-
-                        return m.flashError(Conf.tr(Conf.errors.service_error));
-                    }
+                .then(function () {
+                    return m.flashSuccess(Conf.tr('Enrollment approved'));
                 })
                 .catch(function (error) {
                     console.error(error);
-
                     return m.flashApiError(error);
                 })
                 .then(function () {
@@ -301,6 +230,42 @@ var Helpers = {
                     m.route(m.route());
                 });
     },
+    makeEmission: function (account_id, amount, asset) {
+        m.onLoadingStart();
+
+        var username = '';
+        var password = '';
+
+        m.getPromptValue(Conf.tr("Enter emission auth username"))
+            .then(function (entered_username) {
+                username = entered_username;
+                return m.getPromptValue(Conf.tr("Enter emission auth password"))
+            })
+            .then(function (entered_password) {
+                password = entered_password;
+
+                var xhrConfig = function(xhr) {
+                    xhr.setRequestHeader("Authorization", "Basic " + btoa(username + ":" + password));
+                }
+
+                return m.request({
+                    method: "POST",
+                    url: Conf.emission_host + '/issue',
+                    config: xhrConfig,
+                    data: {accountId: account_id, amount:amount, asset:asset}
+                });
+            })
+            .then(function (response) {
+                console.log(response);
+                return m.flashSuccess(Conf.tr('Emission success'));
+            }).catch(function(error){
+                console.error(error);
+                return m.flashError(typeof error.err_msg != 'undefined' ? Conf.tr(error.err_msg) : Conf.tr('Cannot make emission'));
+            }).then(function(){
+                m.onLoadingEnd();
+            })
+    },
+
     encryptData: function (data, password) {
         if (typeof data !== 'string') {
             throw new TypeError('data must be a String.');

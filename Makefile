@@ -34,7 +34,7 @@ build:
 	docker-compose build
 	docker-compose up -d
 
-dev: build
+dev:
 	@if [ ! -f ./env.js ]; then\
 	  	echo "var Env = {" >> ./env.js; \
 		./scripts/generate_js_env.sh \

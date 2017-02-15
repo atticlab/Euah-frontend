@@ -9,9 +9,30 @@ module.exports = {
             return m.route('/');
         }
 
+        this.assets         = m.prop([]);
         this.is_manage      = m.prop(false);
         this.flat_fee       = m.prop(false);
         this.percent_fee    = m.prop(false);
+
+        this.getAssets = function () {
+            m.onLoadingStart();
+
+            return Conf.horizon.assets()
+                .call()
+                .then((assets) => {
+                    m.startComputation();
+                    ctrl.assets(assets.records);
+                    m.endComputation();
+                })
+                .catch(() => {
+                    m.flashError(Conf.tr("Error requesting currencies"));
+                })
+                .then(() => {
+                    m.onLoadingEnd();
+                })
+        };
+
+        this.getAssets();
 
         this.manageCommission = function (direction, e) {
             e.preventDefault();
@@ -44,7 +65,7 @@ module.exports = {
                     return m.flashError(Conf.tr('Bad account id'));
                 }
             }
-            var asset = new StellarSdk.Asset(Conf.asset, Conf.master_key);
+            var asset = new StellarSdk.Asset(e.target.asset.value, Conf.master_key);
             this.getCommissions(from_account || to_account, from_account, to_account, from_type, to_type, asset, direction)
                 .then(commission => {
                     m.startComputation();
@@ -173,6 +194,7 @@ module.exports = {
 
         this.freezeCommissionParameters = function(){
             m.startComputation();
+            document.getElementById('asset').disabled =         true;
             document.getElementById('direction').disabled =     true;
 
             if (!!document.getElementById('from_acc')) {
@@ -192,6 +214,7 @@ module.exports = {
 
         this.unfreezeCommissionParameters = function(){
             m.startComputation();
+            document.getElementById('asset').disabled           = false;
             document.getElementById('direction').disabled       = false;
 
             if (!!document.getElementById('from_acc')) {
@@ -231,7 +254,7 @@ module.exports = {
             if (inputs.to_type) {
                 opts.to_type = document.getElementById('to_type').value;
             }
-            opts.asset = new StellarSdk.Asset(Conf.asset, Conf.master_key);
+            opts.asset = new StellarSdk.Asset(document.getElementById('asset').value.toString(), Conf.master_key);
 
             var flat    = document.getElementById('flat').value;
             var percent = document.getElementById('percent').value;
@@ -260,7 +283,7 @@ module.exports = {
             if (inputs.to_type) {
                 opts.to_type = document.getElementById('to_type').value;
             }
-            opts.asset = new StellarSdk.Asset(Conf.asset, Conf.master_key);
+            opts.asset = new StellarSdk.Asset(document.getElementById('asset').value.toString(), Conf.master_key);
 
             return Helpers.deleteCommissionOperation(opts).then(function(){
                 ctrl.closeManageForm();
@@ -329,6 +352,19 @@ module.exports = {
                             :
                                 ''
                             }
+
+                            <div class="form-group">
+                                <label for="select" class="col-md-2 control-label">{Conf.tr("Currency")}</label>
+                                <div class="col-md-8">
+                                    <select class="form-control" name="asset" id="asset">
+                                        {
+                                            ctrl.assets().map(function (asset) {
+                                                return <option value={asset.asset_code}>{asset.asset_code}</option>
+                                            })
+                                        }
+                                    </select>
+                                </div>
+                            </div>
 
                             {ctrl.is_manage() ?
                                 <div>

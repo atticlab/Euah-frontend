@@ -148,11 +148,26 @@ var Sign = module.exports = {
 
     view: function (ctrl) {
         return <div>
-            <div class="text-right languages">
-                <a onclick={Conf.loc.changeLocale.bind(ctrl, 'en')} href="#">EN</a>
-                <a onclick={Conf.loc.changeLocale.bind(ctrl, 'ua')} href="#">UA</a>
-                <a onclick={Conf.loc.changeLocale.bind(ctrl, 'ru')} href="#">RU</a>
-            </div>
+            <ul class="nav navbar-nav navbar-right pull-right hidden-xs lang-switcher">
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                        {/*<i class="fa fa-language fa-fw"></i>*/}
+                        <img src={"/assets/img/flags/" + Conf.tr('en') + ".png"} alt=""/>
+                        {/*&nbsp; <i class="fa fa-caret-down"></i>*/}
+                    </a>
+                    <ul class="dropdown-menu dropdown-user">
+                        <li>
+                            <a onclick={Conf.loc.changeLocale.bind(ctrl, 'en')} href="#"><img
+                                src="/assets/img/flags/en.png"/> English</a>
+                            <a onclick={Conf.loc.changeLocale.bind(ctrl, 'ua')} href="#"><img
+                                src="/assets/img/flags/ua.png"/> Українська</a>
+                            <a onclick={Conf.loc.changeLocale.bind(ctrl, 'ru')} href="#"><img
+                                src="/assets/img/flags/ru.png"/> Русский</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+
             <div class="wrapper-page">
                 <div class="text-center logo">
                     <img src="/assets/img/logo.svg" alt="Smartmoney logo"/>

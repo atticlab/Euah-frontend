@@ -1,6 +1,8 @@
 var Conf = require('../config/Config.js'),
     Auth = require('../models/Auth');
 
+var Session = require('../models/Session.js');
+
 module.exports = {
     controller: function (account_id) {
         var ctrl = this;
@@ -83,7 +85,7 @@ module.exports = {
 
         this.saveLimits = function (e) {
             e.preventDefault();
-
+            Session.closeModal();
             var adminKeyPair = null;
 
             m.onLoadingStart();
@@ -140,13 +142,13 @@ module.exports = {
     view: function (ctrl, account_id) {
         return <div class="panel panel-primary panel-border">
             <div class="panel-heading">
-                <h3 class="panel-title">{Conf.tr("Limits for account")} <span id="accountID">{account_id}</span></h3>
+                <h3 class="panel-title">{Conf.tr("Limits for agent")} <span id="accountID">{account_id}</span></h3>
             </div>
             <div class="panel-body">
                 <table class="table table-striped m-b-20">
                     <thead>
                     <tr>
-                        <th>{Conf.tr("Asset code")}</th>
+                        <th>{Conf.tr("Currency")}</th>
                         <th>{Conf.tr("Max operation out")}</th>
                         <th>{Conf.tr("Daily max out")}</th>
                         <th>{Conf.tr("Monthly max out")}</th>

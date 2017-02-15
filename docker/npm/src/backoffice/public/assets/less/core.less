@@ -1,4 +1,4 @@
-@import "variables.less";
+@import "theme.less";
 @import "elements.less";
 
 /* ===========
@@ -19,21 +19,20 @@
  =============*/
 
 body {
-  background: @light5;
+  background: @background-color;
   font-family: @font-1;
   margin: 0;
-  color: #4c5667;
-  padding-bottom: 61px;
+  color: @body-color;
   overflow-x: hidden !important;
 }
 html {
     overflow-x: hidden;
     position: relative;
     min-height: 100%;
-    background: @light5;
+    background: @background-color;
 }
 h1, h2, h3, h4, h5, h6 {
-  color: #505458;
+  color: @font-color;
   font-family: @font-2;
   margin: 10px 0;
 }
@@ -86,7 +85,7 @@ a {
 }
 
 .container {
-  width: 95%;
+  width: auto;
 }
 
 .container-alt {
@@ -97,10 +96,10 @@ a {
 }
 
 .footer {
-  background-color: #f9f9f9;
+  background-color: @footer-color;
   border-top: 1px solid rgba(0, 0, 0, 0.05);
   bottom: 0px;
-  color: #58666e;
+  color: @footer-text-color;
   text-align:left !important;
   padding: 20px 30px;
   position: absolute;
@@ -122,18 +121,27 @@ a {
 }
 
 .page-title {
-  margin-bottom: 20px;
+  margin-bottom: 0px;
   margin-top: 0px;
+}
+.page-title-box {
+  background: @white;
+  box-shadow: 0 6px 19px 0 rgba(0, 0, 0, 0.04), 0 1px 0px 0 rgba(0, 0, 0, 0.02);
+  padding: 20px;
+  margin: -20px -20px 22px -20px;
+
+  .breadcrumb {
+    margin-top: 0px;
+    padding-top: 2px;
+  }
 }
 .card-box {
     padding: 20px;
-    border: 1px solid rgba(54,64,74,.08);
-    -webkit-border-radius: 5px;
-    border-radius: 5px;
-    -moz-border-radius: 5px;
-    background-clip: padding-box;
+    box-shadow: 0 2px 15px 0 rgba(0, 0, 0, 0.06), 0 2px 0px 0 rgba(0, 0, 0, 0.02);
+    .border-radius(5px);
     margin-bottom: 20px;
-    background-color: #fff;
+    background-color: @cardbox-color;
+    border: @cardbox-border;
 }
 .header-title {
     text-transform: uppercase;
@@ -570,7 +578,8 @@ code, pre {
   cursor: pointer;
   line-height: 50px;
   font-weight: 500;
-  padding: 0px 20px;
+  padding-left: 20px;
+  padding-right: 20px;
   font-family: @font-2;
   &:hover {
     color: @primary !important;
@@ -584,14 +593,15 @@ code, pre {
   color: @lightdark3 !important;
   cursor: pointer;
   line-height: 50px;
-  padding: 0px 20px;
+  padding-left: 20px;
+  padding-right: 20px;
   &:hover {
     color: @primary !important;
   }
 }
 
 .tab-content {
-  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 15px 0 rgba(0, 0, 0, 0.06), 0 2px 0px 0 rgba(0, 0, 0, 0.02);
   color: #777777;
 }
 
@@ -605,7 +615,7 @@ code, pre {
 
 .nav.nav-tabs {
   border-bottom: 0;
-  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 15px 0 rgba(0, 0, 0, 0.06), 0 2px 0px 0 rgba(0, 0, 0, 0.02);
 }
 
 .navtab-custom {
@@ -1474,8 +1484,9 @@ code, pre {
   .logo,
   .breadcrumb,
   .page-title,
+  .page-title-box,
   .footer,
-  .topbar-main {
+  .topbar-left {
     display: none;
     margin: 0px;
     padding: 0px;
@@ -1484,7 +1495,7 @@ code, pre {
   .right-bar {
     display: none;
   }
-  .wrapper {
+  .content {
     margin-top: 0px !important;
     padding-top: 0px;
   }

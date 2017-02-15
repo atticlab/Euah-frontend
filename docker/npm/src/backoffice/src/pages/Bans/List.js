@@ -56,7 +56,6 @@ module.exports = {
         this.getStatistics();
 
         this.deleteBan = function (ip) {
-
             swal({
                 title: Conf.tr("Delete ban") + '?',
                 type: "warning",
@@ -69,16 +68,9 @@ module.exports = {
                     ip : String(ip),
                     banned_for : 0
                 };
-
                 Auth.api().banIp(form_data)
-                    .then(function(result){
-                        if (typeof result.message != 'undefined' && result.message == 'success') {
-                            m.flashSuccess(Conf.tr(result.message));
-                        } else {
-                            console.error('Unexpected response');
-                            console.error(result);
-                            m.flashError(Conf.tr(Conf.errors.service_error));
-                        }
+                    .then(function(){
+                        m.flashSuccess(Conf.tr('IP unbanned'));
                     })
                     .then(function(){
                         return ctrl.getStatistics();
@@ -112,14 +104,14 @@ module.exports = {
                                                 <tr>
                                                     <th>{Conf.tr('Ip')}</th>
                                                     <th>{Conf.tr('Banned to')}</th>
-                                                    <th>{Conf.tr('Missed for minute')} {m("i[class='md md-info']" +
+                                                    <th>{Conf.tr('Missed for minute')} {m("i[class='md md-info info-cursor']" +
                                                                                             "[data-container='body']" +
                                                                                             "[title='']" +
                                                                                             "[data-toggle='popover']" +
                                                                                             "[data-placement='right']" +
                                                                                             "[data-content='"+Conf.tr("Bad request per minute")+"']" +
                                                                                             "[data-original-title='']", {config: draggable})}</th>
-                                                    <th>{Conf.tr('Missed for day')} {m("i[class='md md-info']" +
+                                                    <th>{Conf.tr('Missed for day')} {m("i[class='md md-info info-cursor']" +
                                                                                         "[data-container='body']" +
                                                                                         "[title='']" +
                                                                                         "[data-toggle='popover']" +

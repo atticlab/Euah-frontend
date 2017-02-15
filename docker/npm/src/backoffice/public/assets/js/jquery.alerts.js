@@ -84,7 +84,7 @@
             if ($.alerts.dialogClass) $("#popup_container").addClass($.alerts.dialogClass);
 
             $("#popup_container").css({
-                position: 'absolute',
+                position: 'fixed',
                 zIndex: 99999,
                 width: '100%',
                 'max-width': '100%',

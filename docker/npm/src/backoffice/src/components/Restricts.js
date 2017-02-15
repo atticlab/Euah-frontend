@@ -1,6 +1,8 @@
 var Conf = require('../config/Config.js'),
     Auth = require('../models/Auth');
 
+var Session = require('../models/Session.js');
+
 module.exports = {
     controller: function (account_id) {
         var ctrl = this;
@@ -34,8 +36,8 @@ module.exports = {
         this.saveTraits = function (e) {
             e.preventDefault();
 
+            Session.closeModal();
             m.onLoadingStart();
-
             m.getPromptValue(Conf.tr("Enter password to save limits"))
                 .then(function (pwd) {
                     return StellarWallet.getWallet({
@@ -54,7 +56,7 @@ module.exports = {
                 })
                 .catch((err) => {
                     console.log(err);
-                    m.flashError(Conf.tr("Error saving restricts") + " | " + err);
+                    m.flashError(Conf.tr("Error saving restricts"));
                 });
         };
 
@@ -65,7 +67,7 @@ module.exports = {
     view: function (ctrl, account_id) {
         return <div class="panel panel-primary panel-border">
             <div class="panel-heading">
-                <h3 class="panel-title">{Conf.tr("Restricts for account")} <span id="accountID">{account_id}</span></h3>
+                <h3 class="panel-title">{Conf.tr("Restrictions for agent")} <span id="accountID">{account_id}</span></h3>
             </div>
             <div class="panel-body">
                 {ctrl.restricts() ?

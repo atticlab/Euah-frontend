@@ -30,6 +30,19 @@ module.exports = {
             });
         };
 
+        this.deleteEmissionKey = function(account_id, e) {
+            Helpers.deleteMasterSigner(account_id)
+                .then(function(){
+                    m.route(m.route())
+                })
+                .then(function(){
+                    return swal(Conf.tr("Deleted") + "!",
+                        Conf.tr("Emission key successfully deleted"),
+                        "success"
+                    );
+                })
+        };
+
         this.getEmissionKeys();
     },
 
@@ -46,6 +59,9 @@ module.exports = {
                                     <h3 class="panel-title">{Conf.tr('Emission accounts')}</h3>
                                 </div>
                                 <div class="panel-body">
+                                    <div class="alert alert-info">
+                                        {Conf.tr('This page allows to manage accounts that are able to approve emission of e-money. These could be cashiers for example.')}
+                                    </div>
                                     <table class="table table-bordered">
                                         <thead>
                                         <tr>
@@ -62,7 +78,7 @@ module.exports = {
                                                     <span title={em_key}>{em_key}</span>
                                                 </td>
                                                 <td>
-                                                    <button type="submit" onclick={Helpers.deleteMasterSigner.bind(ctrl, em_key)}
+                                                    <button type="submit" onclick={ctrl.deleteEmissionKey.bind(ctrl, em_key)}
                                                             class="btn btn-danger btn-xs waves-effect waves-light">{Conf.tr('Delete')}</button>
                                                 </td>
                                             </tr>

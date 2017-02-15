@@ -8,6 +8,8 @@ var Conf      = require('../../config/Config.js'),
     Auth      = require('../../models/Auth'),
     Pagination  = require('../../components/Pagination.js');
 
+var Session = require('../../models/Session.js');
+
 module.exports = {
     controller: function () {
         var ctrl = this;
@@ -22,10 +24,6 @@ module.exports = {
         this.limit = Conf.pagination.limit;
         this.offset = (ctrl.page() - 1) * ctrl.limit;
         this.pagination_data = m.prop({func: "getAgentsList", page: ctrl.page()});
-
-        this.selected_agent   = m.prop(false); // account ID of selected agent for managing
-        this.manage_limits    = m.prop(false); // flag for showing form to manage agent's limits
-        this.manage_restricts = m.prop(false); // flag for showing form to manage agent's restricts
 
         this.agents = m.prop([]);
 
@@ -53,23 +51,19 @@ module.exports = {
 
         ctrl.getAgents();
 
-        this.resetEditForms = function () {
-            ctrl.selected_agent(false);
-            ctrl.manage_limits(false);
-            ctrl.manage_restricts(false);
-        }
-
         this.toggleManageLimits = function (account_id) {
-            ctrl.resetEditForms();
-            ctrl.selected_agent(account_id);
-            ctrl.manage_limits(true);
+            ctrl.showManagePanel(m.component(Limits, account_id));
         };
 
         this.toggleManageRestricts = function (account_id) {
-            ctrl.resetEditForms();
-            ctrl.selected_agent(account_id);
-            ctrl.manage_restricts(true);
+            ctrl.showManagePanel(m.component(Restricts, account_id));
         };
+
+        this.showManagePanel = function(data) {
+            m.startComputation();
+            Session.modal(data, Conf.tr("Manage panel"), 'big');
+            m.endComputation();
+        }
     },
 
     view: function (ctrl) {
@@ -87,24 +81,38 @@ module.exports = {
                                             <h3 class="panel-title">{Conf.tr('Registered agents')}</h3>
                                         </div>
                                         <div class="panel-body">
+                                            <div class="alert alert-info">
+                                                {Conf.tr('This page allows to view and modify current permissions and limits of the agents')}
+                                            </div>
                                             <table class="table table-bordered">
                                                 <thead>
                                                 <tr>
-                                                    <th>{Conf.tr("Account ID")}</th>
+                                                    <th>{Conf.tr("Account account ID")}</th>
                                                     <th>{Conf.tr('Agent ID')}</th>
                                                     <th>{Conf.tr('Company CODE')}</th>
                                                     <th>{Conf.tr('Company')}</th>
                                                     <th>{Conf.tr('Agent type')}</th>
-                                                    <th>{Conf.tr('Restricts')}</th>
+                                                    <th>{Conf.tr('Restrictions')}</th>
                                                     <th>{Conf.tr('Limits')}</th>
                                                 </tr>
                                                 </thead>
                                                 <tbody>
                                                 {ctrl.agents().map(function (agent) {
-                                                    return <tr>
+                                                    return <tr
+                                                        class={agent.account_id ?
+                                                                ''
+                                                                :
+                                                                'active'
+                                                        }
+                                                        >
                                                         <td>
                                                             {agent.account_id ?
-                                                                <span title={agent.account_id}>{agent.account_id.substr(0, 30) + '...'} </span>
+                                                                <button
+                                                                    class="btn-xs btn-warning waves-effect waves-light"
+                                                                    onclick={function(){
+                                                                        Session.modal(agent.account_id, Conf.tr("Agenr account ID"))
+                                                                    }}
+                                                                >{Conf.tr("Show account ID")}</button>
                                                             :
                                                                 <span>{Conf.tr("Account ID is not approved yet")}</span>
                                                             }
@@ -165,18 +173,6 @@ module.exports = {
                                             </div>
                                         </div>
                                     </div>
-                                }
-
-                                {ctrl.manage_limits() ?
-                                    m.component(Limits, ctrl.selected_agent())
-                                :
-                                    ''
-                                }
-
-                                {ctrl.manage_restricts() ?
-                                    m.component(Restricts, ctrl.selected_agent())
-                                :
-                                    ''
                                 }
                             </div>
                             :

@@ -79,7 +79,6 @@ var Auth = {
 
     login: function (login, password) {
 
-        m.onLoadingStart();
         var master = null;
         var wallet = null;
         var keypair = null;
@@ -137,15 +136,15 @@ var Auth = {
                     Auth.keypair(keypair);
                     Auth.username(wallet.username);
                     m.endComputation();
-                    m.onLoadingEnd()
                 } else {
                     return m.flashError(Conf.tr(Conf.errors.service_error));
                 }
             })
             .catch(function (err) {
                 console.error(err);
-
-                if (err && err.message === 'Record is not found') {
+                //if admin additional data not found on api
+                if (err && typeof(err.description) != 'undefined' && typeof(err.message) != 'undefined'
+                    && err.description === "admin" && err.message === 'Record is not found') {
                     swal({
                         allowOutsideClick: false,
                         allowEscapeKey: false,
@@ -155,9 +154,9 @@ var Auth = {
                         '<input id="admin-comment" class="swal2-input" placeholder="' + Conf.tr('Comment') + '">',
                         preConfirm: function () {
                             return new Promise(function (resolve, reject) {
-                                var name = document.querySelector('#admin-name').value;
+                                var name     = document.querySelector('#admin-name').value;
                                 var position = document.querySelector('#admin-position').value;
-                                var comment = document.querySelector('#admin-comment').value;
+                                var comment  = document.querySelector('#admin-comment').value;
 
                                 if (!name || !position || !comment) {
                                     reject(Conf.tr("Please fill in all fields"));
@@ -174,30 +173,24 @@ var Auth = {
                     .then(function (admin) {
                         Auth.api().createAdmin({
                             account_id: keypair.accountId(),
-                            name: admin.name,
-                            position: admin.position,
-                            comment: admin.comment
+                            name:       admin.name,
+                            position:   admin.position,
+                            comment:    admin.comment
                         })
-                            .then(function (res) {
-                                if (typeof res.message != 'undefined' && res.message == 'success') {
-                                    m.startComputation();
-                                    Auth.keypair(keypair);
-                                    Auth.username(wallet.username);
-                                    m.endComputation();
-                                    m.onLoadingEnd();
-                                    m.route('/');
-                                    return true;
-                                } else {
-                                    m.flashError(Conf.tr(Conf.errors.service_error));
-                                }
-                            })
-                            .catch(function(err) {
-                                console.error(err);
-                                return m.flashApiError(err);
-                            });
+                        .then(function () {
+                            m.startComputation();
+                            Auth.keypair(keypair);
+                            Auth.username(wallet.username);
+                            m.endComputation();
+                            return m.route('/');
+                        })
+                        .catch(function(err) {
+                            console.error(err);
+                            return m.flashApiError(err);
+                        });
                     });
                 } else {
-                    return m.flashError(Conf.tr(Conf.errors.service_error));
+                    return m.flashError(err && err.message ? Conf.tr(err.message) :Conf.tr(Conf.errors.service_error));
                 }
             });
     },
@@ -226,13 +219,6 @@ var Auth = {
         window.location.href = '/';
     },
 
-    destroySession: function () {
-        m.startComputation();
-        Auth.keypair(null);
-        m.endComputation();
-        m.route('/');
-    },
-    
     updatePassword: function (old_pwd, new_pwd) {
         return StellarWallet.getWallet({
             server: Conf.keyserver_host + '/v2',

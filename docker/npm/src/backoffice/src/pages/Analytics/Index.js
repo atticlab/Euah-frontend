@@ -1,8 +1,9 @@
-var Conf = require('../../config/Config.js'),
-    Navbar = require('../../components/Navbar.js'),
-    Footer = require('../../components/Footer.js'),
+var Conf     = require('../../config/Config.js'),
+    Navbar   = require('../../components/Navbar.js'),
+    Footer   = require('../../components/Footer.js'),
     Payments = require('../../components/Payments.js'),
-    Sidebar = require('../../components/Sidebar.js');
+    Sidebar  = require('../../components/Sidebar.js'),
+    Auth     = require('../../models/Auth');
 
 module.exports = {
     controller: function () {
@@ -12,13 +13,11 @@ module.exports = {
             return m.route('/');
         }
 
-        this.payments = m.prop([]);
-
+        this.payments  = m.prop([]);
         this.date_from = m.prop(false);
-        this.date_to = m.prop(false);
-
-        this.btn_prev = m.prop(false);
-        this.btn_next = m.prop(false);
+        this.date_to   = m.prop(false);
+        this.btn_prev  = m.prop(false);
+        this.btn_next  = m.prop(false);
 
         this.getFormattedDate = function (date) {
             var f_date = new Date(date);
@@ -27,7 +26,6 @@ module.exports = {
 
         this.handleBtnToTop = function (e) {
             e.preventDefault();
-
             ctrl.getPayments();
         };
 
@@ -37,11 +35,13 @@ module.exports = {
                 .order('desc')
                 .call()
                 .then((payments) => {
-                    m.startComputation();
-                    ctrl.payments(payments.records);
-                    ctrl.date_from(payments.records[payments.records.length - 1].closed_at);
-                    ctrl.date_to(payments.records[0].closed_at);
-                    m.endComputation();
+                    if (payments.records.length) {
+                        m.startComputation();
+                        ctrl.payments(payments.records);
+                        ctrl.date_from(payments.records[payments.records.length - 1].closed_at);
+                        ctrl.date_to(payments.records[0].closed_at);
+                        m.endComputation();
+                    }
                     return ctrl.checkPrev();
                 })
                 .then(function(){
@@ -74,7 +74,6 @@ module.exports = {
                         ctrl.date_to(payments.records[0].closed_at);
                         m.endComputation();
                     }
-
                     return ctrl.checkPrev();
                 })
                 .then(function(){
@@ -101,7 +100,6 @@ module.exports = {
                         return parseInt(b.id) - parseInt(a.id);
                     });
                     ctrl.payments(records);
-
                     ctrl.date_to(payments.records[0].closed_at);
                     ctrl.date_from(payments.records[payments.records.length - 1].closed_at);
                     m.endComputation();
@@ -170,7 +168,7 @@ module.exports = {
                 .call()
                 .then((payments) => {
                     m.startComputation();
-                    (payments.records && payments.records.length > 0) ? ctrl.btn_prev(true) : ctrl.btn_prev(false);
+                    ctrl.btn_prev(payments.records && payments.records.length > 0);
                     m.endComputation();
                 })
                 .then(function(){
@@ -199,7 +197,7 @@ module.exports = {
                 .call()
                 .then((payments) => {
                     m.startComputation();
-                    (payments.records && payments.records.length > 0) ? ctrl.btn_next(true) : ctrl.btn_next(false);
+                    ctrl.btn_next(payments.records && payments.records.length > 0)
                     m.endComputation();
                 })
                 .then(function(){
@@ -221,49 +219,53 @@ module.exports = {
             <div class="content-page">
                 <div class="content">
                     <div class="container">
-                        <div class="card-box">
-                            <h4 class="m-t-0 header-title">{Conf.tr("Payments")}</h4>
-                            <form class="form-inline" method="post">
-                                <div class="form-group">
-                                    <label for="date_from">{Conf.tr("from")}&nbsp;</label>
-                                    <input class="form-control" id="date_from" type="date" name="date_from"
-                                           onchange={ctrl.handleDateFrom.bind(ctrl)}
-                                           value={ctrl.getFormattedDate(ctrl.date_from())}/>
+                        {
+                            ctrl.payments().length ?
+                                <div class="card-box">
+                                    <h4 class="m-t-0 header-title">{Conf.tr("Payments")}</h4>
+                                    <form class="form-inline" method="post">
+                                        <div class="form-group">
+                                            <label for="date_from">{Conf.tr("from")}&nbsp;</label>
+                                            <input class="form-control" id="date_from" type="date" name="date_from"
+                                                   onchange={ctrl.handleDateFrom.bind(ctrl)}
+                                                   value={ctrl.getFormattedDate(ctrl.date_from())}/>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="date_from">&nbsp;{Conf.tr("to")}&nbsp;</label>
+                                            <input class="form-control" id="date_to" type="date" name="date_to"
+                                                   onchange={ctrl.handleDateTo.bind(ctrl)}
+                                                   value={ctrl.getFormattedDate(ctrl.date_to())}/>
+                                        </div>
+                                        <div style="float: right">
+                                            <button class="btn-outline" onclick={ctrl.handleBtnToTop.bind(ctrl)}>{Conf.tr("To the begining")}</button>
+                                        </div>
+                                    </form>
+
+                                    {m.component(Payments, {payments: ctrl.payments()})}
+
+                                    <ul class="pager">
+                                        {ctrl.btn_prev() ?
+                                            <li className="previous">
+                                                <a href="#" onclick={ctrl.prev.bind(ctrl)}>← {Conf.tr("Prev")}</a>
+                                            </li>
+                                            :
+                                            ''
+                                        }
+                                        {ctrl.btn_next() ?
+                                            <li class="next">
+                                                <a href="#"
+                                                   onclick={ctrl.next.bind(ctrl)}>{Conf.tr("Next")}
+                                                    →</a>
+                                            </li>
+                                            :
+                                            ''
+                                        }
+                                    </ul>
+
                                 </div>
-                                <div class="form-group">
-                                    <label for="date_from">&nbsp;{Conf.tr("to")}&nbsp;</label>
-                                    <input class="form-control" id="date_to" type="date" name="date_to"
-                                           onchange={ctrl.handleDateTo.bind(ctrl)}
-                                           value={ctrl.getFormattedDate(ctrl.date_to())}/>
-                                </div>
-                                <div style="float: right">
-                                    <button class="btn-outline" onclick={ctrl.handleBtnToTop.bind(ctrl)}>{Conf.tr("To the begining")}</button>
-                                </div>
-                            </form>
-
-                            {m.component(Payments, {payments: ctrl.payments()})}
-
-                            <ul class="pager">
-                                {ctrl.btn_prev() ?
-                                    <li className="previous">
-                                        <a href="#" onclick={ctrl.prev.bind(ctrl)}>← {Conf.tr("Prev")}</a>
-                                    </li>
-                                    :
-                                    ''
-                                }
-                                {ctrl.btn_next() ?
-                                    <li class="next">
-                                        <a href="#"
-                                           onclick={ctrl.next.bind(ctrl)}>{Conf.tr("Next")}
-                                            →</a>
-                                    </li>
-                                    :
-                                    ''
-                                }
-                            </ul>
-
-                        </div>
-
+                                :
+                                <h3>{Conf.tr('No payments yet')}</h3>
+                        }
                     </div>
                 </div>
             </div>

@@ -3,20 +3,19 @@ var Locales = require('../locales/translations.js');
 var trim = require('lodash.trim');
 
 var conf = {
-    master_key:         process.env.MASTER_KEY,
-    g_agent_pub:        process.env.G_AGENT_KEY,
+    master_key:         trim(process.env.MASTER_KEY),
     horizon_host:       trim(process.env.HORIZON_HOST, '/'),
     keyserver_host:     trim(process.env.KEYSERVER_HOST, '/'),
     api_url:            trim(process.env.API_HOST, '/'),
+    emission_host:      trim(process.env.EMISSION_HOST, '/'),
+    
     roles: {
         admin   : 1,
         emission: 2
-    },
-    general_agent_signer_weight: 1
+    }
 };
 
 conf.assets_url = 'assets';
-conf.asset = 'EUAH';
 
 conf.directions = [
     'From account',
@@ -43,7 +42,6 @@ conf.phone = {
     prefix   : "+38"
 };
 
-StellarSdk.Network.use(new StellarSdk.Network(process.env.STELLAR_NETWORK));
 conf.horizon = new StellarSdk.Server(conf.horizon_host);
 
 conf.locales = Locales;
@@ -62,13 +60,17 @@ conf.loc.throwOnMissingTranslation(false);
 conf.loc.userLanguage = (localStorage.getItem('locale')) ? (localStorage.getItem('locale')) :
     (navigator.language || navigator.userLanguage).toLowerCase().split('-')[0];
 conf.loc.setLocale(conf.loc.userLanguage);
+conf.current_language = conf.loc.userLanguage;
+
 conf.loc.changeLocale = function (locale, e) {
     e.preventDefault();
     m.startComputation();
     conf.loc.setLocale(locale);
     localStorage.setItem('locale', locale);
+    conf.current_language = locale;
     m.endComputation();
 };
+
 conf.tr = conf.loc.translate; //short alias for translation
 
 var errors = require('../errors/Errors');

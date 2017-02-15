@@ -34,6 +34,10 @@
     "gulp-browserify": "^0.5.1",
     "gulp-msx": "^0.4.0",
     "gulp-rename": "^1.2.2",
+    "gulp-clean-css": "^2.3.2",
+    "gulp-concat-css": "^2.3.0",
+    "gulp-less": "^3.3.0",
+    "gulp-plumber": "^1.1.0",
     "mithrilify": "0.0.6"
   }
 }

@@ -48,15 +48,9 @@ module.exports = {
             };
 
             Auth.api().createCompany(form_data)
-                .then(function(result){
-                    if (typeof result.message != 'undefined' && result.message == 'success') {
-                        ctrl.clearForm();
-                        m.flashSuccess(Conf.tr(result.message));
-                    } else {
-                        console.error('Unexpected response');
-                        console.error(result);
-                        m.flashError(Conf.tr(Conf.errors.service_error));
-                    }
+                .then(function(){
+                    ctrl.clearForm();
+                    m.flashSuccess(Conf.tr('Company created'));
                 })
                 .catch(function(error) {
                     console.log(error);

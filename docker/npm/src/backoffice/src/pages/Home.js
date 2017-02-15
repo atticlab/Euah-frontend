@@ -127,7 +127,7 @@ module.exports = {
                                         </div>
                                     </div>
                                     <div class="clearfix"></div>
-                                    <div class="panel panel-color panel-inverse hidden-md">
+                                    <div class="panel panel-color panel-main hidden-md">
                                         <div class="panel-heading">
                                             <h3 class="panel-title">{Conf.tr("Last transactions")}</h3>
                                             <p class="panel-sub-title font-13">{Conf.tr("Overview of last recent transactions")}.</p>

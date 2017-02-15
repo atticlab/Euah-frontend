@@ -18,6 +18,7 @@ module.exports = {
                             <th>{Conf.tr("ID")}</th>
                             <th>{Conf.tr("Date")}</th>
                             <th>{Conf.tr("Amount")}</th>
+                            <th>{Conf.tr("Asset")}</th>
                             <th>{Conf.tr("From")}</th>
                             <th>{Conf.tr("To")}</th>
                         </tr>
@@ -28,6 +29,7 @@ module.exports = {
                                 <td>{payment.id}</td>
                                 <td>{DateFormat(payment.closed_at, 'dd.mm.yyyy HH:MM:ss')}</td>
                                 <td>{parseFloat(payment.amount).toFixed(2)}</td>
+                                <td>{payment.asset_code}</td>
                                 <td>
                                     <a href={"/analytics/account/" + payment.from} config={m.route}>
                                             <span title={payment.from}>

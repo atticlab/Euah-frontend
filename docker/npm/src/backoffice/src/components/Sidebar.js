@@ -5,14 +5,18 @@ module.exports = {
     controller: function () {
         var ctrl = this;
 
+        this.current_route = m.route();
+        var exist_params   = this.current_route.indexOf('?');
+        this.current_route = this.current_route.substring(0, exist_params != -1 ? exist_params : this.current_route.length);
+
         // check if current sub-menu item is in parent menu to keep sub-menu opened
         this.isRouteInSubItems = function (subItems) {
-            return _.find(subItems, function(keys) { return keys.route === m.route() }) ? true : false;
+            return _.find(subItems, function(keys) { return keys.route === ctrl.current_route }) ? true : false;
         };
 
         // check if current menu or sub-menu item is selected to highlight it in menu
         this.isSelected = function (item) {
-            if (m.route() === item.route) {
+            if (ctrl.current_route === item.route) {
                 return true;
             } else if (item.subItems) {
                 return ctrl.isRouteInSubItems(item.subItems) ? true : false;
@@ -44,7 +48,7 @@ module.exports = {
                                 {item.subItems ?
                                     <ul className="list-unstyled" style={ctrl.isRouteInSubItems(item.subItems) ? 'display: block' : ''}>
                                         {item.subItems.map(function(subItem) {
-                                            return <li class={subItem.route === m.route() ? 'active' : ''}>
+                                            return <li class={subItem.route === ctrl.current_route ? 'active' : ''}>
                                                 <a href={subItem.route} config={m.route}>{Conf.tr(subItem.name)}</a>
                                             </li>
                                         })}

@@ -17,9 +17,8 @@ module.exports = {
             if (Auth.api().getNonceTTL() <= 1) {
                 Auth.logout();
             }
-            m.startComputation();
             ctrl.ttl(Auth.api().getNonceTTL());
-            m.endComputation();
+            document.getElementById('spinner-time').innerHTML = Helpers.getTimeFromSeconds(ctrl.ttl());
 
         }, 1000);
 
@@ -36,9 +35,10 @@ module.exports = {
 
         return <div>
             {Session.modalMessage()?
+
                 m('div', {
                     style: {
-                        position: 'absolute',
+                        position: 'fixed',
                         top: 0,
                         left: 0,
                         padding: '7.5%',
@@ -51,8 +51,8 @@ module.exports = {
                     },
                 },[
                     m(".row", [
-                        m(".col-md-4.col-md-offset-4", [
-                            [m(".portlet.text-center", [
+                        m(".col-md-" + Session.modalSize() + ".col-md-offset-" + ((12 - Session.modalSize())/2).toString(), [
+                            [m(".portlet", [
                                 m(".portlet-heading.bg-primary", {style: {borderRadius: 0}}, [
                                     m("h3.portlet-title", Session.modalTitle() || Conf.tr('Message')),
                                     m(".portlet-widgets", [
@@ -71,7 +71,6 @@ module.exports = {
                 :
                 ''
             }
-
             <div id="wrapper">
                 <div class="topbar">
                     <div class="topbar-left hidden-xs">
@@ -124,7 +123,7 @@ module.exports = {
                                             title={Conf.tr('Time before the session close. Click to update session.')}
                                         >
                                             <span class="fa fa-clock-o m-r-5 align-middle f-s-20"></span>
-                                            <span class="align-middle">
+                                            <span class="align-middle" id="spinner-time">
                                             {
                                                 !ctrl.ttl() ?
                                                     ''
