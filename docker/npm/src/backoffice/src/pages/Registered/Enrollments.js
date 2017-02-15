@@ -72,6 +72,7 @@ module.exports = {
                                                 <thead>
                                                 <tr>
                                                     <th>{Conf.tr('Enrollment ID')}</th>
+                                                    <th>{Conf.tr('Created')}</th>
                                                     <th>{Conf.tr('Name')}</th>
                                                     <th>{Conf.tr('Login')}</th>
                                                     <th>{Conf.tr('Agent Account ID')}</th>
@@ -94,6 +95,9 @@ module.exports = {
                                                         >
                                                         <td>
                                                             <span>{enrollment.id}</span>
+                                                        </td>
+                                                        <td>
+                                                            <span>{Helpers.getDateFromTimestamp(enrollment.created)}</span>
                                                         </td>
                                                         <td>
                                                             <span title={Conf.tr("User name")}>{enrollment.user_data.surname + ' ' + enrollment.user_data.name + ' ' + enrollment.user_data.middle_name}</span>

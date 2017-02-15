@@ -75,6 +75,7 @@ module.exports = {
                                             <thead>
                                             <tr>
                                                 <th>{Conf.tr('Enrollment ID')}</th>
+                                                <th>{Conf.tr('Created')}</th>
                                                 <th>{Conf.tr('Company ID')}</th>
                                                 <th>{Conf.tr('Agent type')}</th>
                                                 <th>{Conf.tr('Agent details')}</th>
@@ -97,6 +98,9 @@ module.exports = {
                                                 >
                                                     <td>
                                                         <span>{enrollment.id}</span>
+                                                    </td>
+                                                    <td>
+                                                        <span>{Helpers.getDateFromTimestamp(enrollment.created)}</span>
                                                     </td>
                                                     <td>
                                                         <span title={Conf.tr("Company code")}>{enrollment.company_data.code}</span>

@@ -3,6 +3,7 @@ var Conf    = require('../../config/Config.js'),
     Footer  = require('../../components/Footer.js'),
     Sidebar = require('../../components/Sidebar.js'),
     Auth    = require('../../models/Auth'),
+    Helpers = require('../../models/Helpers'),
     Pagination  = require('../../components/Pagination.js'),
     Session = require('../../models/Session.js');
 
@@ -94,11 +95,11 @@ module.exports = {
                                                 <thead>
                                                 <tr>
                                                     <th>{Conf.tr("ID")}</th>
+                                                    <th>{Conf.tr("Created")}</th>
                                                     <th>{Conf.tr("Name")}</th>
                                                     <th>{Conf.tr("Account ID")}</th>
                                                     <th>{Conf.tr('Information')}</th>
                                                     <th>{Conf.tr('Currency')}</th>
-                                                    {/*<th>{Conf.tr('Decommission')}</th>*/}
                                                 </tr>
                                                 </thead>
                                                 <tbody>
@@ -106,6 +107,9 @@ module.exports = {
                                                     return <tr>
                                                         <td>
                                                             {reg_user.id}
+                                                        </td>
+                                                        <td>
+                                                            <span>{Helpers.getDateFromTimestamp(reg_user.created)}</span>
                                                         </td>
                                                         <td>
                                                             {reg_user.surname + ' ' + reg_user.name + ' ' + reg_user.middle_name}
@@ -162,21 +166,6 @@ module.exports = {
                                                         <td>
                                                             <span title={Conf.tr("Asset")}>{reg_user.asset}</span>
                                                         </td>
-                                                        {/*<td>*/}
-                                                            {/*{*/}
-                                                                {/*reg_user.account_id ?*/}
-                                                                    {/*<button*/}
-                                                                        {/*class="btn-xs btn-danger waves-effect waves-light"*/}
-                                                                        {/*onclick={ctrl.decommission.bind(ctrl, {*/}
-                                                                            {/*'account_id': reg_user.account_id*/}
-                                                                        {/*})}*/}
-                                                                    {/*>*/}
-                                                                        {/*{Conf.tr('Decommission')}*/}
-                                                                    {/*</button>*/}
-                                                                    {/*:*/}
-                                                                    {/*'-'*/}
-                                                            {/*}*/}
-                                                        {/*</td>*/}
                                                     </tr>
                                                 })}
                                                 </tbody>

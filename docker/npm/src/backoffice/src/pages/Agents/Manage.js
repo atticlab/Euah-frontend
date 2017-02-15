@@ -64,6 +64,40 @@ module.exports = {
             Session.modal(data, Conf.tr("Manage panel"), 'big');
             m.endComputation();
         }
+
+        this.showAgentData = function (agent, e){
+            m.onLoadingStart();
+            Auth.loadAccountById(agent.account_id)
+                .then((data) => {
+                    m.onLoadingEnd();
+                    m.startComputation();
+                    Session.modal(
+                        <div class="panel panel-color panel-primary text-center">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">{Conf.tr('Agent Login')}: {agent.login}</h3>
+                                <p class="panel-sub-title font-13">{Conf.tr('Account ID')} : {agent.account_id}</p>
+                            </div>
+                            <div class="panel-body">
+                                <table class="table table-bordered">
+                                    <tbody>
+                                    {
+                                        data.balances.map(function (balance) {
+                                            if (typeof balance.asset_code != 'undefined') {
+                                                return <tr>
+                                                    <td>{parseFloat(balance.balance).toFixed(2)}</td>
+                                                    <td>{balance.asset_code}</td>
+                                                </tr>
+                                            }
+                                        })
+                                    }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        , Conf.tr("Agent data"), 'small');
+                    m.endComputation();
+                });
+        }
     },
 
     view: function (ctrl) {
@@ -87,7 +121,8 @@ module.exports = {
                                             <table class="table table-bordered">
                                                 <thead>
                                                 <tr>
-                                                    <th>{Conf.tr("Account account ID")}</th>
+                                                    <th>{Conf.tr("Agent data")}</th>
+                                                    <th>{Conf.tr("Created")}</th>
                                                     <th>{Conf.tr('Agent ID')}</th>
                                                     <th>{Conf.tr('Company CODE')}</th>
                                                     <th>{Conf.tr('Company')}</th>
@@ -109,13 +144,14 @@ module.exports = {
                                                             {agent.account_id ?
                                                                 <button
                                                                     class="btn-xs btn-warning waves-effect waves-light"
-                                                                    onclick={function(){
-                                                                        Session.modal(agent.account_id, Conf.tr("Agenr account ID"))
-                                                                    }}
-                                                                >{Conf.tr("Show account ID")}</button>
+                                                                    onclick={ctrl.showAgentData.bind(ctrl, agent)}
+                                                                >{Conf.tr("Show agent data")}</button>
                                                             :
                                                                 <span>{Conf.tr("Account ID is not approved yet")}</span>
                                                             }
+                                                        </td>
+                                                        <td>
+                                                            <span>{Helpers.getDateFromTimestamp(agent.created)}</span>
                                                         </td>
                                                         <td>
                                                             <span title={Conf.tr("Agent ID")}>{agent.id}</span>

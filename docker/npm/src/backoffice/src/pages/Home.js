@@ -10,6 +10,8 @@ module.exports = {
     controller: function () {
         var ctrl = this;
 
+        window.Auth = Auth;
+
         if (!Auth.username()) {
             return m.route('/');
         }
