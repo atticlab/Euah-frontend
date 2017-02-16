@@ -37,7 +37,7 @@ var Login = module.exports = {
                 <li class="dropdown">
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">
                         {/*<i class="fa fa-language fa-fw"></i>*/}
-                        <img src={"/assets/img/flags/" + Conf.tr('en') + ".png"} alt=""/>
+                        <img src={"/assets/img/flags/" + Conf.current_language + ".png"} alt=""/>
                         &nbsp; <i class="fa fa-caret-down"></i>
                     </a>
                     <ul class="dropdown-menu dropdown-user">

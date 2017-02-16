@@ -1,14 +1,13 @@
-var Conf      = require('../../config/Config.js'),
-    Navbar    = require('../../components/Navbar.js'),
-    Footer    = require('../../components/Footer.js'),
-    Sidebar   = require('../../components/Sidebar.js'),
-    Limits    = require('../../components/Limits'),
-    Restricts = require('../../components/Restricts'),
-    Helpers   = require('../../models/Helpers'),
-    Auth      = require('../../models/Auth'),
-    Pagination  = require('../../components/Pagination.js');
-
-var Session = require('../../models/Session.js');
+var Conf        = require('../../config/Config.js'),
+    Navbar      = require('../../components/Navbar.js'),
+    Footer      = require('../../components/Footer.js'),
+    Sidebar     = require('../../components/Sidebar.js'),
+    Limits      = require('../../components/Limits'),
+    Restricts   = require('../../components/Restricts'),
+    Helpers     = require('../../models/Helpers'),
+    Auth        = require('../../models/Auth'),
+    Pagination  = require('../../components/Pagination.js'),
+    Session     = require('../../models/Session.js');
 
 module.exports = {
     controller: function () {
@@ -63,7 +62,7 @@ module.exports = {
             m.startComputation();
             Session.modal(data, Conf.tr("Manage panel"), 'big');
             m.endComputation();
-        }
+        };
 
         this.showAgentData = function (agent, e){
             m.onLoadingStart();
@@ -74,7 +73,7 @@ module.exports = {
                     Session.modal(
                         <div class="panel panel-color panel-primary text-center">
                             <div class="panel-heading">
-                                <h3 class="panel-title">{Conf.tr('Agent Login')}: {agent.login}</h3>
+                                <h3 class="panel-title">{agent.login ? Conf.tr('Agent Login') + ': ' + agent.login : Conf.tr('Agent create mnemonic phrase only')}</h3>
                                 <p class="panel-sub-title font-13">{Conf.tr('Account ID')} : {agent.account_id}</p>
                             </div>
                             <div class="panel-body">

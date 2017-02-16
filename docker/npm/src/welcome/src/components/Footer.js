@@ -8,7 +8,7 @@ module.exports = {
             <div class="container">
                 <div class="row">
                     <div class="col-xs-12 text-center">
-                        © 2016 made by <a href="http://atticlab.net">AtticLab</a>
+                        © 2016 - {new Date().getFullYear()} made by <a href="http://atticlab.net">AtticLab</a>
                     </div>
                 </div>
             </div>

@@ -26,7 +26,7 @@ module.exports = {
             if (e.target.password.value != e.target.password_confirm.value) {
                 return m.flashError(Conf.tr('Passwords must be equal'));
             }
-            StellarWallet.createWallet({
+            return StellarWallet.createWallet({
                 server: Conf.wallet_host + '/v2',
                 username: e.target.login.value,
                 password: e.target.password.value,
@@ -41,10 +41,9 @@ module.exports = {
                     r: 8,
                     p: 1
                 }
-            }).then(function(wallet) {
+            }).then(function() {
                 var sequence = '0';
                 var userAccount = new StellarSdk.Account(Auth.keypair().accountId(), sequence);
-
                 var tx = new StellarSdk.TransactionBuilder(userAccount).addOperation(
                     StellarSdk.Operation.changeTrust({
                         asset: new StellarSdk.Asset(Auth.enrollment().asset, Conf.master_key)
@@ -58,8 +57,7 @@ module.exports = {
                     tx_trust: xdr,
                     login: e.target.login.value
                 });
-            }).then(function(response){
-                console.log(response);
+            }).then(function(){
                 m.startComputation();
                 ctrl.accepted(true);
                 m.endComputation();

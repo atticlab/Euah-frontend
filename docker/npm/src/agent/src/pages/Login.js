@@ -30,7 +30,7 @@ var Login = module.exports = {
             <ul class="nav navbar-nav navbar-right pull-right hidden-xs lang-switcher">
                 <li class="dropdown">
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                        <img src={"/assets/img/flags/" + Conf.tr('en') + ".png"} alt=""/>
+                        <img src={"/assets/img/flags/" + Conf.current_language + ".png"} alt=""/>
                         &nbsp;
                         <i class="fa fa-caret-down"></i>
                     </a>

@@ -8,7 +8,6 @@ var conf = {
     api_url:            process.env.API_HOST
 };
 
-StellarSdk.Network.use(new StellarSdk.Network(process.env.STELLAR_NETWORK));
 conf.horizon = new StellarSdk.Server(conf.horizon_host);
 
 conf.locales = Locales;
@@ -18,11 +17,14 @@ conf.loc.throwOnMissingTranslation(false);
 conf.loc.userLanguage = (localStorage.getItem('locale')) ? (localStorage.getItem('locale')) :
     (navigator.language || navigator.userLanguage).toLowerCase().split('-')[0];
 conf.loc.setLocale(conf.loc.userLanguage);
+conf.current_language = conf.loc.userLanguage;
+
 conf.loc.changeLocale = function (locale, e) {
     e.preventDefault();
     m.startComputation();
     conf.loc.setLocale(locale);
     localStorage.setItem('locale', locale);
+    conf.current_language = locale;
     m.endComputation();
 };
 conf.tr = conf.loc.translate; //short alias for translation

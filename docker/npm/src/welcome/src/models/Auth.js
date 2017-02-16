@@ -34,7 +34,6 @@ var Auth = {
 
         return Auth.api().getAgentEnrollment({company_code: company_code, token: token})
             .then(function (enrollment) {
-                console.log(enrollment);
                 Auth.enrollment(enrollment);
             })
             .catch(err => {
