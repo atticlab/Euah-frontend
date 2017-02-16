@@ -15,10 +15,10 @@
    Common
  =============*/
 body {
-  background: #fff;
-  font-family: "Corsica" !important;
-  color: #194a8f !important;
+  background: #30384b;
+  font-family: 'Roboto', sans-serif;
   margin: 0;
+  color: #98a6ad;
   padding-bottom: 61px;
   overflow-x: hidden !important;
 }
@@ -26,7 +26,7 @@ html {
   overflow-x: hidden;
   position: relative;
   min-height: 100%;
-  background: #fff;
+  background: #30384b;
 }
 h1,
 h2,
