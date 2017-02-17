@@ -27,9 +27,9 @@ module.exports = {
             m.onLoadingStart();
             Auth.api().getInvoicesStatistics({limit: ctrl.limit, offset: ctrl.offset})
                 .then(function(statistics) {                    
-                    if (typeof statistics.items != 'undefined') {
+                    if (typeof statistics.data != 'undefined') {
                         m.startComputation();
-                        ctrl.statistics(statistics.items);
+                        ctrl.statistics(statistics.data);
                         ctrl.is_initialized(true);
                         m.endComputation();
                     } else {

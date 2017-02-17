@@ -25,7 +25,8 @@ module.exports = {
 
         // check that it runs only once
         this.updateTTL = function () {
-            Auth.api().initNonce();
+            m.onLoadingStart();
+            Auth.api().initNonce().then(m.onLoadingEnd);
         };
     },
 

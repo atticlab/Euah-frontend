@@ -8,8 +8,6 @@ var conf = {
     api_url:            process.env.API_HOST
 };
 
-conf.masker = require('vanilla-masker');
-
 conf.phone = {
     view_mask:  "+99 (999) 999-99-99",
     db_mask:    "999999999999",

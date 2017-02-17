@@ -70,13 +70,13 @@ var Auth = {
                 Auth.username(wallet_data.username);
                 Auth.api(new StellarWallet.Api(Conf.api_url, Auth.keypair()));
                 Auth.api().initNonce()
-                .then(function(ttl){
-                    Auth.ttl(ttl);
-                    Auth.time_live(Number(ttl));
-                    return Auth.initAgentAssets();
-                }).then(function(){
-                    return Auth.initAgentBalances();
-                })
+                    .then(function(ttl){
+                        Auth.ttl(ttl);
+                        Auth.time_live(Number(ttl));
+                        return Auth.initAgentAssets();
+                    }).then(function(){
+                        return Auth.initAgentBalances();
+                    });
 
                 m.endComputation();
             }

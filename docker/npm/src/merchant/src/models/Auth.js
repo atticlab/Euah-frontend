@@ -5,10 +5,43 @@ var Auth = {
     setDefaults: function () {
         this.keypair = m.prop(false);
         this.username = m.prop(false);
+        this.assets = m.prop(false);
+        this.balances = m.prop(false);
         this.wallet = m.prop(false);
         this.api = m.prop(false);
         this.ttl = m.prop(0);
         this.time_live = m.prop(0);
+    },
+
+
+    initAgentAssets: function () {
+
+        return Auth.loadAccountById(Auth.keypair().accountId())
+            .then(account_data => {
+                m.startComputation();
+                Auth.assets([]);
+                account_data.balances.map(function(balance) {
+                    if (typeof balance.asset_code != 'undefined') {
+                        Auth.assets().push(balance.asset_code);
+                    }
+                });
+                m.endComputation();
+            })
+    },
+
+    initAgentBalances: function () {
+
+        return Auth.loadAccountById(Auth.keypair().accountId())
+            .then(account_data => {
+                m.startComputation();
+                Auth.balances([]);
+                account_data.balances.map(function(balance) {
+                    if (typeof balance.asset_code != 'undefined') {
+                        Auth.balances().push(balance);
+                    }
+                });
+                m.endComputation();
+            })
     },
 
     login: function (login, password) {
@@ -38,6 +71,9 @@ var Auth = {
                     .then(function(ttl){
                         Auth.ttl(ttl);
                         Auth.time_live(Number(ttl));
+                        return Auth.initAgentAssets();
+                    }).then(function(){
+                        return Auth.initAgentBalances();
                     });
                 
                 m.endComputation();
@@ -47,13 +83,6 @@ var Auth = {
 
     logout: function () {
         window.location.href = '/';
-    },
-
-    destroySession: function () {
-        m.startComputation();
-        Auth.keypair(null);
-        m.endComputation();
-        m.route('/');
     },
 
     loadAccountById: function (aid) {

@@ -36,15 +36,9 @@ module.exports = {
             };
 
             Auth.api().createStore(form_data)
-                .then(function(result){
-                    if (typeof result.message != 'undefined' && result.message == 'success') {
-                        ctrl.clearForm();
-                        return m.flashSuccess(Conf.tr(result.message));
-                    } else {
-                        console.error('Unexpected response');
-                        console.error(result);
-                        return m.flashError(Conf.tr(Conf.errors.service_error));
-                    }
+                .then(function(){
+                    ctrl.clearForm();
+                    return m.flashSuccess('Store created');
                 })
                 .catch(function(error) {
                     console.error(error);

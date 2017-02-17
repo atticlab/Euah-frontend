@@ -27,9 +27,9 @@ module.exports = {
 
             return Auth.api().getCardsList({limit: ctrl.limit, offset: ctrl.offset})
                 .then(cards => {
-                    if (typeof cards.items != 'undefined') {
+                    if (typeof cards.data != 'undefined') {
                         m.startComputation();
-                        ctrl.cardsList(cards.items);
+                        ctrl.cardsList(cards.data);
                         ctrl.is_initialized(true);
                         m.endComputation();
                     } else {

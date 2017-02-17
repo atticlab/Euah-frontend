@@ -28,7 +28,7 @@ module.exports = {
         m.onLoadingStart();
         ctrl.getNextPageItems()
             .then(function (list) {
-                if (typeof list.items != 'undefined' && list.items.length > 0) {
+                if (typeof list.data != 'undefined' && list.data.length > 0) {
                     m.startComputation();
                     ctrl.btn_next(true);
                     m.endComputation();

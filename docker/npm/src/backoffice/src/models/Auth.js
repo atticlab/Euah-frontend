@@ -130,15 +130,11 @@ var Auth = {
 
                 return Auth.api().getAdmin({account_id: keypair.accountId()})
             })
-            .then(function (admin) {
-                if (admin && admin.name) {
-                    m.startComputation();
-                    Auth.keypair(keypair);
-                    Auth.username(wallet.username);
-                    m.endComputation();
-                } else {
-                    return m.flashError(Conf.tr(Conf.errors.service_error));
-                }
+            .then(function () {
+                m.startComputation();
+                Auth.keypair(keypair);
+                Auth.username(wallet.username);
+                m.endComputation();
             })
             .catch(function (err) {
                 console.error(err);

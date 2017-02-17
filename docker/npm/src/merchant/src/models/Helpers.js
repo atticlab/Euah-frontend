@@ -3,6 +3,11 @@ var Auth = require('../models/Auth');
 
 var Helpers = {
     getDateFromTimestamp: function (timestamp) {
+
+        if (!timestamp) {
+            return '';
+        }
+
         var d = new Date(timestamp * 1000);
         var year = d.getFullYear();
         var month = this.transformToTwoDigits(d.getMonth() + 1);

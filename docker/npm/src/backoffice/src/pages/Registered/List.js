@@ -31,9 +31,9 @@ module.exports = {
             m.onLoadingStart();
             Auth.api().getRegusersList({limit: ctrl.limit, offset: ctrl.offset})
                 .then(function(reg_users){
-                    if (typeof reg_users.items != 'undefined') {
+                    if (typeof reg_users.data != 'undefined') {
                         m.startComputation();
-                        ctrl.reg_users(reg_users.items);
+                        ctrl.reg_users(reg_users.data);
                         ctrl.is_initialized(true);
                         m.endComputation();
                     } else {

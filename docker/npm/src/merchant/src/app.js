@@ -49,9 +49,9 @@ m.getPromptValue = function (label) {
 m.route.mode = 'pathname';
 m.route(document.getElementById('app'), "/", {
     "/": require('./pages/Login.js'),
-    "/logout": require('./pages/Logout.js'),
     "/stores": require('./pages/Stores/List.js'),
     "/stores/create": require('./pages/Stores/Create.js'),
-    "/orders/:store_id": require('./pages/Orders.js'),
-    "/transaction/:order_id": require('./pages/Transaction.js')
+    "/transfer": require('./pages/Transfer/Transfer.js'),
+    "/orders/:store_id": require('./pages/Orders/Orders.js'),
+    "/transaction/:order_id": require('./pages/Transaction/Transaction.js')
 });

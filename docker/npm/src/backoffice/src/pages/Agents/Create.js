@@ -19,10 +19,10 @@ module.exports = {
             m.onLoadingStart();
             return Auth.api().getCompaniesList()
                 .then(function(companies){
-                    if (typeof companies.items != 'undefined') {
-                        if (companies.items.length > 0) {
+                    if (typeof companies.data != 'undefined') {
+                        if (companies.data.length > 0) {
                             m.startComputation();
-                            ctrl.companies(companies.items);
+                            ctrl.companies(companies.data);
                             m.endComputation();
                         }
                     } else {

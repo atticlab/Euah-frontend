@@ -1,6 +1,8 @@
-var Conf = require('../../config/Config.js');
-var Wrapper = require('../../components/Wrapper.js');
-var Auth = require('../../models/Auth.js');
+var Conf = require('../../config/Config.js'),
+    Navbar  = require('../../components/Navbar.js'),
+    Footer  = require('../../components/Footer.js'),
+    Sidebar = require('../../components/Sidebar.js'),
+    Auth = require('../../models/Auth.js');
 
 var Transfer = module.exports = {
 
@@ -219,114 +221,117 @@ var Transfer = module.exports = {
     },
 
     view: function (ctrl) {
-        return m.component(Wrapper, {
-            title: Conf.tr("Cards"),
-            tpl: <div class="wrapper">
-                <div class="container">
-                    <div class="row">
-                        <form class="col-lg-6" onsubmit={ctrl.commitPayment.bind(ctrl)}>
-                            <div class="panel panel-color panel-primary">
-                                <div class="panel-heading">
-                                    <h3 class="panel-title">{Conf.tr("Transfer money")}</h3>
-                                </div>
-                                <div class="panel-body">
-                                    <div class="form-group">
-                                        <label>{Conf.tr("Transfer type")}</label>
-                                        <select name="transType" required="required" class="form-control"
-                                                onchange={ctrl.changeTransferType.bind(ctrl)}
-                                                value={ctrl.transferType()}
-                                        >
-                                            <option value="byAccount">{Conf.tr("by account ID")}</option>
-                                            <option value="byPhone">{Conf.tr("by phone")}</option>
-                                            <option value="byEmail">{Conf.tr("by email")}</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group"
-                                         class={(ctrl.transferType() != 'byAccount') ? 'hidden' : ''}>
-                                        <label>{Conf.tr("Account ID")}</label>
-                                        <input name="account"
-                                               oninput={m.withAttr("value", ctrl.infoAccount)} pattern=".{56}"
-                                               title={Conf.tr("Account ID should have 56 symbols")}
-                                               class="form-control"
-                                               value={ctrl.infoAccount()}/>
-                                    </div>
-                                    <div class="form-group"
-                                         class={(ctrl.transferType() != 'byPhone') ? 'hidden' : ''}>
-                                        <label>{Conf.tr("Phone number")}</label>
-                                        <input name="phone"
-                                               class="form-control"
-                                               placeholder={Conf.phone.view_mask}
-                                               oninput={ctrl.addPhoneViewPattern.bind(ctrl)}
-                                               value={ctrl.infoPhone()}/>
-                                    </div>
-                                    <div class="form-group"
-                                         class={(ctrl.transferType() != 'byEmail') ? 'hidden' : ''}>
-                                        <label>{Conf.tr("Email")}</label>
-                                        <input name="email"
-                                               type="email"
-                                               class="form-control"
-                                               oninput={m.withAttr("value", ctrl.infoEmail)}
-                                               value={ctrl.infoEmail()}/>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>{Conf.tr("Amount")}</label>
-                                        <input type="number" required="required" name="amount"
-                                               min="0.01"
-                                               step="0.01"
-                                               placeholder="0.00"
-                                               class="form-control"
-                                               oninput={m.withAttr("value", ctrl.infoAmount)}
-                                               value={ctrl.infoAmount()}/>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>{Conf.tr("Asset")}</label>
-                                        <select name="asset" required="required" class="form-control">
-                                            {Auth.assets().map(function (asset) {
-                                                return <option
-                                                    value={asset}
-                                                    selected={ctrl.infoAsset() && ctrl.infoAsset() == asset ? 'selected' : ''}
+        return <div class="wrapper">
+            {m.component(Navbar)}
+            {m.component(Sidebar)}
+                <div class="content-page">
+                    <div class="content">
+                        <div class="container">
+                            <div class="row">
+                                <form class="col-lg-6" onsubmit={ctrl.commitPayment.bind(ctrl)}>
+                                    <div class="panel panel-color panel-primary">
+                                        <div class="panel-heading">
+                                            <h3 class="panel-title">{Conf.tr("Transfer money")}</h3>
+                                        </div>
+                                        <div class="panel-body">
+                                            <div class="form-group">
+                                                <label>{Conf.tr("Transfer type")}</label>
+                                                <select name="transType" required="required" class="form-control"
+                                                        onchange={ctrl.changeTransferType.bind(ctrl)}
+                                                        value={ctrl.transferType()}
                                                 >
-                                                    {asset}
-                                                </option>
-                                            })}
-                                        </select>
+                                                    <option value="byAccount">{Conf.tr("by account ID")}</option>
+                                                    <option value="byPhone">{Conf.tr("by phone")}</option>
+                                                    <option value="byEmail">{Conf.tr("by email")}</option>
+                                                </select>
+                                            </div>
+                                            <div class="form-group"
+                                                 class={(ctrl.transferType() != 'byAccount') ? 'hidden' : ''}>
+                                                <label>{Conf.tr("Account ID")}</label>
+                                                <input name="account"
+                                                       oninput={m.withAttr("value", ctrl.infoAccount)} pattern=".{56}"
+                                                       title={Conf.tr("Account ID should have 56 symbols")}
+                                                       class="form-control"
+                                                       value={ctrl.infoAccount()}/>
+                                            </div>
+                                            <div class="form-group"
+                                                 class={(ctrl.transferType() != 'byPhone') ? 'hidden' : ''}>
+                                                <label>{Conf.tr("Phone number")}</label>
+                                                <input name="phone"
+                                                       class="form-control"
+                                                       placeholder={Conf.phone.view_mask}
+                                                       oninput={ctrl.addPhoneViewPattern.bind(ctrl)}
+                                                       value={ctrl.infoPhone()}/>
+                                            </div>
+                                            <div class="form-group"
+                                                 class={(ctrl.transferType() != 'byEmail') ? 'hidden' : ''}>
+                                                <label>{Conf.tr("Email")}</label>
+                                                <input name="email"
+                                                       type="email"
+                                                       class="form-control"
+                                                       oninput={m.withAttr("value", ctrl.infoEmail)}
+                                                       value={ctrl.infoEmail()}/>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>{Conf.tr("Amount")}</label>
+                                                <input type="number" required="required" name="amount"
+                                                       min="0.01"
+                                                       step="0.01"
+                                                       placeholder="0.00"
+                                                       class="form-control"
+                                                       oninput={m.withAttr("value", ctrl.infoAmount)}
+                                                       value={ctrl.infoAmount()}/>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>{Conf.tr("Asset")}</label>
+                                                <select name="asset" required="required" class="form-control">
+                                                    {Auth.assets().map(function (asset) {
+                                                        return <option
+                                                            value={asset}
+                                                            selected={ctrl.infoAsset() && ctrl.infoAsset() == asset ? 'selected' : ''}
+                                                        >
+                                                            {asset}
+                                                        </option>
+                                                    })}
+                                                </select>
+                                            </div>
+                                            <div class="form-group" style="display:none;">
+                                                <label>{Conf.tr("Memo message")}</label>
+                                                <input name="memo"
+                                                       size="14" maxlength="14"
+                                                       disabled="disabled"
+                                                       oninput={m.withAttr("value", ctrl.infoMemo)}
+                                                       class="form-control"
+                                                       value={ctrl.infoMemo()}/>
+                                            </div>
+                                            <div class="form-group">
+                                                <button class="btn btn-primary btn-custom">{Conf.tr("Transfer")}</button>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="form-group" style="display:none;">
-                                        <label>{Conf.tr("Memo message")}</label>
-                                        <input name="memo"
-                                               size="14" maxlength="14"
-                                               disabled="disabled"
-                                               oninput={m.withAttr("value", ctrl.infoMemo)}
-                                               class="form-control"
-                                               value={ctrl.infoMemo()}/>
+                                </form>
+                                <form class="col-lg-6" onsubmit={ctrl.getInvoice.bind(ctrl)}>
+                                    <div class="panel panel-color panel-primary">
+                                        <div class="panel-heading">
+                                            <h3 class="panel-title">{Conf.tr("Pay by invoice code")}</h3>
+                                        </div>
+                                        <div class="panel-body">
+                                            <div class="form-group">
+                                                <label>{Conf.tr("Invoice code")}</label>
+                                                <input type="number" name="code" required="required" class="form-control"/>
+                                            </div>
+                                            <div class="form-group">
+                                                <button class="btn btn-primary btn-custom">{Conf.tr("Request")}</button>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="form-group">
-                                        <button class="btn btn-primary btn-custom">{Conf.tr("Transfer")}</button>
-                                    </div>
-                                </div>
+                                </form>
+                                <div class="clearfix"></div>
                             </div>
-                        </form>
-                        <form class="col-lg-6" onsubmit={ctrl.getInvoice.bind(ctrl)}>
-                            <div class="panel panel-color panel-primary">
-                                <div class="panel-heading">
-                                    <h3 class="panel-title">{Conf.tr("Pay by invoice code")}</h3>
-                                </div>
-                                <div class="panel-body">
-                                    <div class="form-group">
-                                        <label>{Conf.tr("Invoice code")}</label>
-                                        <input type="number" name="code" required="required" class="form-control"/>
-                                    </div>
-                                    <div class="form-group">
-                                        <button class="btn btn-primary btn-custom">{Conf.tr("Request")}</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
-                        <div class="clearfix"></div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        });
+            {m.component(Footer)}
+        </div>
     }
-
 };

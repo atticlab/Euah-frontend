@@ -1,5 +1,6 @@
-var menuItems = require('../models/Menu-items');
-var Conf = require('../config/Config.js');
+var menuItems = require('../models/Menu-items'),
+    Conf = require('../config/Config.js'),
+    Auth = require('../models/Auth');
 
 module.exports = {
     controller: function () {
@@ -24,6 +25,32 @@ module.exports = {
         return <div class="left side-menu">
             <div class="sidebar-inner slimscrollleft">
                 <div id="sidebar-menu">
+                    {
+                        Auth.balances().length ?
+                            <div class="col-lg-12">
+                                <div class="panel panel-border panel-primary">
+                                    <div class="panel-body">
+                                        <h5 class="m-l-5">{Conf.tr('Balances')}</h5>
+                                        <div class="table-responsive">
+                                            <table class="table table-striped">
+                                                <tbody>
+                                                {
+                                                    Auth.balances().map(function (balance) {
+                                                        return <tr>
+                                                            <td>{parseFloat(balance.balance).toFixed(2)}</td>
+                                                            <td>{balance.asset_code}</td>
+                                                        </tr>
+                                                    })
+                                                }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            :
+                            ''
+                    }
                     <ul>
                         {menuItems.map(function (item) {
                             return <li class={item.subItems ? 'has_sub' : ''}>

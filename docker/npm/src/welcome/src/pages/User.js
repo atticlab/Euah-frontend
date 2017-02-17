@@ -90,7 +90,7 @@ module.exports = {
                     return Auth.api().enrollmentDecline({
                         id: Auth.enrollment().id,
                         token: Auth.enrollment().otp
-                    }).then(function(response){
+                    }).then(function() {
                         m.startComputation();
                         ctrl.declined(true);
                         m.endComputation();

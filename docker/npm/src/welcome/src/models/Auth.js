@@ -18,7 +18,13 @@ var Auth = {
 
         return Auth.api().getUserEnrollment({token: token})
             .then(function (enrollment) {
-                Auth.enrollment(enrollment);
+                if (typeof enrollment.data != 'undefined') {
+                    Auth.enrollment(enrollment.data);
+                } else {
+                    console.error('Unexpected response');
+                    console.error(enrollment);
+                    return m.flashError(Conf.tr('Service error'));
+                }
             })
             .catch(err => {
                 console.error(err);
@@ -34,7 +40,13 @@ var Auth = {
 
         return Auth.api().getAgentEnrollment({company_code: company_code, token: token})
             .then(function (enrollment) {
-                Auth.enrollment(enrollment);
+                if (typeof enrollment.data != 'undefined') {
+                    Auth.enrollment(enrollment.data);
+                } else {
+                    console.error('Unexpected response');
+                    console.error(enrollment);
+                    return m.flashError(Conf.tr('Service error'));
+                }
             })
             .catch(err => {
                 console.error(err);

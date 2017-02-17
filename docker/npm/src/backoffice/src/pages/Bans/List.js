@@ -34,9 +34,9 @@ module.exports = {
             m.onLoadingStart();
             Auth.api().getBansList({limit: ctrl.limit, offset: ctrl.offset})
                 .then(function(list) {
-                    if (typeof list.items != 'undefined') {
+                    if (typeof list.data != 'undefined') {
                         m.startComputation();
-                        ctrl.list(list.items);
+                        ctrl.list(list.data);
                         ctrl.is_initialized(true);
                         m.endComputation();
                     } else {

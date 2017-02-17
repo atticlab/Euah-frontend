@@ -32,9 +32,9 @@ module.exports = {
                     type: 'agent'
                 })
                 .then(function(enrollments){
-                    if (typeof enrollments.items != 'undefined') {
+                    if (typeof enrollments.data != 'undefined') {
                         m.startComputation();
-                        ctrl.enrollments(enrollments.items);
+                        ctrl.enrollments(enrollments.data);
                         ctrl.is_initialized(true);
                         m.endComputation();
                     } else {

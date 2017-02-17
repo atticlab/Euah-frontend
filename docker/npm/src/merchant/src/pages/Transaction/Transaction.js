@@ -1,8 +1,8 @@
-var Conf    = require('../config/Config.js'),
-    Navbar  = require('../components/NavbarFullWidth.js'),
-    Footer  = require('../components/FooterFullWidth.js'),
-    Helpers = require('../models/Helpers'),
-    Auth    = require('../models/Auth'),
+var Conf    = require('../../config/Config.js'),
+    Navbar  = require('../../components/NavbarFullWidth.js'),
+    Footer  = require('../../components/FooterFullWidth.js'),
+    Helpers = require('../../models/Helpers'),
+    Auth    = require('../../models/Auth'),
     Qr      = require('qrcode-npm/qrcode');
 
 module.exports = {
@@ -22,23 +22,23 @@ module.exports = {
 
         m.onLoadingStart();
         ctrl.api.getOrder({order_id: ctrl.order_id()})
-            .then(function(order_data){
+            .then(function(order){
 
-                if (typeof order_data.status == 'undefined'){
+                if (!order || typeof order.data == 'undefined'){
                     return m.flashError(Conf.tr('Bad order data'));
                 }
 
-                if (order_data.status != Conf.statuses.STATUS_WAIT_PAYMENT){
+                if (order.data.status != Conf.statuses.STATUS_WAIT_PAYMENT){
                     return m.flashError(Conf.tr('Order has been already handled'));
                 }
 
                 // QR-CODE
                 var jsonData = {
-                    account: order_data.store_data.merchant_id,
-                    amount: order_data.amount,
-                    asset: order_data.currency,
+                    account: order.data.store_data.merchant_id,
+                    amount: order.data.amount,
+                    asset: order.data.currency,
                     t: Conf.payment_type,
-                    m: Conf.payment_prefix + order_data.id
+                    m: Conf.payment_prefix + order.data.id
                 };
                 var jsonDataStr = JSON.stringify(jsonData);
 
@@ -58,19 +58,19 @@ module.exports = {
                 var imgTag = qr.createImgTag(4);
 
                 //set stream on payment
-                Conf.horizon.transactions().forAccount(order_data.store_data.merchant_id)
+                Conf.horizon.transactions().forAccount(order.data.store_data.merchant_id)
                     .cursor('now')
                     .stream({
                         onmessage: function (transaction) {
                             var order_id = getOrderIdFromTX(transaction);
-                            if (order_id && order_id == order_data.id) {
+                            if (order_id && order_id == order.data.id) {
                                 return onSuccessPayment(ctrl.order_data().success_url);
                             }
                         }
                     });
 
                 m.startComputation();
-                ctrl.order_data(order_data);
+                ctrl.order_data(order.data);
                 ctrl.qr(m.trust(imgTag));
                 m.endComputation();
             })

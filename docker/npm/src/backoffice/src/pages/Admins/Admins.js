@@ -25,12 +25,12 @@ module.exports = {
                         account_ids: admins
                     })
                 })
-                .then(function(data){
+                .then(function(response){
                     var formatted_data = [];
                     ctrl.admins.map(function(account_id){
                         formatted_data.push({account_id: account_id})
                     });
-                    data.items.map(function(account_data){
+                    response.data.map(function(account_data){
                         formatted_data.map(function(admin_data){
                             if ("account_id" in admin_data && account_data.account_id == admin_data.account_id) {
                                 admin_data.data = account_data;

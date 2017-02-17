@@ -12,6 +12,12 @@ module.exports = [
                 name: 'Create',
                 route: '/stores/create'
             }
-        ]
-    }
+        ],
+    },
+    {
+        name: 'Transfer',
+        route: '/transfer',
+        icon: 'fa fa-money',
+        subItems: null
+    },
 ];

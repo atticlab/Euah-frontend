@@ -30,9 +30,9 @@ module.exports = {
             m.onLoadingStart();
             return Auth.api().getAgentsList({limit: ctrl.limit, offset: ctrl.offset})
                 .then(function(agents){
-                    if (typeof agents.items != 'undefined') {
+                    if (typeof agents.data != 'undefined') {
                         m.startComputation();
-                        ctrl.agents(agents.items);
+                        ctrl.agents(agents.data);
                         ctrl.is_initialized(true);
                         m.endComputation();
                     } else {

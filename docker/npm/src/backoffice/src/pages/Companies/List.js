@@ -25,9 +25,9 @@ module.exports = {
         m.onLoadingStart();
         Auth.api().getCompaniesList({limit: ctrl.limit, offset: ctrl.offset})
             .then(function(companies){
-                if (typeof companies.items != 'undefined') {
+                if (typeof companies.data != 'undefined') {
                     m.startComputation();
-                    ctrl.companies(companies.items);
+                    ctrl.companies(companies.data);
                     ctrl.is_initialized(true);
                     m.endComputation();
                 } else {

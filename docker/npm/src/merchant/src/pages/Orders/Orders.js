@@ -1,11 +1,11 @@
-var Conf    = require('../config/Config.js'),
-    Navbar  = require('../components/Navbar.js'),
-    Footer  = require('../components/Footer.js'),
-    Sidebar = require('../components/Sidebar.js'),
-    Helpers = require('../models/Helpers'),
-    Session = require('../models/Session.js'),
-    Pagination  = require('../components/Pagination.js'),
-    Auth    = require('../models/Auth');
+var Conf    = require('../../config/Config.js'),
+    Navbar  = require('../../components/Navbar.js'),
+    Footer  = require('../../components/Footer.js'),
+    Sidebar = require('../../components/Sidebar.js'),
+    Helpers = require('../../models/Helpers'),
+    Session = require('../../models/Session.js'),
+    Pagination  = require('../../components/Pagination.js'),
+    Auth    = require('../../models/Auth');
 
 module.exports = {
     controller: function () {
@@ -30,9 +30,9 @@ module.exports = {
         m.onLoadingStart();
         Auth.api().getOrdersList({store_id: ctrl.store_id(), limit: ctrl.limit, offset: ctrl.offset})
             .then(function(orders){
-                if (typeof orders.items != 'undefined') {
+                if (typeof orders.data != 'undefined') {
                     m.startComputation();
-                    ctrl.orders(orders.items);
+                    ctrl.orders(orders.data);
                     ctrl.is_initialized(true);
                     m.endComputation();
                 } else {
@@ -67,23 +67,23 @@ module.exports = {
                 <table class="table">
                     <tr>
                         <td>{Conf.tr('Payment date')}:</td>
-                        <td><code> Helpers.getDateFromTimestamp(payment_details.date || false) + </code></td>
+                        <td><code>{Helpers.getDateFromTimestamp(payment_details.date || false)}</code></td>
                     </tr>
                     <tr>
                         <td>{Conf.tr('Payment amount')}:</td>
-                        <td><code> parseFloat(payment_details.amount).toFixed(2) + </code></td>
+                        <td><code>{parseFloat(payment_details.amount).toFixed(2)}</code></td>
                     </tr>
                     <tr>
-                        <td> {Conf.tr('Payer')}:</td>
-                        <td><code> payment_details.payer + </code></td>
+                        <td>{Conf.tr('Payer')}:</td>
+                        <td><code>{payment_details.payer}</code></td>
                     </tr>
                     <tr>
-                        <td> {Conf.tr('Payment details')}:</td>
-                        <td><code> payment_details.details + </code></td>
+                        <td>{Conf.tr('Payment details')}:</td>
+                        <td><code>{payment_details.details}</code></td>
                     </tr>
                     <tr>
-                        <td> {Conf.tr('Transaction ID')}:</td>
-                        <td><code> payment_details.tx + </code></td>
+                        <td>{Conf.tr('Transaction ID')}:</td>
+                        <td><code>{payment_details.tx}</code></td>
                     </tr>
                 </table>
                 , Conf.tr("Payment details"));
@@ -147,7 +147,7 @@ module.exports = {
                                                             <span title={Conf.tr("ID")}>{order.id}</span>
                                                         </td>
                                                         <td>
-                                                            <span title={Conf.tr("Order date")}>{Helpers.getDateFromTimestamp(order.date)}</span>
+                                                            <span title={Conf.tr("Order date")}>{Helpers.getDateFromTimestamp(order.created)}</span>
                                                         </td>
                                                         <td>
                                                             <span title={Conf.tr("Order amount")}>{parseFloat(order.amount).toFixed(2)}</span>
