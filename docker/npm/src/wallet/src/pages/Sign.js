@@ -2,7 +2,7 @@ var AuthNavbar = require('../components/AuthNavbar.js');
 var Auth = require('../models/Auth.js');
 var Conf = require('../config/Config.js');
 var PhraseWizard = require('../components/PhraseWizard.js');
-var Qr = require('../../node_modules/kjua/dist/kjua.min');
+var Qr = require('kjua');
 
 var Sign = module.exports = {
     controller: function () {
@@ -10,6 +10,7 @@ var Sign = module.exports = {
         if (Auth.keypair()) {
             return m.route('/home');
         }
+
         this.qr = m.prop(false);
         this.mnemonic = m.prop(false);
         this.showMnemonic = m.prop(false);
@@ -27,12 +28,6 @@ var Sign = module.exports = {
 
             if (login.length < 3) {
                 return m.flashError(Conf.tr("Login should have 3 chars min"));
-            }
-
-            var pattern = /^([A-Za-z0-9_-]{1,})$/;
-
-            if (!pattern.test(login)) {
-                return m.flashError(Conf.tr("Login should contain only latin characters, numbers, - and _"))
             }
 
             if (password.length < 6) {
@@ -101,7 +96,7 @@ var Sign = module.exports = {
                                     <input class="form-control" type="text"
                                            placeholder={Conf.tr("Username")}
                                            autocapitalize="none"
-                                           name="login"
+                                           name="login" pattern="[A-Za-z0-9_-]+"
                                            title={Conf.tr("Characters and numbers allowed")}/>
                                     <i class="md md-account-circle form-control-feedback l-h-34"></i>
                                 </div>
@@ -111,7 +106,7 @@ var Sign = module.exports = {
                                 <div class="col-xs-12">
                                     <input class="form-control" type="password"
                                            autocapitalize="none"
-                                           placeholder={Conf.tr("Password")} name="password"
+                                           placeholder={Conf.tr("Password")} name="password" pattern=".{6,}"
                                            title={Conf.tr("6 characters minimum")}/>
                                     <i class="md md-vpn-key form-control-feedback l-h-34"></i>
                                 </div>
@@ -121,7 +116,7 @@ var Sign = module.exports = {
                                 <div class="col-xs-12">
                                     <input class="form-control" type="password"
                                            autocapitalize="none"
-                                           placeholder={Conf.tr("Retype Password")} name="repassword"
+                                           placeholder={Conf.tr("Retype Password")} name="repassword" pattern=".{6,}"
                                            title={Conf.tr("6 characters minimum")}/>
                                     <i class="md md-vpn-key form-control-feedback l-h-34"></i>
                                 </div>
@@ -136,6 +131,8 @@ var Sign = module.exports = {
 
                     <div class="m-t-10">
                         <a href="/" config={m.route} class="">{Conf.tr("Log in")}</a>
+                        <a href={Conf.smartmoney_host + "/docs/api-reference"} target="_blank"
+                           class="pull-right">{Conf.tr("Help")}</a>
                     </div>
                 </div>
             </div>
@@ -144,25 +141,21 @@ var Sign = module.exports = {
 
     viewQRCode: function (ctrl) {
         var code = ctrl.qr();
-        // ctrl.qr(false);
+        ctrl.qr(false);
 
-        return <div>
-            {m.component(AuthNavbar)}
-
-            <div class="wrapper-page">
-                <div>
-                    <div class="panel panel-color panel-success">
-                        <div class="panel-heading">
-                            <h3 class="panel-title">{Conf.tr("Account successfully created")}</h3>
-                            <p class="panel-sub-title font-13">{Conf.tr("This is a QR-code with a mnemonic phrase that is used for account recovering. It is very important to keep your mnemonic phrase in a safe and private place")}!</p>
-                        </div>
-                        <div class="panel-body">
-                            <div class="text-center">
-                                <p><img src={code.src} alt=""/></p>
-                                <p><a href={code.src} download="qr_mnemonic.png">{Conf.tr("Save code")}</a></p>
-                                <button className="btn btn-success btn-custom waves-effect w-md waves-light m-b-5 m-t-10"
-                                        onclick={ctrl.goNext.bind(ctrl)}>{Conf.tr("Next")}</button>
-                            </div>
+        return <div class="wrapper-page">
+            <div>
+                <div class="panel panel-color panel-success">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">{Conf.tr("Account successfully created")}</h3>
+                        <p class="panel-sub-title font-13">{Conf.tr("This is a QR-code with a mnemonic phrase that is used for account recovering. It is very important to keep your mnemonic phrase in a safe and private place")}!</p>
+                    </div>
+                    <div class="panel-body">
+                        <div class="text-center">
+                            <p><img src={code.src} alt=""/></p>
+                            <p><a href={code.src} download="qr_mnemonic.png">{Conf.tr("Save code")}</a></p>
+                            <button className="btn btn-success btn-custom waves-effect w-md waves-light m-b-5 m-t-10"
+                                    onclick={ctrl.goNext.bind(ctrl)}>{Conf.tr("Next")}</button>
                         </div>
                     </div>
                 </div>

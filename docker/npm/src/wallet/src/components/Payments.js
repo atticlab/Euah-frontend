@@ -18,7 +18,7 @@ module.exports = {
                         var accountId = payment.to == Auth.keypair().accountId() ? payment.from : payment.to
                         //The reason for send an amount and asset code instead of payment id is that there is
                         //no method in SDK to get payment by id.
-                        var trans_url = '/transaction/' + trans_id + '/' + accountId + '/' + payment.amount;
+                        var trans_url = '/transaction/' + trans_id + '/' + accountId + '/' + payment.amount + '/' + payment.asset_code;
                         return <div class="payment">
                             <a class="account_overflow" href={trans_url} config={m.route}
                                title={accountId}>
@@ -67,7 +67,7 @@ module.exports = {
                             var accountId = payment.to == Auth.keypair().accountId() ? payment.from : payment.to
                             //The reason for send an amount and asset code instead of payment id is that there is
                             //no method in SDK to get payment by id.
-                            var trans_url = '/transaction/' + trans_id + '/' + accountId + '/' + payment.amount;
+                            var trans_url = '/transaction/' + trans_id + '/' + accountId + '/' + payment.amount + '/' + payment.asset_code;
                             return <tr>
                                 <td class="account-td">
                                     <a class="account_overflow" href={trans_url} config={m.route}>
@@ -78,13 +78,13 @@ module.exports = {
                                 <td>{parseFloat(payment.amount).toFixed(2)} {payment.asset_code}</td>
                                 <td>
                                     {payment.to == Auth.keypair().accountId() ?
-                                        <span class="label label-payment label-success">
+                                        <span class="label label-success">
                                                             <i class="fa fa-sign-in fa-fw" aria-hidden="true"></i>
                                             &nbsp;
                                             {Conf.tr("Debit")}
                                                         </span>
                                         :
-                                        <span class="label label-payment label-danger">
+                                        <span class="label label-danger">
                                                             <i class="fa fa-sign-out fa-fw" aria-hidden="true"></i>
                                             &nbsp;
                                             {Conf.tr("Credit")}

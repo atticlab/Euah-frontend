@@ -5,6 +5,7 @@ var Conf = require('../config/Config.js');
 var Login = module.exports = {
     controller: function () {
         var ctrl = this;
+        this.wordNum = m.prop(1);
 
         if (Auth.keypair()) {
             return m.route('/home');
@@ -21,7 +22,7 @@ var Login = module.exports = {
                         m.route('/home');
                     })
                     .catch(err => {
-                        console.error(err);
+                        console.log(err);
                         if (err.name === "ConnectionError") {
                             return m.flashError(Conf.tr("Service error. Please contact support"));
                         } else {
@@ -41,13 +42,13 @@ var Login = module.exports = {
             <div class="wrapper-page">
                 <div className="auth-form">
                     <div class="text-center">
-                        <h3>{Conf.tr("Sign in")}</h3>
+                        <h3>{Conf.tr("Log in to SmartMoney")}</h3>
                     </div>
                     <form class="form-horizontal m-t-30" onsubmit={ctrl.login.bind(ctrl)}>
                             <div class="form-group">
                                 <div class="col-xs-12">
                                     <input class="form-control" type="text" placeholder={Conf.tr("Username")}
-                                           autocapitalize="none" name="login"/>
+                                           autocapitalize="none" name="login" autofocus />
                                     <i class="md md-account-circle form-control-feedback l-h-34"></i>
                                 </div>
                             </div>
@@ -68,22 +69,11 @@ var Login = module.exports = {
                     </form>
 
                     <div class="m-t-10">
-                        <a href="/sign" config={m.route} class="">{Conf.tr("Create account")}</a>
+                        <a href="/sign" config={m.route} class="">{Conf.tr("Create an account")}</a>
                         <a href="/recovery" config={m.route} class="pull-right">{Conf.tr("Forgot your password?")}</a>
                     </div>
                 </div>
             </div>
-
-            <footer class="visible-xs visible-sm footer-app">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-xs-12">
-                            <a href="/assets/data/ProstirMobileWallet.apk" download="ProstirMobileWallet.apk">{Conf.tr("Tap here")}</a> {Conf.tr("to download Prostir mobile wallet application")}
-                        </div>
-                    </div>
-                </div>
-            </footer>
-
         </div>
     }
 };

@@ -98,12 +98,13 @@ var Transaction = module.exports = {
                         </div>
                         <div class="panel-footer text-center">
                             <a href={'/transfer' + '?account='+ctrl.account().id +
-                                                        '&amount='+parseFloat(m.route.param("amount")).toFixed(2)}
+                                                        '&amount='+parseFloat(m.route.param("amount")).toFixed(2) +
+                                                        '&asset='+m.route.param("asset")}
                                config={m.route}
                                class="btn btn-inverse btn-custom waves-effect w-md waves-light"
                             >
                                 <span class="fa fa-repeat"></span>
-                                &nbsp; {Conf.tr("Repeat")}
+                                &nbsp;{Conf.tr("Repeat")}
                             </a>
                         </div>
                     </div>

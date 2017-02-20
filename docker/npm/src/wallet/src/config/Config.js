@@ -1,12 +1,16 @@
 var Localize = require('localize');
 var Locales = require('../locales/translations.js');
 
+var trim = require('lodash.trim');
+
 var conf = {
-    master_key:         process.env.MASTER_KEY,
-    horizon_host:       process.env.HORIZON_HOST,
-    keyserver_host:     process.env.KEYSERVER_HOST,
-    api_host:           process.env.API_HOST,
-    info_host:          process.env.INFO_HOST,
+    master_key:              process.env.MASTER_KEY,
+    horizon_host:       trim(process.env.HORIZON_HOST, '/'),
+    keyserver_host:     trim(process.env.KEYSERVER_HOST, '/'),
+    api_host:           trim(process.env.API_HOST, '/'),
+    info_host:          trim(process.env.INFO_HOST, '/'),
+    exchange_host:      trim(process.env.EXCHANGE_HOST, '/'),
+    smartmoney_host:    trim(process.env.SMARTMONEY_HOST, '/'),
 }
 
 conf.assets_url = 'assets';
@@ -18,9 +22,6 @@ conf.phone = {
     prefix:     "+38"
 };
 
-conf.asset = 'EUAH';
-
-StellarSdk.Network.use(new StellarSdk.Network(process.env.STELLAR_NETWORK));
 conf.horizon = new StellarSdk.Server(conf.horizon_host);
 conf.locales = Locales;
 
@@ -35,7 +36,6 @@ conf.loc.userLanguage = (localStorage.getItem('locale')) ? (localStorage.getItem
 conf.loc.setLocale(conf.loc.userLanguage);
 conf.mnemonic = {langsList: ['eng', 'ukr']};
 conf.mnemonic.locale = (conf.loc.userLanguage == 'en') ? 'eng' : 'ukr';
-conf.mnemonic.totalWordsCount = 24;
 conf.loc.changeLocale = function (locale, e) {
     e.preventDefault();
     m.startComputation();
@@ -45,5 +45,7 @@ conf.loc.changeLocale = function (locale, e) {
     m.endComputation();
 };
 conf.tr = conf.loc.translate; //short alias for translation
+
+conf.mnemonic.totalWordsCount = 24;
 
 var Config = module.exports = conf;

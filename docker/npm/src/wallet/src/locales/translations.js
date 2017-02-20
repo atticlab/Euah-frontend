@@ -7,7 +7,7 @@ module.exports = {
     "Transfer money": {
         'en': "Transfer money",
         'ru': "Перевод денег",
-        'ua': "Переказ грошей"
+        'ua': "Переведення грошей"
     },
     "Create invoice": {
         'en': "Create invoice",
@@ -123,7 +123,8 @@ module.exports = {
         'ru': "Повторите пароль",
         'ua': "Повторіть пароль"
     },
-    "Create account": {
+    "Create an account": {
+        'en': "Create an account",
         'ru': "Создать аккаунт",
         'ua': "Створити аккаунт"
     },
@@ -214,17 +215,17 @@ module.exports = {
     "Invoice": {
         'en': "Invoice",
         'ru': "Счет-фактура",
-        'ua': "Запит на отримання коштів"
+        'ua': "Рахунок-фактура"
     },
     "Invoice created": {
         'en': "Invoice created",
         'ru': "Счет-фактура создан",
-        'ua': "Запит на отримання коштів створений"
+        'ua': "Рахунок-фактура створений"
     },
     "Create a new invoice": {
         'en': "Create a new invoice",
         'ru': "Создать новый счет-фактуру",
-        'ua': "Створити новий запит на отримання коштів"
+        'ua': "Створити новий рахунок-фактуру"
     },
     "Create": {
         'en': "Create",
@@ -234,12 +235,12 @@ module.exports = {
     "Invoice code": {
         'en': "Invoice code",
         'ru': "Код счета-фактуры",
-        'ua': "Код запиту на отримання коштів"
+        'ua': "Код рахунку-фактури"
     },
     "Copy this invoice code and share it with someone you need to get money from": {
         'en': "Copy this invoice code and share it with someone you need to get money from",
         'ru': "Скопируйте этот код счета-фактуры и поделитесь им с тем, от кого ожидаете средства",
-        'ua': "Скопіюйте цей код запиту на отримання коштів та поділіться ним з тим, від кого очікуєте кошти"
+        'ua': "Скопіюйте цей код рахунку-фактури та поділіться ним з тим, від кого очікуєте кошти"
     },
     "Create new": {
         'en': "Create new",
@@ -306,8 +307,7 @@ module.exports = {
         'ru': "Изменить",
         'ua': "Змінити"
     },
-    "Change additional data": {
-        'en': "Change additional data",
+    "Change account info": {
         'ru': "Изменить дополнительные данные",
         'ua': "Змінити додаткові дані"
     },
@@ -399,22 +399,17 @@ module.exports = {
     "Invalid invoice currency": {
         'en': "Invalid invoice currency",
         'ru': "Неверная валюта счета-фактури",
-        'ua': "Невірна валюта запиту на отриманная грошей"
+        'ua': "Невірна валюта рахунку-фактури"
     },
     "Invoice requested": {
         'en': "Invoice requested",
         'ru': "Счет-фактура запрошен",
-        'ua': "Запит на отримання коштів запрошений"
+        'ua': "Рахунок-фактура запрошений"
     },
     "User not found! Check phone number": {
         'en': "User not found! Check phone number",
         'ru': "Пользователь не найден. Проверьте номер телефона",
         'ua': "Користувач не знайден. Перевірте номер телефону"
-    },
-    "User not found! Check email": {
-        'en': "User not found! Check email",
-        'ru': "Пользователь не найден. Проверьте адрес электронной почты",
-        'ua': "Користувач не знайден. Перевірте адресу електронної пошти"
     },
     "Account is invalid": {
         'en': "Account is invalid",
@@ -434,17 +429,17 @@ module.exports = {
     "Can't send money to distribution agent!": {
         'en': "Can't send money to distribution agent!",
         'ru': "Невозможно перевести средства агенту по распространению",
-        'ua': "Неможливо переказати кошти агенту по розповсюдженню"
+        'ua': "Неможливо перевести кошки агенту по розповсюдженню"
     },
     "Transfer successful": {
         'en': "Transfer successful",
         'ru': "Успешно переведено",
-        'ua': "Кошти успішно переказано"
+        'ua': "Успішно переведено"
     },
     "Cannot make transfer": {
         'en': "Cannot make transfer",
         'ru': "Невозможно перевести",
-        'ua': "Неможливо переказати"
+        'ua': "Неможливо перевести"
     },
     "Can't load account for transaction": {
         'en': "Can't load account for transaction",
@@ -454,12 +449,12 @@ module.exports = {
     "Transfer": {
         'en': "Transfer",
         'ru': "Перевод",
-        'ua': "Переказ"
+        'ua': "Переведення"
     },
     "Transfer type": {
         'en': "Transfer type",
         'ru': "Тип перевода",
-        'ua': "Тип переказу"
+        'ua': "Тип переведення"
     },
     "by account ID": {
         'en': "By account ID",
@@ -496,10 +491,9 @@ module.exports = {
         'ru': "Текст описание",
         'ua': "Текст опис"
     },
-    "Request invoice": {
-        'en': "Request invoice",
+    "Pay by invoice code": {
         'ru': "Запросить счет-фактуру",
-        'ua': "Запит на отримання коштів"
+        'ua': "Запросити рахунок-фактуру"
     },
     "Request": {
         'en': "Request",
@@ -745,7 +739,7 @@ module.exports = {
     "Your account" : {
         'en': "Your account",
         'ru': "Ваш счет",
-        'ua': "Ваш рахунок"
+        'ua': "Ваш раханок"
     },
     "Show account" : {
         'en': "Show account",
@@ -844,9 +838,8 @@ module.exports = {
         'ru' : "",
         'ua' : ""
     },
-    "Log in to PROSTIR" : {
-        'ua': "Увійти до системи ПРОСТІР",
-        'ru': "Войти в систему PROSTIR"
+    "Log in to SmartMoney" : {
+        'ua': "Увійти до SmartMoney"
     },
     "Help" :{
         'ua': "Допомога",
@@ -860,9 +853,9 @@ module.exports = {
         'ua': "Забули пароль?",
         'ru': "Забыли пароль?",
     },
-    "Log in to PROSTIR via mnemonic phrase" : {
-        'ua': "Увійти до системи ПРОСТІР за допомогою мнемонічної фрази",
-        'ru': "Войти в систему ПРОСТІР с помощью мнемонической фразы",
+    "Log in to SmartMoney via mnemonic phrase" : {
+        'ua': "Увійти до SmartMoney за допомогою мнемонічної фрази",
+        'ru': "Войти в SmartMoney с помощью мнемонической фразы",
     },
     "This is a QR-code with a mnemonic phrase that is used for account recovering. It is very important to keep your mnemonic phrase in a safe and private place" : {
         'ua': "Це QR-код з мнемонічною фразою, яка використовується для відновлення вашого аккаунту. Дуже важливо зберігати вашу мнемонічну фразу в безпечному та надійному місці",
@@ -929,25 +922,5 @@ module.exports = {
     },
     "logo-image": {
         'ua': "logo-image-ua"
-    },
-    "Made by": {
-        'ua': "Зроблено в",
-        'ru': "Сделано в"
-    },
-    "Time to end the session": {
-        'ua': "Час до кінця сесії",
-        'ru': "Время до конца сессии",
-    },
-    "Login should contain only latin characters, numbers, - and _": {
-        'ua': "Логін повинен складатися лише з латинських букв, цифр, знаків - та _",
-        'ru': "Логин должен состоять только из латинских букв, цифр, знаков - и _"
-    },
-    "Tap here": {
-        'ua': "Натисніть тут",
-        'ru': "Нажмите тут"
-    },
-    "to download Prostir mobile wallet application": {
-        'ua': "щоб завантажити мобільний додаток - Простір гаманець",
-        'ru': "чтоб загрузить мобильное приложение - Простир кошелёк"
-    },
+    }
 };

@@ -1,10 +1,9 @@
-var Qr = require('../../node_modules/kjua/dist/kjua.min');
+var Qr = require('kjua');
+//var Qr = require('../../node_modules/kjua/dist/kjua.min');
 // var Qr = require('../../node_modules/qrcode-npm/qrcode');
 var Conf = require('../config/Config.js');
 var Navbar = require('../components/Navbar.js');
 var Auth = require('../models/Auth.js');
-var Footer = require('../components/Footer.js');
-
 
 var Invoice = module.exports = {
 
@@ -24,24 +23,32 @@ var Invoice = module.exports = {
             e.preventDefault();
 
             var amount = e.target.amount.value;
+            var asset  = e.target.asset.value;
+            // TODO: check if asset is available in Auth.balances
 
             m.onLoadingStart();
 
-            Auth.api().createInvoice({asset: Conf.asset, amount: parseFloat(parseFloat(amount).toFixed(2))})
+            Auth.api().createInvoice({asset: asset, amount: parseFloat(parseFloat(amount).toFixed(2))})
                 .then(function(response){
-                    m.flashSuccess(Conf.tr("Invoice created"));
 
-                    if (!response.id) {
-                        m.flashError(Conf.tr("Invalid response. Contact support"));
+                    if (
+                        !response ||
+                        typeof response.data == 'undefined' ||
+                        typeof response.data.id == 'undefined') {
+                        console.error('Unexpected response');
+                        console.error(response);
+                        m.flashError(Conf.tr("Service error. Contact support"));
                     }
 
-                    ctrl.invoiceCode(response.id);
+                    m.flashSuccess(Conf.tr("Invoice created"));
+
+                    ctrl.invoiceCode(response.data.id);
 
                     // QR-CODE
                     var qrData = {
                         "account": Auth.keypair().accountId(),
                         "amount": amount,
-                        "asset": Conf.asset,
+                        "asset": asset,
                         "t": 1
                     };
 
@@ -85,7 +92,7 @@ var Invoice = module.exports = {
                         <div class="col-lg-6">
                             {
                                 (!ctrl.invoiceCode()) ?
-                                    <div class="panel panel-color panel-maincolor">
+                                    <div class="panel panel-color panel-purple">
                                         <div class="panel-heading">
                                             <h3 class="panel-title">{Conf.tr("Create a new invoice")}</h3>
                                         </div>
@@ -104,10 +111,20 @@ var Invoice = module.exports = {
                                                     </div>
                                                 </div>
 
+                                                <div class="form-group">
+                                                    <div class="col-xs-4">
+                                                        <select name="asset" class="form-control">
+                                                            {Auth.assets().map(function (b) {
+                                                                return <option>{b.asset}</option>
+                                                            })}
+                                                        </select>
+                                                    </div>
+                                                </div>
+
                                                 <div class="form-group m-t-20">
                                                     <div class="col-sm-7">
                                                         <button
-                                                            class="btn btn-primary btn-custom w-md waves-effect waves-light"
+                                                            class="btn btn-purple btn-custom w-md waves-effect waves-light"
                                                             type="submit">
                                                             {Conf.tr("Create")}
                                                         </button>
@@ -126,9 +143,11 @@ var Invoice = module.exports = {
                                             <i>{Conf.tr("Copy this invoice code and share it with someone you need to get money from")}</i>
                                             <br/>
                                             <br/>
+                                            {/*{code}*/}
                                             <img src={code.src}/>
                                             <br/>
                                             <br/>
+                                            {/*{ctrl.barcode() ? ctrl.barcode() : ''}*/}
                                             <br/>
                                             <br/>
                                             <button class="btn btn-purple waves-effect w-md waves-light m-b-5"
@@ -141,8 +160,7 @@ var Invoice = module.exports = {
                     </div>
                 </div>
             </div>
-            ,
-            m.component(Footer)
+
         ];
     }
 };

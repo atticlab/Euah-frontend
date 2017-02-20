@@ -87,10 +87,10 @@ module.exports = {
             m.component(Navbar),
             <div class="wrapper">
                 <div class="container">
-                    <div class="panel panel-color panel-maincolor">
+                    <div class="panel panel-color panel-success">
                         <div class="panel-heading">
                             <h3 class="panel-title">{Conf.tr("Account transactions")}</h3>
-                            <p class="panel-sub-title font-13">{Conf.tr("Overview of recent transactions")}</p>
+                            <p class="panel-sub-title font-13">{Conf.tr("Overview of recent transactions")}.</p>
                         </div>
 
                         <div class="panel-body">

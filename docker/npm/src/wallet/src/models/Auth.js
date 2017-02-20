@@ -3,16 +3,16 @@ var Errors = require('../errors/Errors.js');
 
 var Auth = {
     setDefaults: function () {
-        this.keypair    = m.prop(false);
-        this.type       = m.prop(false);
-        this.username   = m.prop(false);
-        this.balances   = m.prop([]);
-        this.assets     = m.prop([]);
-        this.payments   = m.prop([]);
-        this.wallet     = m.prop(false);
-        this.api        = m.prop(false);
-        this.ttl        = m.prop(0);
-        this.time_live  = m.prop(0);
+        this.keypair = m.prop(false);
+        this.type = m.prop(false);
+        this.username = m.prop(false);
+        this.balances = m.prop([]);
+        this.assets = m.prop([]);
+        this.payments = m.prop([]);
+        this.wallet = m.prop(false);
+        this.api = m.prop(false);
+        this.ttl = m.prop(0);
+        this.time_live = m.prop(0);
     },
 
     updateBalances: function (account_id) {
@@ -21,7 +21,19 @@ var Auth = {
         var balances = [];
         var account = null;
 
-        return Auth.loadAccountById(account_id)
+        return getAnonymousAssets()
+            .then(assets_list => {
+                Object.keys(assets_list).map(function (index) {
+                    if (assets_list[index].asset_type != 'native') {
+                        assets.push({
+                            asset: assets_list[index].asset_code
+                        });
+                    }
+                });
+
+                // Use this function instead of load account to gather more data
+                return Auth.loadAccountById(account_id);
+            })
             .then(source => {
 
                 var response = source.balances;
@@ -45,7 +57,17 @@ var Auth = {
                 //step this err, because user can be not created yet (before first payment)
             })
             .then(function () {
-                
+
+                //only unique values
+                var flags = {};
+                assets = assets.filter(function (item) {
+                    if (flags[item.asset]) {
+                        return false;
+                    }
+                    flags[item.asset] = true;
+                    return true;
+                });
+
                 m.startComputation();
                 Auth.balances(balances);
                 Auth.assets(assets);
@@ -58,47 +80,65 @@ var Auth = {
     login: function (login, password) {
 
         var master = null;
+        var wallet = null;
+        var authable = false;
 
         return this.loadAccountById(Conf.master_key)
-            .then(function (master_info) {                
-                master = master_info;
-
+            .then(function (master_data) {
+                master = master_data;
                 return StellarWallet.getWallet({
                     server: Conf.keyserver_host + '/v2',
                     username: login,
                     password: password
                 });
             })
-            .then(function (wallet) {
-                var is_admin = false;
-                if (typeof master.signers != 'undefined') {                    
+            .then(function (wallet_data) {
+                wallet = wallet_data;
+                return Auth.loadAccountById(StellarSdk.Keypair.fromSeed(wallet.getKeychainData()).accountId());
+            })
+            .then(function (account_data) {
+                var allow_types = [
+                    StellarSdk.xdr.AccountType.accountAnonymousUser().value,
+                    StellarSdk.xdr.AccountType.accountRegisteredUser().value
+                ];
+                if (account_data && typeof account_data.type_i != 'undefined') {
+                    if (allow_types.indexOf(account_data.type_i) != -1) {
+                        authable = true;
+                    }
+                }
+            })
+            .catch(function (error) {
+                console.error(error);
+                authable = true;
+                //look like not created anonym user login, but it also can be admin
+                if (typeof master.signers != 'undefined') {
                     master.signers.forEach(function (signer) {
                         if (signer.weight == StellarSdk.xdr.SignerType.signerAdmin().value &&
                             signer.public_key == StellarSdk.Keypair.fromSeed(wallet.getKeychainData()).accountId()) {
-                            is_admin = true;
+                            //its admin
+                            authable = false;
                         }
                     });
-
-                    if (is_admin) {
-                        throw new Error('Login/password combination is invalid');
-                    }
                 }
-
-                return wallet;
             })
-            .then(function (wallet) {
+            .then(function () {
+                if (!authable) {
+                    throw new Error('Login/password combination is invalid');
+                }
+            })
+            .then(function () {
                 m.startComputation();
                 Auth.wallet(wallet);
                 Auth.keypair(StellarSdk.Keypair.fromSeed(wallet.getKeychainData()));
                 Auth.username(wallet.username);
                 Auth.api(new StellarWallet.Api(Conf.api_host, Auth.keypair()));
-                m.endComputation();
-                return Auth.api().initNonce();
-            })
-            .then(function(ttl){
-                m.startComputation();
-                Auth.ttl(ttl);
-                Auth.time_live(Number(ttl));
+
+                Auth.api().initNonce()
+                    .then(function (ttl) {
+                        Auth.ttl(ttl);
+                        Auth.time_live(Number(ttl));
+                    });
+
                 m.endComputation();
             });
     },
@@ -116,19 +156,14 @@ var Auth = {
                     continue;
                 }
             }
-            if (seed === null) {throw new Error(Conf.tr("Invalid mnemonic phrase"));}
+            if (seed === null) {
+                throw new Error(Conf.tr("Invalid mnemonic phrase"));
+            }
             Auth.keypair(StellarSdk.Keypair.fromSeed(seed));
             Auth.api(new StellarWallet.Api(Conf.api_host, Auth.keypair()));
             Auth.username(null);
             m.endComputation();
-            Auth.api().initNonce()
-                .then(function(ttl){
-                    m.startComputation();
-                    Auth.ttl(ttl);
-                    Auth.time_live(Number(ttl));
-                    m.endComputation();
-                    resolve();
-                });
+            return resolve();
         });
     },
 
@@ -153,13 +188,6 @@ var Auth = {
 
     logout: function () {
         window.location.href = '/';
-    },
-
-    destroySession: function () {
-        m.startComputation();
-        Auth.keypair(null);
-        m.route('/');
-        m.endComputation();
     },
 
     updatePassword: function (old_pwd, new_pwd) {
@@ -196,6 +224,29 @@ var Auth = {
             .call();
     }
 };
+
+function getAnonymousAssets() {
+
+    return m.request({method: "GET", url: Conf.horizon_host + '/' + Conf.assets_url})
+        .then(response => {
+            if (typeof response._embedded == 'undefined' || typeof response._embedded.records == 'undefined') {
+                throw new Error(Conf.tr(Errors.assets_empty));
+            }
+
+            let assets_list = response._embedded.records;
+
+            Object.keys(assets_list).forEach(function (key) {
+                if (typeof assets_list[key].is_anonymous == 'undefined') {
+                    delete assets_list[key];
+                }
+                if (!assets_list[key].is_anonymous) {
+                    delete assets_list[key];
+                }
+            });
+
+            return assets_list;
+        });
+}
 
 Auth.setDefaults();
 

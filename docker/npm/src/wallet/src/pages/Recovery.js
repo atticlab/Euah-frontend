@@ -44,7 +44,7 @@ var Login = module.exports = {
             <div class="wrapper-page">
                 <div className="auth-form">
                     <div class="text-center">
-                        <h3>{Conf.tr("Log in to PROSTIR via mnemonic phrase")}</h3>
+                        <h3>{Conf.tr("Log in to SmartMoney via mnemonic phrase")}</h3>
                     </div>
                     <form class="form-horizontal m-t-20" onsubmit={ctrl.login.bind(ctrl)}>
                         <div id="by-mnemonic" class="tab-pane">

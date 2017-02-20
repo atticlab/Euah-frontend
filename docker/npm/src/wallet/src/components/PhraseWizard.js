@@ -1,6 +1,5 @@
 var Auth = require('../models/Auth.js');
 var Conf = require('../config/Config.js');
-var AuthNavbar = require('../components/AuthNavbar.js');
 
 var LAST_WIZARD_STAGE = 2;
 var WORDS_PER_PAGE = 4;
@@ -108,23 +107,20 @@ var Wizard = module.exports = {
 
     view: function (ctrl, data) {
         if (ctrl.isSuccess()) return Wizard.view_success();
-        return <div>
-            {m.component(AuthNavbar)}
-                <div class="wrapper-page">
-                    <div class="row">
-                        <div class="col-lg-12">
-                            <div class="panel panel-color m-b-0">
-                                <div class="panel-heading">
-                                    <h3 class="panel-title unselectable">{Conf.tr("Mnemonic phrase generation")}</h3>
-                                </div>
-                                <form role="form" onsubmit={ctrl.complete.bind(ctrl)}>
-                                    {ctrl.showWizardStage(ctrl, data)}
-                                </form>
-                            </div>
+        return <div class="wrapper-page">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="panel panel-color panel-primary m-b-0">
+                        <div class="panel-heading">
+                            <h3 class="panel-title unselectable">{Conf.tr("Mnemonic phrase generation")}</h3>
                         </div>
+                        <form role="form" onsubmit={ctrl.complete.bind(ctrl)}>
+                            {ctrl.showWizardStage(ctrl, data)}
+                        </form>
                     </div>
                 </div>
             </div>
+        </div>
     },
 
     view_wizard_stage_blank: function (ctrl) {

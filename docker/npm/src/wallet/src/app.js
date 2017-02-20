@@ -38,7 +38,7 @@ m.route(document.getElementById('app'), "/", {
     "/transfer": require('./pages/Transfer.js'),
     "/settings": require('./pages/Settings.js'),
     //"/hd": require('./pages/Hd.js'),
-    "/transaction/:trans_id/:target_acc/:amount": require('./pages/Transaction.js'),
+    "/transaction/:trans_id/:target_acc/:amount/:asset": require('./pages/Transaction.js'),
     "/payments": require('./pages/Payments.js'),
     "/recovery": require('./pages/Recovery.js')
 });

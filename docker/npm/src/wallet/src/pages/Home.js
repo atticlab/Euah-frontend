@@ -3,7 +3,6 @@ var Navbar = require('../components/Navbar.js');
 var Payments = require('../components/Payments.js');
 var Footer = require('../components/Footer.js');
 var Auth = require('../models/Auth.js');
-var Session = require('../models/Session.js');
 
 module.exports = {
     controller: function () {
@@ -67,19 +66,15 @@ module.exports = {
                         <div class="col-sm-6">
                             <div class="card-box widget-user info-block">
                                 <div>
-                                    <img src="/assets/img/avatar-empty.png" class="img-responsive" alt="user"/>
+                                    <img src="/assets/img/no-avatar.png" class="img-responsive img-circle" alt="user"/>
                                     <div class="wid-u-info">
                                         {(Auth.username()) ?
                                           <h4 class="m-t-0 m-b-5">{Conf.tr("Welcome")}, {Auth.username()}</h4> : ''
                                         }
-                                        <p>
-                                            <button
+                                        <p><button
                                             class="btn-xs btn-warning waves-effect waves-light m-t-10"
-                                            onclick={function(){
-                                                Session.modal(Auth.keypair().accountId(), Conf.tr("Your account"))
-                                            }}
-                                            >{Conf.tr("Show account")}</button>
-                                        </p>
+                                            data-toggle="modal"
+                                            data-target=".show_account">{Conf.tr("Show account")}</button></p>
                                         <small class="text-pink">
                                             <b>{Conf.tr(type)}</b></small>
                                     </div>
@@ -87,30 +82,50 @@ module.exports = {
                             </div>
                         </div>
 
+                        <div class="modal fade show_account" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true" style="display: none;">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                        <h4 class="modal-title" id="modalLabel">{Conf.tr("Your account")}</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <code class="long_string">{Auth.keypair().accountId()}</code>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="col-sm-6">
                             <div class="widget-simple text-center card-box info-block">
-                                <h3 class="text-primary counter m-t-30">
+                                <h3 class="text-primary counter">
                                     {Auth.balances().length ?
                                         Auth.balances().map(b => {
-                                            return <div>
-                                                <span>
+                                            return <span class="label label-primary label-price">
                                                     {parseFloat(b.balance).toFixed(2) + " " + b.asset}
                                                 </span>
-                                            </div>
                                         })
                                         :
                                         '0.00'
                                     }
                                 </h3>
+                                <p style="margin-bottom: 8px;">
+                                    <a
+                                    class="btn btn-success btn-custom waves-effect w-md btn-sm waves-light"
+                                    target="_blank"
+                                    title={Conf.tr('Add funds')}
+                                    href={Conf.exchange_host + "/cashin/privat24?acc="+Auth.keypair().accountId()}>{Conf.tr("Add funds")}</a>
+                                </p>
                             </div>
                         </div>
 
                         <div class="clearfix"></div>
                     </div>
 
-                    <div class="panel panel-color panel-maincolor">
+                    <div class="panel panel-color panel-inverse">
                         <div class="panel-heading">
-                            <h3 class="panel-title">{Conf.tr("Overview of recent transactions")}</h3>
+                            <h3 class="panel-title">{Conf.tr("Account transactions")}</h3>
+                            <p class="panel-sub-title font-13">{Conf.tr("Overview of recent transactions")}.</p>
                         </div>
 
                         <div class="panel-body">

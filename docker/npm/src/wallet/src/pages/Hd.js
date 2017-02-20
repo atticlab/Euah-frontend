@@ -208,7 +208,7 @@ module.exports = {
                         </div>
                         <form class="col-sm-4" onsubmit={ctrl.getInvoice.bind(ctrl)}>
                             <div class="panel panel-primary">
-                                <div class="panel-heading">{Conf.tr("Request invoice")}</div>
+                                <div class="panel-heading">{Conf.tr("Pay by invoice code")}</div>
                                 <div class="panel-body">
                                     <div class="form-group">
                                         <label>{Conf.tr("Invoice code")}</label>
