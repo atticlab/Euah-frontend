@@ -180,6 +180,14 @@ module.exports = {
                                     :
                                     ''
                             }
+                            <div class="col-lg-12 text-center">
+                                <button
+                                    class="btn-xs btn-warning waves-effect waves-light m-t-10 m-b-10"
+                                    onclick={function(){
+                                        Session.modal(Auth.keypair().accountId(), Conf.tr("Your account"))
+                                    }}
+                                >{Conf.tr("Show account")}</button>
+                            </div>
                             <ul>
                                 <li>
                                     <a href="/cards" config={m.route} class="waves-effect waves-primary">

@@ -2,6 +2,8 @@ var menuItems = require('../models/Menu-items'),
     Conf = require('../config/Config.js'),
     Auth = require('../models/Auth');
 
+var Session = require('../models/Session.js');
+
 module.exports = {
     controller: function () {
         var ctrl = this;
@@ -51,6 +53,14 @@ module.exports = {
                             :
                             ''
                     }
+                    <div class="col-lg-12 text-center">
+                        <button
+                            class="btn-xs btn-warning waves-effect waves-light m-t-10 m-b-10"
+                            onclick={function(){
+                                Session.modal(Auth.keypair().accountId(), Conf.tr("Your account"))
+                            }}
+                        >{Conf.tr("Show account")}</button>
+                    </div>
                     <ul>
                         {menuItems.map(function (item) {
                             return <li class={item.subItems ? 'has_sub' : ''}>
