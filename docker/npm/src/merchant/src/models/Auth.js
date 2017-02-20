@@ -77,6 +77,20 @@ var Auth = {
                     });
                 
                 m.endComputation();
+
+                //set stream for balances update
+                Conf.horizon.payments()
+                    .forAccount(Auth.keypair().accountId())
+                    .cursor('now')
+                    .stream({
+                        onmessage: function (message) {
+                            // Update user balance
+                            return Auth.initAgentBalances();
+                        },
+                        onerror: function () {
+                            console.log('Cannot get payment from stream');
+                        }
+                    });
             }
         })
     },
