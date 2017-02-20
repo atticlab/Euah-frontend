@@ -3,6 +3,7 @@ var Navbar = require('../components/Navbar.js');
 var Payments = require('../components/Payments.js');
 var Footer = require('../components/Footer.js');
 var Auth = require('../models/Auth.js');
+var Session = require('../models/Session.js');
 
 module.exports = {
     controller: function () {
@@ -71,10 +72,14 @@ module.exports = {
                                         {(Auth.username()) ?
                                           <h4 class="m-t-0 m-b-5">{Conf.tr("Welcome")}, {Auth.username()}</h4> : ''
                                         }
-                                        <p><button
-                                            class="btn-xs btn-warning waves-effect waves-light m-t-10"
-                                            data-toggle="modal"
-                                            data-target=".show_account">{Conf.tr("Show account")}</button></p>
+                                        <p>
+                                            <button
+                                                class="btn-xs btn-warning waves-effect waves-light m-t-10"
+                                                onclick={function(){
+                                                    Session.modal(Auth.keypair().accountId(), Conf.tr("Your account"))
+                                                }}
+                                            >{Conf.tr("Show account")}</button>
+                                        </p>
                                         <small class="text-pink">
                                             <b>{Conf.tr(type)}</b></small>
                                     </div>
