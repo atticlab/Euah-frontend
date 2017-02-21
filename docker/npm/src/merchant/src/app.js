@@ -52,6 +52,7 @@ m.route(document.getElementById('app'), "/", {
     "/stores": require('./pages/Stores/List.js'),
     "/stores/create": require('./pages/Stores/Create.js'),
     "/transfer": require('./pages/Transfer/Transfer.js'),
+    "/payments": require('./pages/Payments/Payments.js'),
     "/orders/:store_id": require('./pages/Orders/Orders.js'),
     "/transaction/:order_id": require('./pages/Transaction/Transaction.js')
 });

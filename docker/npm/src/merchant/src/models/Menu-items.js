@@ -20,4 +20,10 @@ module.exports = [
         icon: 'fa fa-money',
         subItems: null
     },
+    {
+        name: 'Payments',
+        route: '/payments',
+        icon: 'fa fa-list-ul',
+        subItems: null
+    },
 ];

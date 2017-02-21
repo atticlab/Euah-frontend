@@ -204,6 +204,11 @@ module.exports = {
                                         <i class="fa fa-money"></i> <span>{Conf.tr("Transfer money")}</span>
                                     </a>
                                 </li>
+                                <li>
+                                    <a href="/payments" config={m.route} class="waves-effect waves-primary">
+                                        <i class="fa fa-money"></i> <span>{Conf.tr("Payments")}</span>
+                                    </a>
+                                </li>
                             </ul>
                             <div class="clearfix"></div>
                         </div>
