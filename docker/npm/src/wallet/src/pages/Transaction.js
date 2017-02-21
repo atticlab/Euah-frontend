@@ -84,7 +84,7 @@ var Transaction = module.exports = {
                                 }
                                 <tr>
                                     <th>{Conf.tr("Target account ID")}:</th>
-                                    <td><a href={Conf.info_host + '/account?acc='+ctrl.account().id}
+                                    <td><a href={Conf.info_host + '/account/' + ctrl.account().id}
                                            target="_blank"
                                     ><span class="account_overflow">{ctrl.account().id}</span>
                                     </a></td>
