@@ -191,7 +191,7 @@ module.exports = {
                                         </div>
                                     </div>
                                     :
-                                    <div class="panel panel-border panel-inverse">
+                                    <div class="panel panel-border panel-primary">
                                         <div class="panel-heading">
                                             <h3 class="panel-title">{Conf.tr("Invoice code")}</h3>
                                         </div>
@@ -199,7 +199,7 @@ module.exports = {
                                             <h2>{ctrl.invoiceCode()}</h2>
                                             <i>{Conf.tr("Copy this invoice code and share it with someone you need to get money from")}</i>
                                             <br/>
-                                            <button class="btn btn-purple waves-effect w-md waves-light m-b-5"
+                                            <button class="btn btn-primary waves-effect w-md waves-light m-b-5"
                                                     onclick={ctrl.newForm.bind(ctrl)}>{Conf.tr("Create new")}
                                             </button>
                                         </div>

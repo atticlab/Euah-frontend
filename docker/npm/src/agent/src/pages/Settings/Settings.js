@@ -1,6 +1,6 @@
-var Conf = require('../config/Config.js');
-var Navbar = require('../components/Navbar.js');
-var Auth = require('../models/Auth.js');
+var Conf = require('../../config/Config.js');
+var Wrapper = require('../../components/Wrapper.js');
+var Auth = require('../../models/Auth.js');
 
 var Settings = module.exports = {
 
@@ -127,8 +127,9 @@ var Settings = module.exports = {
     },
 
     view: function (ctrl) {
-        return [m.component(Navbar),
-            <div class="wrapper">
+        return m.component(Wrapper, {
+            title: Conf.tr("Transfer money"),
+            tpl: <div class="wrapper">
                 <div class="container">
                     <div class="row">
                         <div class="col-lg-6">
@@ -220,7 +221,6 @@ var Settings = module.exports = {
                     </div>
                 </div>
             </div>
-
-        ];
+        });
     }
 };

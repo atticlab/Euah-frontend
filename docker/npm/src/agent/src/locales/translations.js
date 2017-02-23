@@ -154,5 +154,23 @@ module.exports = {
     "en": {
         ru: 'ru',
         ua: 'ua'
-    }
+    },
+
+    //errors global
+    "Error": {
+        ru: 'Ошибка',
+        ua: 'Помилка'
+    },
+
+    //error messages
+    "Record not found": {
+        ru: 'Запись не найдена',
+        ua: 'Запис не знайдено'
+    },
+
+    //error descriptions
+    "invoice": {
+        ru: 'инвойс',
+        ua: 'інвойс'
+    },
 };

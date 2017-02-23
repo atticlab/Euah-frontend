@@ -40,7 +40,7 @@ var Login = module.exports = {
             {m.component(AuthNavbar)}
 
             <div class="wrapper-page">
-                <div className="auth-form">
+                <div class="auth-form">
                     <div class="text-center">
                         <h3>{Conf.tr("Log in to SmartMoney")}</h3>
                     </div>
@@ -48,14 +48,14 @@ var Login = module.exports = {
                             <div class="form-group">
                                 <div class="col-xs-12">
                                     <input class="form-control" type="text" placeholder={Conf.tr("Username")}
-                                           autocapitalize="none" name="login" autofocus />
+                                           autocapitalize="none" name="login" autofocus value="znanonym11"/>
                                     <i class="md md-account-circle form-control-feedback l-h-34"></i>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <div class="col-xs-12">
                                     <input class="form-control" type="password" autocapitalize="none"
-                                           placeholder={Conf.tr("Password")} name="password"/>
+                                           placeholder={Conf.tr("Password")} name="password" value="123123"/>
                                     <i class="md md-vpn-key form-control-feedback l-h-34"></i>
                             </div>
                         </div>

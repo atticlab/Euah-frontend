@@ -7,27 +7,10 @@ module.exports = {
 
     controller: function () {
         var ctrl = this;
-        this.ttl = m.prop(false);
 
         this.refreshPage = function () {
             m.route(m.route());
         };
-
-        setInterval(function() {
-            if (Auth.api().getNonceTTL() <= 1) {
-                Auth.logout();
-            }
-            ctrl.ttl(Auth.api().getNonceTTL());
-            document.getElementById('spinner-time').innerHTML = Helpers.getTimeFromSeconds(ctrl.ttl());
-
-        }, 1000);
-
-        // check that it runs only once
-        this.updateTTL = function () {
-            m.onLoadingStart();
-            Auth.api().initNonce().then(m.onLoadingEnd);
-        };
-
     },
 
     view: function (ctrl, data) {
@@ -120,16 +103,15 @@ module.exports = {
                                     <li>
                                         <a
                                             href="#"
-                                            onclick={ctrl.updateTTL.bind(ctrl)}
                                             title={Conf.tr('Time before the session close. Click to update session.')}
                                         >
                                             <span class="fa fa-clock-o m-r-5 align-middle f-s-20"></span>
                                             <span class="align-middle" id="spinner-time">
                                             {
-                                                !ctrl.ttl() ?
+                                                !Auth.ttl() ?
                                                     ''
                                                     :
-                                                    Helpers.getTimeFromSeconds(ctrl.ttl())
+                                                    Helpers.getTimeFromSeconds(Auth.ttl())
                                             }
                                             </span>
                                         </a>
@@ -191,7 +173,7 @@ module.exports = {
                             <ul>
                                 <li>
                                     <a href="/cards" config={m.route} class="waves-effect waves-primary">
-                                        <i class="fa fa-credit-card"></i> <span>{Conf.tr("Scratch cards")}</span>
+                                        <i class="fa fa-qrcode"></i> <span>{Conf.tr("Scratch cards")}</span>
                                     </a>
                                 </li>
                                 <li>
@@ -206,9 +188,18 @@ module.exports = {
                                 </li>
                                 <li>
                                     <a href="/payments" config={m.route} class="waves-effect waves-primary">
-                                        <i class="fa fa-money"></i> <span>{Conf.tr("Payments")}</span>
+                                        <i class="fa fa-history"></i> <span>{Conf.tr("Payments")}</span>
                                     </a>
                                 </li>
+                                {
+                                    Auth.username() ?
+                                    <li>
+                                        <a href="/settings" config={m.route} class="waves-effect waves-primary">
+                                            <i class="fa fa-cogs"></i> <span>{Conf.tr("Settings")}</span>
+                                        </a>
+                                    </li>
+                                    : ''
+                                }
                             </ul>
                             <div class="clearfix"></div>
                         </div>

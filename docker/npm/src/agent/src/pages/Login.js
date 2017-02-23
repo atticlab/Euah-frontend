@@ -54,7 +54,6 @@ var Login = module.exports = {
                 </div>
 
                 <form class="form-horizontal m-t-20" onsubmit={ctrl.login.bind(ctrl)}>
-
                     <div class="form-group">
                         <div class="col-xs-12">
                             <input class="form-control" type="text" required="required" placeholder={Conf.tr("Username")}
@@ -63,7 +62,6 @@ var Login = module.exports = {
                             <i class="md md-account-circle form-control-feedback l-h-34"></i>
                         </div>
                     </div>
-
                     <div class="form-group">
                         <div class="col-xs-12">
                             <input class="form-control" type="password" required="required" autocapitalize="none"
@@ -72,13 +70,15 @@ var Login = module.exports = {
                             <i class="md md-vpn-key form-control-feedback l-h-34"></i>
                         </div>
                     </div>
-
                     <div class="form-group m-t-20 text-center">
                         <button class="btn btn-inverse btn-lg btn-custom waves-effect w-md waves-light m-b-5"
                                 type="submit">{Conf.tr("Log in")}
                         </button>
                     </div>
                 </form>
+                <div class="m-t-10 text-center">
+                    <a href="/recovery" config={m.route}>{Conf.tr("Forgot your password?")}</a>
+                </div>
             </div>
         </div>
     }

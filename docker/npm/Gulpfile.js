@@ -87,15 +87,3 @@ gulp.task('switch-theme', function () {
 gulp.task('js-watch', ['js'], function(){
     browserSync.reload();
 });
-
-
-gulp.task('default', ['less', 'js'], function() {
-    browserSync.init({
-        server: {
-           baseDir: "./public"
-        }
-    });
-
-    gulp.watch('./src/**/*.js', ['js-watch']);
-    gulp.watch(lessDir + '/**/*.less', ['less']);
-});

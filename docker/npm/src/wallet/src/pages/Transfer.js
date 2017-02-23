@@ -13,7 +13,7 @@ var Invoice = module.exports = {
                 number = Conf.phone.prefix;
             }
             return m.prop(VMasker.toPattern(number, {pattern: Conf.phone.view_mask, placeholder: "x"}));
-        }
+        };
 
         this.addPhoneViewPattern = function (e) {
             ctrl.infoPhone = ctrl.getPhoneWithViewPattern(e.target.value);
@@ -58,31 +58,27 @@ var Invoice = module.exports = {
             e.preventDefault();
             m.onLoadingStart();
 
-            Auth.api().getInvoice({
-                id: e.target.code.value,
-            })
+            Conf.SmartApi.Invoices.get({
+                    id: e.target.code.value,
+                })
                 .then(response => {
-
                     if (!response || typeof response.data == 'undefined') {
                         console.error('Unexpected response');
                         console.error(response);
 
-                        m.flashError(Conf.tr("Service error"));
-                        return;
+                        return m.flashError(Conf.tr("Service error"));
                     }
-
                     response = response.data;
 
                     var allow_inv = false;
-                    Auth.assets().map(function (b) {
-                        if (b.asset == response.asset) {
+                    Auth.assets().map(function (asset) {
+                        if (asset == response.asset) {
                             allow_inv = true;
                         }
                     });
 
                     if (!allow_inv) {
-                        m.flashError(Conf.tr("Invalid invoice currency"));
-                        return;
+                        return m.flashError(Conf.tr("Invalid invoice currency"));
                     }
 
                     m.startComputation(); // TODO: add this to form
@@ -98,18 +94,23 @@ var Invoice = module.exports = {
                     } else {
                         this.infoMemo('by_invoice');
                     }
-                    m.endComputation();
 
                     // Clear input data
                     e.target.code.value = '';
+                    m.endComputation();
 
-                    m.flashSuccess(Conf.tr("Invoice requested"));
+                    return m.flashSuccess(Conf.tr("Invoice requested"));
                 })
-                .catch(err => {
-                    m.flashApiError(err);
+                .catch(error => {
+                    console.error(error);
+                    if (error.name === 'ApiError') {
+                        return m.flashApiError(error);
+                    }
+
+                    return m.flashError(Conf.tr("Can not request invoice"));
                 })
                 .then(() => {
-                    m.onLoadingEnd();
+                    return m.onLoadingEnd();
                 })
         };
 
@@ -283,8 +284,13 @@ var Invoice = module.exports = {
                                     <div class="form-group">
                                         <label>{Conf.tr("Asset")}</label>
                                         <select name="asset" required="required" class="form-control">
-                                            {Auth.assets().map(function (b) {
-                                                return <option value={b.asset}>{b.asset}</option>
+                                            {Auth.assets().map(function (asset) {
+                                                return <option
+                                                        value={asset}
+                                                        selected={ctrl.infoAsset() && ctrl.infoAsset() == asset ? 'selected' : ''}
+                                                    >
+                                                        {asset}
+                                                    </option>
                                             })}
                                         </select>
                                     </div>

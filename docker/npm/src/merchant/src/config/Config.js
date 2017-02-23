@@ -1,9 +1,9 @@
 var Localize = require('localize');
 var Locales = require('../locales/translations.js');
+var smart_api = require('smart-api-js');
 
 var conf = {
     master_key:         process.env.MASTER_KEY,
-    keyserver_host:     process.env.KEYSERVER_HOST,
     horizon_host:       process.env.HORIZON_HOST,
     api_url:            process.env.API_HOST,
     roles: {
@@ -11,6 +11,10 @@ var conf = {
         emission: 2
     }
 };
+
+conf.SmartApi = new smart_api({
+    host: process.env.API_HOST
+});
 
 conf.statuses = {
     STATUS_WAIT_PAYMENT: 1, //create order record in db, wait payment

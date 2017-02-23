@@ -1,14 +1,13 @@
-var AuthNavbar = require('../components/AuthNavbar.js');
 var Auth = require('../models/Auth.js');
 var Conf = require('../config/Config.js');
 
-var Login = module.exports = {
+var Recovery = module.exports = {
     controller: function () {
         var ctrl = this;
         this.wordNum = m.prop(1);
 
         if (Auth.keypair()) {
-            return m.route('/home');
+            return m.route('/cards');
         }
 
         this.login = function (e) {
@@ -19,7 +18,7 @@ var Login = module.exports = {
                 Auth.mnemonicLogin(e.target.mnemonic.value)
                     .then(function () {
                         m.onLoadingEnd();
-                        m.route('/home');
+                        m.route('/cards');
                     })
                     .catch(err => {
                         console.error(err);
@@ -39,8 +38,26 @@ var Login = module.exports = {
     },
 
     view: function (ctrl) {
-        return <div class="auth-wrapper">
-            {m.component(AuthNavbar)}
+        return <div>
+            <ul class="nav navbar-nav navbar-right pull-right hidden-xs lang-switcher">
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                        <img src={"/assets/img/flags/" + Conf.current_language + ".png"} alt=""/>
+                        &nbsp;
+                        <i class="fa fa-caret-down"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-user">
+                        <li>
+                            <a onclick={Conf.loc.changeLocale.bind(ctrl, 'en')} href="#"><img
+                                src="/assets/img/flags/en.png"/> English</a>
+                            <a onclick={Conf.loc.changeLocale.bind(ctrl, 'ua')} href="#"><img
+                                src="/assets/img/flags/ua.png"/> Українська</a>
+                            <a onclick={Conf.loc.changeLocale.bind(ctrl, 'ru')} href="#"><img
+                                src="/assets/img/flags/ru.png"/> Русский</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
 
             <div class="wrapper-page">
                 <div className="auth-form">
@@ -73,8 +90,8 @@ var Login = module.exports = {
                             </button>
                         </div>
                     </form>
-                    <div class="m-t-10">
-                        <a href="/" config={m.route} class="">{Conf.tr("Back")}</a>
+                    <div class="m-t-10 text-center">
+                        <a href="/" config={m.route}>{Conf.tr("Back")}</a>
                     </div>
                 </div>
             </div>

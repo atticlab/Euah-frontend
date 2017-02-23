@@ -25,8 +25,20 @@ m.flashApiError = function (err) {
         return;
     }
     m.onLoadingEnd();
-    var msg = err.message ? Conf.tr(err.message) + (err.description ? ': ' + Conf.tr(err.description) : '') : Conf.tr('Unknown error. Contact support');
-    $.Notification.notify('error', 'top center', Conf.tr("Error"), msg);
+
+    if (!err.message) {
+        console.error('Unexpected ApiError response');
+        console.error(err);
+        return $.Notification.notify('error', 'top center', Conf.tr("Error"), Conf.tr('Service error'));
+    }
+
+    switch (err.message) {
+        case 'ERR_NOT_FOUND':
+            return $.Notification.notify('error', 'top center', Conf.tr("Error"), Conf.tr("Record not found") + ': ' + Conf.tr(err.description));
+        default:
+            return $.Notification.notify('error', 'top center', Conf.tr("Error"), Conf.tr('Service error'));
+    }
+
 };
 m.flashSuccess = function (msg) {
     m.onLoadingEnd();
@@ -52,6 +64,8 @@ m.route(document.getElementById('app'), "/", {
     "/": require('./pages/Login.js'),
     "/transfer": require('./pages/Transfer/Transfer'),
     "/payments": require('./pages/Payments/Payments'),
+    "/settings": require('./pages/Settings/Settings'),
+    "/recovery": require('./pages/Recovery'),
     "/cards": require('./pages/Cards/CardsList'),
     "/cards/generate": require('./pages/Cards/CardsGenerate'),
 });
