@@ -1,6 +1,3 @@
-var Conf = require('../config/Config');
-var Auth = require('../models/Auth');
-
 var Helpers = {
     getDateFromTimestamp: function (timestamp) {
 

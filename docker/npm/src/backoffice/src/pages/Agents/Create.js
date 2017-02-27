@@ -8,7 +8,7 @@ module.exports = {
     controller: function () {
         var ctrl = this;
 
-        if (!Auth.username()) {
+        if (!Auth.keypair()) {
             return m.route('/');
         }
 
@@ -17,7 +17,7 @@ module.exports = {
 
         this.getCompanies = function () {
             m.onLoadingStart();
-            return Auth.api().getCompaniesList()
+            return Conf.SmartApi.Companies.getList()
                 .then(function(companies){
                     if (typeof companies.data != 'undefined') {
                         if (companies.data.length > 0) {
@@ -70,13 +70,17 @@ module.exports = {
                 asset        : e.target.asset.value
             };
 
-            Auth.api().createAgent(form_data)
+            Conf.SmartApi.Agents.create(form_data)
                 .then(function(){
                     m.flashSuccess(Conf.tr('Success') + '. ' + Conf.tr('Enrollment was sent to email'));
                 })
                 .catch(function(error) {
                     console.error(error);
-                    m.flashApiError(error);
+                    if (error.name === 'ApiError') {
+                        return m.flashApiError(error);
+                    }
+
+                    return m.flashError(Conf.tr('Can not create agent'));
                 });
 
         }

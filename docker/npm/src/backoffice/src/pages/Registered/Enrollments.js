@@ -1,16 +1,18 @@
-var Conf    = require('../../config/Config.js'),
-    Navbar  = require('../../components/Navbar.js'),
-    Footer  = require('../../components/Footer.js'),
+var Conf = require('../../config/Config.js'),
+    Navbar = require('../../components/Navbar.js'),
+    Footer = require('../../components/Footer.js'),
     Sidebar = require('../../components/Sidebar.js'),
-    Helpers = require('../../models/Helpers'),
-    Auth    = require('../../models/Auth'),
-    Pagination  = require('../../components/Pagination.js');
+    Helpers = require('../../components/Helpers'),
+    Operations = require('../../components/Operations'),
+    Auth = require('../../models/Auth'),
+    Session = require('../../models/Session'),
+    Pagination = require('../../components/Pagination.js');
 
 module.exports = {
     controller: function () {
         var ctrl = this;
 
-        if (!Auth.username()) {
+        if (!Auth.keypair()) {
             return m.route('/');
         }
 
@@ -19,18 +21,23 @@ module.exports = {
         this.page = (m.route.param('page')) ? m.prop(Number(m.route.param('page'))) : m.prop(1);
         this.limit = Conf.pagination.limit;
         this.offset = (ctrl.page() - 1) * ctrl.limit;
-        this.pagination_data = m.prop({func: "getEnrollmentsList", page: ctrl.page(), params: {type: 'user'}});
+        this.pagination_data = m.prop({
+            module: "Enrollments",
+            func: "getList",
+            page: ctrl.page(),
+            params: {type: 'user'}
+        });
 
         this.enrollments = m.prop([]);
 
         this.getEnrollments = function () {
             m.onLoadingStart();
-                return Auth.api().getEnrollmentsList({
+            return Conf.SmartApi.Enrollments.getList({
                     limit: ctrl.limit,
                     offset: ctrl.offset,
                     type: 'user'
                 })
-                .then(function(enrollments){
+                .then(function (enrollments) {
                     if (typeof enrollments.data != 'undefined') {
                         m.startComputation();
                         ctrl.enrollments(enrollments.data);
@@ -39,13 +46,18 @@ module.exports = {
                     } else {
                         console.error('Unexpected response');
                         console.error(enrollments);
+                        return m.flashError(Conf.tr('Can not load registered users list'));
                     }
                 })
-                .catch(function(error) {
+                .catch(function (error) {
                     console.error(error);
-                    return m.flashApiError(error);
+                    if (error.name === 'ApiError') {
+                        return m.flashApiError(error);
+                    }
+
+                    return m.flashError(Conf.tr('Can not get registered users enrollments'));
                 })
-                .then(function() {
+                .then(function () {
                     m.onLoadingEnd();
                 });
         };
@@ -74,8 +86,7 @@ module.exports = {
                                                     <th>{Conf.tr('Enrollment ID')}</th>
                                                     <th>{Conf.tr('Created')}</th>
                                                     <th>{Conf.tr('Name')}</th>
-                                                    <th>{Conf.tr('Login')}</th>
-                                                    <th>{Conf.tr('Agent Account ID')}</th>
+                                                    <th>{Conf.tr('User details')}</th>
                                                     <th>{Conf.tr('Enrollment status')}</th>
                                                     <th>{Conf.tr('Approve status')}</th>
                                                 </tr>
@@ -83,16 +94,16 @@ module.exports = {
                                                 <tbody>
                                                 {ctrl.enrollments().map(function (enrollment) {
                                                     return <tr
-                                                            class={
-                                                                enrollment.stage == Conf.enrollment_created ?
-                                                                    "active"
+                                                        class={
+                                                            enrollment.stage == Conf.enrollment_created ?
+                                                                "active"
                                                                 :
                                                                 enrollment.stage == Conf.enrollment_approved ?
                                                                     "success"
                                                                     :
                                                                     "danger"
-                                                            }
-                                                        >
+                                                        }
+                                                    >
                                                         <td>
                                                             <span>{enrollment.id}</span>
                                                         </td>
@@ -100,16 +111,43 @@ module.exports = {
                                                             <span>{Helpers.getDateFromTimestamp(enrollment.created)}</span>
                                                         </td>
                                                         <td>
-                                                            <span title={Conf.tr("User name")}>{enrollment.user_data.surname + ' ' + enrollment.user_data.name + ' ' + enrollment.user_data.middle_name}</span>
+                                                            <span
+                                                                title={Conf.tr("User name")}>{enrollment.user_data.surname + ' ' + enrollment.user_data.name + ' ' + enrollment.user_data.middle_name}</span>
                                                         </td>
                                                         <td>
-                                                            <span title={Conf.tr("User login")}>{enrollment.login}</span>
+                                                            {
+                                                                enrollment.stage == Conf.enrollment_approved ?
+                                                                    <button
+                                                                        class="btn-xs btn-primary waves-effect waves-light"
+                                                                        onclick={function () {
+                                                                            Session.modal(
+                                                                                <table class="table">
+                                                                                    <tr>
+                                                                                        <td>{Conf.tr('Login')}:</td>
+                                                                                        <td>
+                                                                                            <code>{enrollment.login || Conf.tr('Agent create mnemonic phrase only')}</code>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <td>{Conf.tr('Account ID')}:</td>
+                                                                                        <td>
+                                                                                            <code>{enrollment.account_id}</code>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                </table>
+                                                                                , Conf.tr('User details'))
+                                                                        }}
+                                                                    >{Conf.tr('Show')}</button>
+                                                                    :
+                                                                    enrollment.stage == Conf.enrollment_declined ?
+                                                                        Conf.tr("User decline enrollment")
+                                                                        :
+                                                                        Conf.tr("Wait for enrollment approve")
+                                                            }
                                                         </td>
                                                         <td>
-                                                            <span title={Conf.tr("Account ID")}>{enrollment.account_id ? enrollment.account_id : Conf.tr("Not created yet")}</span>
-                                                        </td>
-                                                        <td>
-                                                            <span title={Conf.tr("Enrollment status")}>{Helpers.getEnrollmentStageStatus(enrollment.stage)}</span>
+                                                            <span
+                                                                title={Conf.tr("Enrollment status")}>{Helpers.getEnrollmentStageStatus(enrollment.stage)}</span>
                                                         </td>
                                                         <td>
                                                             <span title={Conf.tr("Create status")}>
@@ -119,7 +157,7 @@ module.exports = {
                                                                         :
                                                                         enrollment.stage == Conf.enrollment_approved ?
                                                                             <button class="btn btn-primary btn-xs"
-                                                                                    onclick={Helpers.approveEnrollment.bind(ctrl, enrollment.account_id,
+                                                                                    onclick={Operations.approveEnrollment.bind(ctrl, enrollment.account_id,
                                                                                         StellarSdk.xdr.AccountType.accountRegisteredUser().value, enrollment.tx_trust, enrollment.id)}
 
                                                                             >

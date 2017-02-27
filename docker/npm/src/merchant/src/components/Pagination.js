@@ -8,6 +8,7 @@ module.exports = {
         this.current_page       = m.prop(data.pagination.page);
         this.next_page_offset   = m.prop(ctrl.current_page() * Conf.pagination.limit);
         this.func               = m.prop(data.pagination.func);
+        this.module             = m.prop(data.pagination.module);
         this.params             = m.prop(data.pagination.params || {});
         this.btn_prev           = m.prop(false);
         this.btn_next           = m.prop(false);
@@ -21,7 +22,7 @@ module.exports = {
 
         this.getNextPageItems = function ()
         {
-            return Auth.api()[ctrl.func()](Object.assign(ctrl.params(), {limit: Conf.pagination.limit, offset: ctrl.next_page_offset()}))
+            return Conf.SmartApi[ctrl.module()][ctrl.func()](Object.assign(ctrl.params(), {limit: Conf.pagination.limit, offset: ctrl.next_page_offset()}))
         };
 
         //check prev/next buttons

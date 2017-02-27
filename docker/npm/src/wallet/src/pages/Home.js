@@ -80,7 +80,7 @@ module.exports = {
                                                 }}
                                             >{Conf.tr("Show account")}</button>
                                         </p>
-                                        <small class="text-pink">
+                                        <small class="text-inverse">
                                             <b>{Conf.tr(type)}</b></small>
                                     </div>
                                 </div>
@@ -127,7 +127,7 @@ module.exports = {
                         <div class="clearfix"></div>
                     </div>
 
-                    <div class="panel panel-color panel-inverse">
+                    <div class="panel panel-color panel-primary">
                         <div class="panel-heading">
                             <h3 class="panel-title">{Conf.tr("Account transactions")}</h3>
                             <p class="panel-sub-title font-13">{Conf.tr("Overview of recent transactions")}.</p>

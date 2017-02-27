@@ -2,7 +2,7 @@ var Conf        = require('../../config/Config.js'),
     Navbar      = require('../../components/Navbar.js'),
     Footer      = require('../../components/Footer.js'),
     Sidebar     = require('../../components/Sidebar.js'),
-    Helpers     = require('../../models/Helpers'),
+    Helpers     = require('../../components/Helpers'),
     Auth        = require('../../models/Auth'),
     Pagination  = require('../../components/Pagination.js');
 
@@ -18,7 +18,7 @@ module.exports = {
     controller: function () {
         var ctrl = this;
 
-        if (!Auth.username()) {
+        if (!Auth.keypair()) {
             return m.route('/');
         }
 
@@ -27,12 +27,12 @@ module.exports = {
         this.page = (m.route.param('page')) ? m.prop(Number(m.route.param('page'))) : m.prop(1);
         this.limit = Conf.pagination.limit;
         this.offset = (ctrl.page() - 1) * ctrl.limit;
-        this.pagination_data = m.prop({func: "getBansList", page: ctrl.page()});
+        this.pagination_data = m.prop({module: "Bans", func: "getList", page: ctrl.page()});
         this.list = m.prop([]);
 
-        this.getStatistics = function () {
+        this.getBansList = function () {
             m.onLoadingStart();
-            Auth.api().getBansList({limit: ctrl.limit, offset: ctrl.offset})
+            Conf.SmartApi.Bans.getList({limit: ctrl.limit, offset: ctrl.offset})
                 .then(function(list) {
                     if (typeof list.data != 'undefined') {
                         m.startComputation();
@@ -44,16 +44,20 @@ module.exports = {
                         console.error(list);
                     }
                 })
-                .catch(function(err){
-                    console.error(err);
-                    m.flashApiError(err);
+                .catch(function(error){
+                    console.error(error);
+                    if (error.name === 'ApiError') {
+                        return m.flashApiError(error);
+                    }
+
+                    return m.flashError(Conf.tr("Can not get companies list"));
                 })
                 .then(function(){
                     m.onLoadingEnd();
                 });
         };
 
-        this.getStatistics();
+        this.getBansList();
 
         this.deleteBan = function (ip) {
             swal({
@@ -63,24 +67,19 @@ module.exports = {
                 confirmButtonColor: "#DD6B55",
                 confirmButtonText: Conf.tr("Yes, delete it"),
             })
-                .then(function () {
-                var form_data = {
-                    ip : String(ip),
-                    banned_for : 0
-                };
-                Auth.api().banIp(form_data)
-                    .then(function(){
-                        m.flashSuccess(Conf.tr('IP unbanned'));
-                    })
-                    .then(function(){
-                        return ctrl.getStatistics();
-                    })
-                    .catch(function(error) {
-                        console.log(error);
-                        m.flashError(Conf.tr(error.message || Conf.errors.service_error));
-                    });
-                });
-
+            .then(function () {
+                return Conf.SmartApi.Bans.delete({ip: String(ip)})
+            })
+            .then(function(){
+                m.flashSuccess(Conf.tr('IP unbanned'));
+            })
+            .then(function(){
+                return ctrl.getBansList();
+            })
+            .catch(function(error) {
+                console.log(error);
+                m.flashError(Conf.tr(error.message || Conf.errors.service_error));
+            });
         };
     },
 

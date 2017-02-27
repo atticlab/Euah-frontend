@@ -17,25 +17,8 @@ module.exports = {
             }
         };
 
-        this.ttl = m.prop(false);
-
         this.refreshPage = function () {
             m.route(m.route());
-        };
-
-        setInterval(function() {
-            if (Auth.api().getNonceTTL() <= 1) {
-                Auth.logout();
-            }
-            ctrl.ttl(Auth.api().getNonceTTL());
-            document.getElementById('spinner-time').innerHTML = Helpers.getTimeFromSeconds(ctrl.ttl());
-
-        }, 1000);
-
-        // check that it runs only once
-        this.updateTTL = function () {
-            m.onLoadingStart();
-            Auth.api().initNonce().then(m.onLoadingEnd);
         };
 
     },
@@ -80,18 +63,11 @@ module.exports = {
                             <li>
                                 <a
                                     href="#"
-                                    onclick={ctrl.updateTTL.bind(ctrl)}
+                                    onclick={function(){return Conf.SmartApi.Api.refreshNonce()}}
                                     title={Conf.tr('Time before the session close. Click to update session.')}
                                 >
                                     <span class="fa fa-clock-o m-r-5 align-middle f-s-20"></span>
-                                    <span class="align-middle" id="spinner-time">
-                                            {
-                                                !ctrl.ttl() ?
-                                                    ''
-                                                    :
-                                                    Helpers.getTimeFromSeconds(ctrl.ttl())
-                                            }
-                                            </span>
+                                    <span class="align-middle" id="spinner-time"></span>
                                 </a>
                             </li>
                         </ul>

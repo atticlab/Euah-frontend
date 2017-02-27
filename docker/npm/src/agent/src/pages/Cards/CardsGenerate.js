@@ -78,7 +78,7 @@ module.exports = {
                     for (var c = 0; c < ctrl.cards_count(); c++) {
                         accountKeypair = StellarSdk.Keypair.random();
 
-                        accounts_data[accountKeypair.accountId()] = btoa(sjcl.encrypt(Auth.wallet().getKeychainData(), accountKeypair.seed()));
+                        accounts_data[accountKeypair.accountId()] = btoa(sjcl.encrypt(Auth.keypair().seed(), accountKeypair.seed()));
 
                         txBuilder.addOperation(StellarSdk.Operation.payment({
                             destination: accountKeypair.accountId(),
@@ -88,9 +88,9 @@ module.exports = {
                     }
 
                     var tx = txBuilder.build();
-                    tx.sign(StellarSdk.Keypair.fromSeed(Auth.wallet().getKeychainData()));
+                    tx.sign(Auth.keypair());
 
-                    return Auth.api().createCards({
+                    return Conf.SmartApi.Cards.create({
                         tx: tx.toEnvelope().toXDR().toString("base64"),
                         data: JSON.stringify(accounts_data)
                     })
@@ -103,10 +103,11 @@ module.exports = {
                 })
                 .catch(error => {
                     console.error(error);
-                    if (error && typeof error.name != 'undefined' && error.name == 'ApiError') {
+                    if (error.name === 'ApiError') {
                         return m.flashApiError(error);
                     }
-                    return m.flashError(error);
+
+                    return m.flashError(Conf.tr("Can not generate cards"));
                 })
                 .then(() => {
                     m.onLoadingEnd();

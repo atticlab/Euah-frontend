@@ -8,7 +8,7 @@ module.exports = {
     controller: function () {
         var ctrl = this;
 
-        if (!Auth.username()) {
+        if (!Auth.keypair()) {
             return m.route('/');
         }
 
@@ -35,7 +35,7 @@ module.exports = {
                 name   : ctrl.name(),
             };
 
-            Auth.api().createStore(form_data)
+            Conf.SmartApi.Merchants.createStore(form_data)
                 .then(function(){
                     ctrl.clearForm();
                     return m.flashSuccess('Store created');

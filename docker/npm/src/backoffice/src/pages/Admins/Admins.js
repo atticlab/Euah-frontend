@@ -2,14 +2,14 @@ var Conf = require('../../config/Config.js'),
     Navbar = require('../../components/Navbar.js'),
     Footer = require('../../components/Footer.js'),
     Sidebar = require('../../components/Sidebar.js'),
-    Helpers   = require('../../models/Helpers'),
+    Operations   = require('../../components/Operations'),
     Auth      = require('../../models/Auth');
 
 module.exports = {
     controller: function () {
         var ctrl = this;
 
-        if (!Auth.username()) {
+        if (!Auth.keypair()) {
             return m.route('/');
         }
 
@@ -18,10 +18,10 @@ module.exports = {
 
         this.getAdmins = function () {
             m.onLoadingStart();
-            Helpers.getAdminsList()
+            Operations.getAdminsList()
                 .then(function(admins) {
                     ctrl.admins = admins;
-                    return Auth.api().getAdminsList({
+                    return Conf.SmartApi.Admins.getList({
                         account_ids: admins
                     })
                 })
@@ -41,16 +41,20 @@ module.exports = {
                     ctrl.admins_data(formatted_data);
                     m.endComputation();
                 })
-                .catch(function(err){
-                console.error(err);
-                m.flashError(Conf.tr('Can not get admins list'));
-            }).then(function(){
-                m.onLoadingEnd();
-            });
+                .catch(function(error){
+                    console.error(error);
+                    if (error.name === 'ApiError') {
+                        return m.flashApiError(error);
+                    }
+
+                    return m.flashError(Conf.tr('Can not get admins list'));
+                }).then(function(){
+                    m.onLoadingEnd();
+                });
         };
 
         this.deleteAdminKey = function(account_id, e) {
-            Helpers.deleteMasterSigner(account_id)
+            Operations.deleteMasterSigner(account_id)
                 .then(function(){
                     m.route(m.route())
                 })
@@ -60,6 +64,10 @@ module.exports = {
                         "success"
                     );
                 })
+                .catch(function (e) {
+                    m.flashError(Conf.tr("Cannot delete signer"));
+                    console.log(e);
+                });
         };
 
         this.getAdmins();

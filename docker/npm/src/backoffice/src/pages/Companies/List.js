@@ -2,14 +2,15 @@ var Conf    = require('../../config/Config.js'),
     Navbar  = require('../../components/Navbar.js'),
     Footer  = require('../../components/Footer.js'),
     Sidebar = require('../../components/Sidebar.js'),
-    Helpers = require('../../models/Helpers'),
+    Helpers = require('../../components/Helpers'),
     Auth    = require('../../models/Auth'),
     Pagination  = require('../../components/Pagination.js');
 
 module.exports = {
     controller: function () {
         var ctrl = this;
-        if (!Auth.username()) {
+
+        if (!Auth.keypair()) {
             return m.route('/');
         }
 
@@ -18,12 +19,12 @@ module.exports = {
         this.page = (m.route.param('page')) ? m.prop(Number(m.route.param('page'))) : m.prop(1);
         this.limit = Conf.pagination.limit;
         this.offset = (ctrl.page() - 1) * ctrl.limit;
-        this.pagination_data = m.prop({func: "getCompaniesList", page: ctrl.page()});
+        this.pagination_data = m.prop({module: "Companies", func: "getList", page: ctrl.page()});
 
         this.companies = m.prop([]);
 
         m.onLoadingStart();
-        Auth.api().getCompaniesList({limit: ctrl.limit, offset: ctrl.offset})
+        Conf.SmartApi.Companies.getList({limit: ctrl.limit, offset: ctrl.offset})
             .then(function(companies){
                 if (typeof companies.data != 'undefined') {
                     m.startComputation();
@@ -33,11 +34,16 @@ module.exports = {
                 } else {
                     console.error('Unexpected response');
                     console.error(companies);
+                    return m.flashError(Conf.tr('Can not load companies'))
                 }
             })
             .catch(function(error) {
                 console.error(error);
-                return m.flashApiError(error);
+                if (error.name === 'ApiError') {
+                    return m.flashApiError(error);
+                }
+
+                return m.flashError(Conf.tr("Can not get companies list"));
             })
             .then(function() {
                 m.onLoadingEnd();

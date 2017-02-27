@@ -22,7 +22,8 @@ var Login = module.exports = {
                         m.route('/home');
                     })
                     .catch(err => {
-                        m.flashError(err.message ? Conf.tr(err.message) : Conf.tr('Service error. Please contact support'));
+                        console.error(err);
+                        return m.flashError(typeof err == 'string' ? Conf.tr(err) : Conf.tr('Service error. Please contact support'));
                     })
             }
         };

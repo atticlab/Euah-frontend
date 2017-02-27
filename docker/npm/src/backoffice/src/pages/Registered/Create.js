@@ -7,7 +7,8 @@ var Conf = require('../../config/Config.js'),
 module.exports = {
     controller: function () {
         var ctrl = this;
-        if (!Auth.username()) {
+
+        if (!Auth.keypair()) {
             return m.route('/');
         }
 
@@ -79,19 +80,20 @@ module.exports = {
                 passport    : ctrl.passport()
             };
 
-            Auth.api().createReguser(form_data)
+            Conf.SmartApi.Regusers.create(form_data)
                 .then(function() {
                     ctrl.clearForm();
                     m.flashSuccess(Conf.tr('Success') + '. ' + Conf.tr('Enrollment was sent to email'));
-
                 })
                 .catch(function(error) {
-                    console.log(error);
-                    return m.flashApiError(error);
+                    console.error(error);
+                    if (error.name === 'ApiError') {
+                        return m.flashApiError(error);
+                    }
+
+                    return m.flashError(Conf.tr('Can not create registered user'));
                 });
-
         };
-
     },
 
     view: function (ctrl) {

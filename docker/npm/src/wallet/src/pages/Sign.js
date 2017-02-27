@@ -60,6 +60,7 @@ var Sign = module.exports = {
                     m.endComputation();
                 })
                 .catch(err => {
+                    console.error(err);
                     m.flashError(err.message ? Conf.tr(err.message) : Conf.tr('Service error. Please contact support'));
                 })
                 .then(function () {

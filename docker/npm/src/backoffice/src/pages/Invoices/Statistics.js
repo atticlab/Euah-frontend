@@ -2,7 +2,7 @@ var Conf        = require('../../config/Config.js'),
     Navbar      = require('../../components/Navbar.js'),
     Footer      = require('../../components/Footer.js'),
     Sidebar     = require('../../components/Sidebar.js'),
-    Helpers     = require('../../models/Helpers'),
+    Helpers     = require('../../components/Helpers'),
     Auth        = require('../../models/Auth'),
     Pagination  = require('../../components/Pagination.js');
 
@@ -10,7 +10,7 @@ module.exports = {
     controller: function () {
         var ctrl = this;
 
-        if (!Auth.username()) {
+        if (!Auth.keypair()) {
             return m.route('/');
         }
 
@@ -19,13 +19,13 @@ module.exports = {
         this.page = (m.route.param('page')) ? m.prop(Number(m.route.param('page'))) : m.prop(1);
         this.limit = Conf.pagination.limit;
         this.offset = (ctrl.page() - 1) * ctrl.limit;
-        this.pagination_data = m.prop({func: "getInvoicesStatistics", page: ctrl.page()});
+        this.pagination_data = m.prop({module: "Invoices", func: "getStatistics", page: ctrl.page()});
 
         this.statistics = m.prop([]);
 
         this.getStatistics = function () {
             m.onLoadingStart();
-            Auth.api().getInvoicesStatistics({limit: ctrl.limit, offset: ctrl.offset})
+            Conf.SmartApi.Invoices.getStatistics({limit: ctrl.limit, offset: ctrl.offset})
                 .then(function(statistics) {                    
                     if (typeof statistics.data != 'undefined') {
                         m.startComputation();
@@ -35,11 +35,18 @@ module.exports = {
                     } else {
                         console.error('Unexpected response');
                         console.error(statistics);
+                        return m.flashError(Conf.tr('Can not get invoices statistics'));
                     }
-                }).catch(function(err){
-                    console.error(err);
-                    m.flashApiError(err);
-                }).then(function(){
+                })
+                .catch(function(error){
+                    console.error(error);
+                    if (error.name === 'ApiError') {
+                        return m.flashApiError(error);
+                    }
+
+                    return m.flashError(Conf.tr('Can not get invoices statistics'));
+                })
+                .then(function(){
                     m.onLoadingEnd();
                 });
         };

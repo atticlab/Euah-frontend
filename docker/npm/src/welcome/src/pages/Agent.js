@@ -34,30 +34,19 @@ module.exports = {
                     if (ctrl.mnemonic_only()) {
                         return Promise.resolve();
                     }
-
                     if (!e.target.login || !e.target.password || !e.target.password_confirm) {
                         return Promise.reject(Conf.tr('Fill all required fields'));
                     }
-
                     if (e.target.password.value != e.target.password_confirm.value) {
                         return Promise.reject(Conf.tr('Passwords must be equal'));
                     }
-
-                    return StellarWallet.createWallet({
-                        server: Conf.wallet_host + '/v2',
+                    return Conf.SmartApi.Wallets.create({
                         username: e.target.login.value,
                         password: e.target.password.value,
                         accountId: Auth.keypair().accountId(),
                         publicKey: Auth.keypair().rawPublicKey().toString('base64'),
                         keychainData: Auth.keypair().seed(),
-                        mainData: 'mainData',
-                        kdfParams: {
-                            algorithm: 'scrypt',
-                            bits: 256,
-                            n: Math.pow(2, 11),
-                            r: 8,
-                            p: 1
-                        }
+                        mainData: 'mainData'
                     });
                 })
                 .then(function () {
@@ -77,7 +66,7 @@ module.exports = {
                     var tx = txBuilder.build();
                     tx.sign(Auth.keypair());
                     var xdr = tx.toEnvelope().toXDR().toString("base64");
-                    return Auth.api().enrollmentAccept({
+                    return Conf.SmartApi.Enrollments.accept({
                         id: Auth.enrollment().id,
                         token: Auth.enrollment().otp,
                         account_id: Auth.keypair().accountId(),
@@ -115,7 +104,7 @@ module.exports = {
                 closeOnConfirm: false,
                 html: false
             }, function () {
-                return Auth.api().enrollmentDecline({
+                return Conf.SmartApi.Enrollments.decline({
                     id: Auth.enrollment().id,
                     token: Auth.enrollment().otp
                 }).then(function () {

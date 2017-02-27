@@ -1,4 +1,5 @@
 var Conf = require('./config/Config.js');
+var Auth = require('./models/Auth.js');
 var queue = require('queue');
 var q = queue();
 
@@ -21,8 +22,7 @@ m.flashError = function (msg) {
 };
 m.flashApiError = function (err) {
     if (err && typeof err.message != 'undefined' && err.message == 'Invalid signature') {
-        window.location.href = '/';
-        return;
+        return Auth.destroySession();
     }
     m.onLoadingEnd();
     var msg = err.message ? Conf.tr(err.message) + (err.description ? ': ' + Conf.tr(err.description) : '') : Conf.tr('Unknown error. Contact support');
@@ -49,6 +49,8 @@ m.getPromptValue = function (label) {
 m.route.mode = 'pathname';
 m.route(document.getElementById('app'), "/", {
     "/": require('./pages/Login.js'),
+    "/recovery": require('./pages/Recovery'),
+    "/settings": require('./pages/Settings/Settings'),
     "/stores": require('./pages/Stores/List.js'),
     "/stores/create": require('./pages/Stores/Create.js'),
     "/transfer": require('./pages/Transfer/Transfer.js'),

@@ -1,17 +1,20 @@
 var Conf = require('../config/Config.js'),
     Auth = require('../models/Auth.js'),
-    Helpers = require('../models/Helpers.js'),
+    Helpers = require('../components/Helpers.js'),
     Navbar = require('../components/Navbar.js'),
-    // sjcl = require('sjcl'),
     Footer = require('../components/FooterFullWidth.js');
 
 var Sign = module.exports = {
     controller: function () {
         var ctrl = this;
 
+        this.registered = m.prop(false);
+        this.mnemonic_phrase = m.prop('');
+
         if (Auth.keypair()) {
             return m.route('/home');
         }
+
 
         this.generateTx = function (e) {
             e.preventDefault();
@@ -36,8 +39,7 @@ var Sign = module.exports = {
             var admin_keypair = StellarSdk.Keypair.random();
 
             // Check if login already exists
-            return StellarWallet.isLoginExist({
-                server: Conf.keyserver_host + '/v2',
+            return Conf.SmartApi.Wallets.notExist({
                 username: login
             })
             .then(function(){
@@ -113,28 +115,27 @@ var Sign = module.exports = {
                             throw new Error(Conf.tr('Bad password'));
                         }
                         var keypair = StellarSdk.Keypair.fromSeed(seed);
-                        return StellarWallet.createWallet({
-                            server: Conf.keyserver_host + '/v2',
+
+                        m.startComputation();
+                        ctrl.mnemonic_phrase(StellarSdk.getMnemonicFromSeed(keypair.seed()));
+                        m.endComputation();
+
+                        return Conf.SmartApi.Wallets.create({
                             username: data.login,
                             password: password,
                             accountId: keypair.accountId(),
                             publicKey: keypair.rawPublicKey().toString('base64'),
                             keychainData: keypair.seed(),
-                            mainData: 'mainData',
-                            kdfParams: {
-                                algorithm: 'scrypt',
-                                bits: 256,
-                                n: Math.pow(2, 11),
-                                r: 8,
-                                p: 1
-                            }
+                            mainData: 'mainData'
                         });
                     })
                     .then(function () {
-                        return Conf.horizon.submitTransaction(tx)
+                        return Conf.horizon.submitTransaction(tx);
                     })
                     .then(function () {
-                        m.route('/');
+                        m.startComputation();
+                        ctrl.registered(true);
+                        m.endComputation();
                         return m.flashSuccess(Conf.tr('Admin account created'));
                     })
                     .catch(function (err) {
@@ -151,9 +152,8 @@ var Sign = module.exports = {
             <ul class="nav navbar-nav navbar-right pull-right hidden-xs lang-switcher">
                 <li class="dropdown">
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                        {/*<i class="fa fa-language fa-fw"></i>*/}
-                        <img src={"/assets/img/flags/" + Conf.tr('en') + ".png"} alt=""/>
-                        {/*&nbsp; <i class="fa fa-caret-down"></i>*/}
+                        <img src={"/assets/img/flags/" + Conf.current_language + ".png"} alt=""/>
+                        &nbsp; <i class="fa fa-caret-down"></i>
                     </a>
                     <ul class="dropdown-menu dropdown-user">
                         <li>
@@ -173,48 +173,61 @@ var Sign = module.exports = {
                     <img src="/assets/img/logo.svg" alt="Smartmoney logo"/>
                     <h4>{Conf.tr('Admin Dashboard')}</h4>
                 </div>
-
-                <form class="form-horizontal m-t-20" onsubmit={ctrl.generateTx.bind(ctrl)}>
-
-                    <div class="form-group">
-                        <div class="col-xs-12">
-                            <input class="form-control" type="text" required="" name="login"
-                                placeholder={Conf.tr('Login')}
-                            />
-                                <i class="md md-account-circle form-control-feedback l-h-34"></i>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <div class="col-xs-12">
-                            <input class="form-control" type="password" required="" name="password"
-                                   placeholder={Conf.tr('Password')}
-                            />
-                                <i class="md md-vpn-key form-control-feedback l-h-34"></i>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <div class="col-xs-12">
-                            <input class="form-control" type="password" required="" name="repassword"
-                                   placeholder={Conf.tr('Repeat password')}
-                            />
-                                <i class="md md-vpn-key form-control-feedback l-h-34"></i>
-                        </div>
-                    </div>
-
-                    <div class="form-group m-b-0">
-                        <div class="col-md-offset-1 col-md-10 text-center">
-                            <button type="submit" class="btn btn-primary btn-custom waves-effect w-md waves-light m-b-5 m-r-15">
-                                {Conf.tr('Download for sign')}
-                            </button>
-                            <div class="fileUpload btn btn-inverse btn-custom waves-effect w-md waves-light m-b-5 m-r-0" onchange={ctrl.uploadTx.bind(ctrl)}>
-                                <span>{Conf.tr('Upload signed')}</span><input type="file" accept=".smbx"
-                                                    id="upload_tx"/>
+                {
+                    ctrl.registered() ?
+                        <div>
+                            <div class="m-t-10 text-center">
+                                <h4>{Conf.tr('Please, remember mnemonic phrase - it is NOT recoverable')}</h4>
+                                <kbd
+                                    style="word-break: break-word; display: block;">{ctrl.mnemonic_phrase()}</kbd>
+                            </div>
+                            <div class="m-t-10 text-center">
+                                <a href="/" config={m.route}>{Conf.tr("Go to login")}</a>
                             </div>
                         </div>
-                    </div>
-                </form>
+                        :
+                        <form class="form-horizontal m-t-20" onsubmit={ctrl.generateTx.bind(ctrl)}>
+
+                            <div class="form-group">
+                                <div class="col-xs-12">
+                                    <input class="form-control" type="text" required="" name="login"
+                                           placeholder={Conf.tr('Login')}
+                                    />
+                                    <i class="md md-account-circle form-control-feedback l-h-34"></i>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="col-xs-12">
+                                    <input class="form-control" type="password" required="" name="password"
+                                           placeholder={Conf.tr('Password')}
+                                    />
+                                    <i class="md md-vpn-key form-control-feedback l-h-34"></i>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="col-xs-12">
+                                    <input class="form-control" type="password" required="" name="repassword"
+                                           placeholder={Conf.tr('Repeat password')}
+                                    />
+                                    <i class="md md-vpn-key form-control-feedback l-h-34"></i>
+                                </div>
+                            </div>
+
+                            <div class="form-group m-b-0">
+                                <div class="col-md-offset-1 col-md-10 text-center">
+                                    <button type="submit" class="btn btn-primary btn-custom waves-effect w-md waves-light m-b-5 m-r-15">
+                                        {Conf.tr('Download for sign')}
+                                    </button>
+                                    <div class="fileUpload btn btn-inverse btn-custom waves-effect w-md waves-light m-b-5 m-r-0" onchange={ctrl.uploadTx.bind(ctrl)}>
+                                        <span>{Conf.tr('Upload signed')}</span><input type="file" accept=".smbx"
+                                                                                      id="upload_tx"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                }
             </div>
             {m.component(Footer)}
         </div>

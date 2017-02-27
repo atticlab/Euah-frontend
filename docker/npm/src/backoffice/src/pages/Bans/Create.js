@@ -1,46 +1,49 @@
-var Conf    = require('../../config/Config.js'),
-    Navbar  = require('../../components/Navbar.js'),
-    Footer  = require('../../components/Footer.js'),
+var Conf = require('../../config/Config.js'),
+    Navbar = require('../../components/Navbar.js'),
+    Footer = require('../../components/Footer.js'),
     Sidebar = require('../../components/Sidebar.js'),
-    Auth    = require('../../models/Auth');
+    Auth = require('../../models/Auth');
 
 module.exports = {
     controller: function () {
         var ctrl = this;
-        if (!Auth.username()) {
+
+        if (!Auth.keypair()) {
             return m.route('/');
         }
 
-        this.bans_ip        = m.prop('');
-        this.bans_banned_to = m.prop('');
-        
+        this.ip = m.prop('');
+        this.ttl = m.prop('');
+
         this.clearForm = function () {
             m.startComputation();
-            ctrl.bans_ip('');
-            ctrl.bans_banned_to('');            
+            ctrl.ip('');
+            ctrl.ttl('');
             m.endComputation();
-        }
+        };
 
         this.addBan = function (e) {
             e.preventDefault();
             m.onLoadingStart();
 
-            ctrl.bans_ip(String(e.target.ip.value));
-            ctrl.bans_banned_to(Number(e.target.banned_for.value));
+            ctrl.ip(String(e.target.ip.value));
+            ctrl.ttl(Number(e.target.ttl.value));
 
-            var form_data = {                
-                ip           : ctrl.bans_ip(),
-                banned_for   : ctrl.bans_banned_to()
-            };            
-
-            Auth.api().banIp(form_data)
-                .then(function(){
-                    ctrl.clearForm();
-                    m.flashSuccess(Conf.tr('IP was successfully banned'));
+            Conf.SmartApi.Bans.create({
+                    ip: ctrl.ip(),
+                    ttl: ctrl.ttl()
                 })
-                .catch(function(error) {
-                    console.log(error);
-                    m.flashError(Conf.tr(error.message || Conf.errors.service_error));
+                .then(function () {
+                    ctrl.clearForm();
+                    m.flashSuccess(Conf.tr('IP banned'));
+                })
+                .catch(function (error) {
+                    console.error(error);
+                    if (error.name === 'ApiError') {
+                        return m.flashApiError(error);
+                    }
+
+                    return m.flashError(Conf.tr("Can not ban ip"));
                 });
         }
     },
@@ -60,33 +63,35 @@ module.exports = {
                                 <div class="col-lg-6">
                                     <form class="form-horizontal" onsubmit={ctrl.addBan.bind(ctrl)}>
                                         <div class="form-group">
-                                            <label for="code" class="col-md-2 control-label">{Conf.tr("Ip")}</label>
+                                            <label for="ip" class="col-md-2 control-label">{Conf.tr("Ip")}</label>
                                             <div class="col-md-4">
-                                                <input class="form-control" 
-                                                       name="ip" 
+                                                <input class="form-control"
+                                                       name="ip"
                                                        id="ip"
                                                        placeholder={Conf.tr("User ip")}
-                                                       type="text" 
-                                                       value="" 
+                                                       type="text"
+                                                       value=""
                                                        required="required"/>
-                                            </div>                                            
+                                            </div>
                                         </div>
                                         <div class="form-group">
-                                            <label for="code" class="col-md-2 control-label">{Conf.tr("Banned for minutes")}</label>
+                                            <label for="ttl"
+                                                   class="col-md-2 control-label">{Conf.tr("Time of ban (in seconds)")}</label>
                                             <div class="col-md-4">
-                                                <input class="form-control" 
-                                                       name="banned_for" 
-                                                       id="banned_for"
-                                                       placeholder={Conf.tr("Banned for")}
-                                                       type="number" 
-                                                       value="" 
-                                                       required="required"/> 
+                                                <input class="form-control"
+                                                       name="ttl"
+                                                       id="ttl"
+                                                       placeholder={Conf.tr("Time of ban")}
+                                                       type="number"
+                                                       value=""
+                                                       required="required"/>
                                             </div>
                                         </div>
                                         <div class="form-group m-b-0">
                                             <div class="col-sm-offset-2 col-sm-9">
-                                                <button type="submit" class="btn btn-primary btn-custom waves-effect w-md waves-light m-b-5">
-                                                {Conf.tr('Add')}
+                                                <button type="submit"
+                                                        class="btn btn-primary btn-custom waves-effect w-md waves-light m-b-5">
+                                                    {Conf.tr('Add')}
                                                 </button>
                                             </div>
                                         </div>

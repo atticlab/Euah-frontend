@@ -3,14 +3,15 @@ var Conf    = require('../../config/Config.js'),
     Footer  = require('../../components/Footer.js'),
     Sidebar = require('../../components/Sidebar.js'),
     Auth    = require('../../models/Auth'),
-    Helpers = require('../../models/Helpers'),
+    Helpers = require('../../components/Helpers'),
     Pagination  = require('../../components/Pagination.js'),
     Session = require('../../models/Session.js');
 
 module.exports = {
     controller: function () {
         var ctrl = this;
-        if (!Auth.username()) {
+
+        if (!Auth.keypair()) {
             return m.route('/');
         }
 
@@ -19,7 +20,7 @@ module.exports = {
         this.page = (m.route.param('page')) ? m.prop(Number(m.route.param('page'))) : m.prop(1);
         this.limit = Conf.pagination.limit;
         this.offset = (ctrl.page() - 1) * ctrl.limit;
-        this.pagination_data = m.prop({func: "getRegusersList", page: ctrl.page()});
+        this.pagination_data = m.prop({module: "Regusers", func: "getList", page: ctrl.page()});
 
         this.reg_users = m.prop([]);
 
@@ -29,7 +30,7 @@ module.exports = {
 
         this.getRegisteredUsers = function () {
             m.onLoadingStart();
-            Auth.api().getRegusersList({limit: ctrl.limit, offset: ctrl.offset})
+            Conf.SmartApi.Regusers.getList({limit: ctrl.limit, offset: ctrl.offset})
                 .then(function(reg_users){
                     if (typeof reg_users.data != 'undefined') {
                         m.startComputation();
@@ -43,7 +44,11 @@ module.exports = {
                 })
                 .catch(function(error) {
                     console.error(error);
-                    return m.flashApiError(error);
+                    if (error.name === 'ApiError') {
+                        return m.flashApiError(error);
+                    }
+
+                    return m.flashError(Conf.tr('Can not get registered users list'));
                 })
                 .then(function() {
                     m.onLoadingEnd();

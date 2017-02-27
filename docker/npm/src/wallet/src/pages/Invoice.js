@@ -12,7 +12,6 @@ var Invoice = module.exports = {
 
         this.invoiceCode = m.prop(false);
         this.qr = m.prop(false);
-        this.barcode = m.prop(false);
 
         if (!Auth.keypair()) {
             return m.route('/');
@@ -28,7 +27,7 @@ var Invoice = module.exports = {
 
             m.onLoadingStart();
 
-            Auth.api().createInvoice({asset: asset, amount: parseFloat(parseFloat(amount).toFixed(2))})
+            Conf.SmartApi.Invoices.create({asset: asset, amount: parseFloat(parseFloat(amount).toFixed(2))})
                 .then(function(response){
 
                     if (
@@ -63,14 +62,15 @@ var Invoice = module.exports = {
 
                     m.startComputation();
                     ctrl.qr(qrCode);
-                    // ctrl.barcode(m.trust('<img width="230" height="118"' +
-                    //     'src="http://www.barcode-generator.org/zint/api.php?bc_number=13&bc_data=482000' +
-                    //     id + '">'));
                     m.endComputation();
                 })
-                .catch(err => {
-                    m.flashApiError(err);
-                    console.error(err);
+                .catch(error => {
+                    console.error(error);
+                    if (error.name === 'ApiError') {
+                        return m.flashApiError(error);
+                    }
+
+                    return m.flashError(Conf.tr("Can not create invoice"));
                 })
                 .then(() => {
                     m.onLoadingEnd();
@@ -92,7 +92,7 @@ var Invoice = module.exports = {
                         <div class="col-lg-6">
                             {
                                 (!ctrl.invoiceCode()) ?
-                                    <div class="panel panel-color panel-purple">
+                                    <div class="panel panel-color panel-primary">
                                         <div class="panel-heading">
                                             <h3 class="panel-title">{Conf.tr("Create a new invoice")}</h3>
                                         </div>
@@ -114,8 +114,8 @@ var Invoice = module.exports = {
                                                 <div class="form-group">
                                                     <div class="col-xs-4">
                                                         <select name="asset" class="form-control">
-                                                            {Auth.assets().map(function (b) {
-                                                                return <option>{b.asset}</option>
+                                                            {Auth.assets().map(function (asset) {
+                                                                return <option>{asset}</option>
                                                             })}
                                                         </select>
                                                     </div>
@@ -124,7 +124,7 @@ var Invoice = module.exports = {
                                                 <div class="form-group m-t-20">
                                                     <div class="col-sm-7">
                                                         <button
-                                                            class="btn btn-purple btn-custom w-md waves-effect waves-light"
+                                                            class="btn btn-primary btn-custom w-md waves-effect waves-light"
                                                             type="submit">
                                                             {Conf.tr("Create")}
                                                         </button>
@@ -134,7 +134,7 @@ var Invoice = module.exports = {
                                         </div>
                                     </div>
                                     :
-                                    <div class="panel panel-border panel-inverse">
+                                    <div class="panel panel-border panel-primary">
                                         <div class="panel-heading">
                                             <h3 class="panel-title">{Conf.tr("Invoice code")}</h3>
                                         </div>
@@ -143,14 +143,12 @@ var Invoice = module.exports = {
                                             <i>{Conf.tr("Copy this invoice code and share it with someone you need to get money from")}</i>
                                             <br/>
                                             <br/>
-                                            {/*{code}*/}
                                             <img src={code.src}/>
                                             <br/>
                                             <br/>
-                                            {/*{ctrl.barcode() ? ctrl.barcode() : ''}*/}
                                             <br/>
                                             <br/>
-                                            <button class="btn btn-purple waves-effect w-md waves-light m-b-5"
+                                            <button class="btn btn-primary waves-effect w-md waves-light m-b-5"
                                                     onclick={ctrl.newForm.bind(ctrl)}>{Conf.tr("Create new")}
                                             </button>
                                         </div>

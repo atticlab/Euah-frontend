@@ -9,13 +9,13 @@ module.exports = {
     controller: function () {
         var ctrl = this;
 
-        this.current_cursor = m.prop(null);
-        this.payments = m.prop([]);
-        this.next = m.prop(false);
-
         if (!Auth.keypair()) {
             return m.route('/');
         }
+
+        this.current_cursor = m.prop(null);
+        this.payments = m.prop([]);
+        this.next = m.prop(false);
 
         this.checkNextPaymentsExist = function () {
 

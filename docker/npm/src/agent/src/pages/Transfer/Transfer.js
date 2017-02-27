@@ -58,16 +58,15 @@ var Transfer = module.exports = {
             e.preventDefault();
             m.onLoadingStart();
 
-            Auth.api().getInvoice({
-                id: e.target.code.value,
-            })
+            Conf.SmartApi.Invoices.get({
+                    id: e.target.code.value,
+                })
                 .then(response => {
                     if (!response || typeof response.data == 'undefined') {
                         console.error('Unexpected response');
                         console.error(response);
 
-                        m.flashError(Conf.tr("Service error"));
-                        return;
+                        return m.flashError(Conf.tr("Service error"));
                     }
                     response = response.data;
                     var allow_inv = false;
@@ -78,8 +77,7 @@ var Transfer = module.exports = {
                     });
 
                     if (!allow_inv) {
-                        m.flashError(Conf.tr("Invalid invoice currency"));
-                        return;
+                        return m.flashError(Conf.tr("Invalid invoice currency"));
                     }
 
                     m.startComputation(); // TODO: add this to form
@@ -102,8 +100,13 @@ var Transfer = module.exports = {
 
                     m.flashSuccess(Conf.tr("Invoice requested"));
                 })
-                .catch(err => {
-                    m.flashApiError(err);
+                .catch(error => {
+                    console.error(error);
+                    if (error.name === 'ApiError') {
+                        return m.flashApiError(error);
+                    }
+
+                    return m.flashError(Conf.tr("Can not request invoice"));
                 })
                 .then(() => {
                     m.onLoadingEnd();
@@ -137,16 +140,16 @@ var Transfer = module.exports = {
                         return m.flashError(Conf.tr("Invalid phone"));
                     }
 
-                    StellarWallet.getWalletDataByParams({
-                        server: Conf.keyserver_host + "/v2",
-                        phone : phoneNum
-                    })
+                    Conf.SmartApi.Wallets.getWalletData({
+                            phone : phoneNum
+                        })
                         .then(function (walletData) {
-                            if (walletData && walletData.accountId) {
-                                ctrl.processPayment(walletData.accountId, memoText, amount, asset);
+                            if (walletData && walletData.data.accountId) {
+                                ctrl.processPayment(walletData.data.accountId, memoText, amount, asset);
                             }
                         })
                         .catch(function (err) {
+                            console.error(err);
                             return m.flashError(Conf.tr("User not found! Check phone number"));
                         });
                     break;
@@ -157,16 +160,16 @@ var Transfer = module.exports = {
                         return m.flashError(Conf.tr("Please fill all the fields"));
                     }
 
-                    StellarWallet.getWalletDataByParams({
-                        server: Conf.keyserver_host + "/v2",
-                        email : email
-                    })
+                    Conf.SmartApi.Wallets.getWalletData({
+                            email : email
+                        })
                         .then(function (walletData) {
-                            if (walletData && walletData.accountId) {
-                                ctrl.processPayment(walletData.accountId, memoText, amount, asset);
+                            if (walletData && walletData.data.accountId) {
+                                ctrl.processPayment(walletData.data.accountId, memoText, amount, asset);
                             }
                         })
                         .catch(function (err) {
+                            console.error(err);
                             return m.flashError(Conf.tr("User not found! Check email"));
                         });
                     break;
@@ -220,7 +223,7 @@ var Transfer = module.exports = {
 
     view: function (ctrl) {
         return m.component(Wrapper, {
-            title: Conf.tr("Cards"),
+            title: Conf.tr("Transfer money"),
             tpl: <div class="wrapper">
                 <div class="container">
                     <div class="row">
@@ -328,5 +331,4 @@ var Transfer = module.exports = {
             </div>
         });
     }
-
 };

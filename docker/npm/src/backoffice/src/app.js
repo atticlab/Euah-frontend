@@ -1,4 +1,5 @@
 var Conf = require('./config/Config.js');
+var Auth = require('./models/Auth.js');
 var queue = require('queue');
 var q = queue();
 
@@ -21,12 +22,21 @@ m.flashError = function (msg) {
 };
 m.flashApiError = function (err) {
     if (err && typeof err.message != 'undefined' && err.message == 'Invalid signature') {
-        window.location.href = '/';
-        return;
+        return Auth.destroySession();
     }
     m.onLoadingEnd();
-    var msg = err.message ? Conf.tr(err.message) + (err.description ? ': ' + Conf.tr(err.description) : '') : Conf.tr('Unknown error. Contact support');
-    $.Notification.notify('error', 'top center', Conf.tr("Error"), msg);
+    if (!err.message) {
+        console.error('Unexpected ApiError response');
+        console.error(err);
+
+        return $.Notification.notify('error', 'top center', Conf.tr("Error"), Conf.tr('Service error'));
+    }
+    switch (err.message) {
+        case 'ERR_NOT_FOUND':
+            return $.Notification.notify('error', 'top center', Conf.tr("Error"), Conf.tr("Record not found") + ': ' + Conf.tr(err.description));
+        default:
+            return $.Notification.notify('error', 'top center', Conf.tr("Error"), Conf.tr('Service error'));
+    }
 };
 m.flashSuccess = function (msg) {
     m.onLoadingEnd();
@@ -50,9 +60,10 @@ m.getPromptValue = function (label) {
 m.route.mode = 'pathname';
 m.route(document.getElementById('app'), "/", {
     "/": require('./pages/Login.js'),
-    "/logout": require('./pages/Logout.js'),
+    "/recovery": require('./pages/Recovery.js'),
     "/sign": require('./pages/Sign.js'),
     "/home": require('./pages/Home.js'),
+    "/settings" : require('./pages/Settings/Settings.js'),
     "/admins" : require('./pages/Admins/Admins.js'),
     "/emission" : require('./pages/Emission/List.js'),
     "/emission/generate" : require('./pages/Emission/Generate.js'),

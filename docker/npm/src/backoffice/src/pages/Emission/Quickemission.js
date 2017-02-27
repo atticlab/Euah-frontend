@@ -2,13 +2,14 @@ var Conf    = require('../../config/Config.js'),
     Navbar  = require('../../components/Navbar.js'),
     Footer  = require('../../components/Footer.js'),
     Auth    = require('../../models/Auth'),
-    Helpers = require('../../models/Helpers'),
+    Operations = require('../../components/Operations'),
     Sidebar = require('../../components/Sidebar.js');
 
 module.exports = {
     controller: function () {
         var ctrl = this;
-        if (!Auth.username()) {
+
+        if (!Auth.keypair()) {
             return m.route('/');
         }
 
@@ -59,7 +60,7 @@ module.exports = {
                         return m.flashError(Conf.tr('Check account id parameter'));
                     }
 
-                    return Helpers.makeEmission(e.target.account_id.value.toString(), parseInt(parseFloat(e.target.amount.value).toFixed(2)*100), e.target.asset.value.toString());
+                    return Operations.makeEmission(e.target.account_id.value.toString(), parseInt(parseFloat(e.target.amount.value).toFixed(2)*100), e.target.asset.value.toString());
 
                 }).catch(function(error){
                     console.error(error);

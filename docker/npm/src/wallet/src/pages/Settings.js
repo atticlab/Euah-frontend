@@ -13,7 +13,7 @@ var Settings = module.exports = {
 
         //return phone in pattern or prefix
         this.getPhoneWithViewPattern = function (number) {
-            if (number.substr(0, Conf.phone.prefix.length) != Conf.phone.prefix) {
+            if (!number.length || number.substr(0, Conf.phone.prefix.length) != Conf.phone.prefix) {
                 number = Conf.phone.prefix;
             }
             return m.prop(VMasker.toPattern(number, {pattern: Conf.phone.view_mask, placeholder: "x"}));
@@ -23,107 +23,53 @@ var Settings = module.exports = {
             ctrl.phone = ctrl.getPhoneWithViewPattern(e.target.value);
         };
 
-        this.phone = ctrl.getPhoneWithViewPattern(Conf.phone.prefix + Auth.wallet().phone);
+        this.onBlur = function (e) {
+            var phone = e.target.value;
+            if (!e.target.value || e.target.value == Conf.phone.prefix || e.target.value.substr(0, Conf.phone.prefix.length) != Conf.phone.prefix) {
+                phone = '';
+            }
+            this.phone = m.prop(VMasker.toPattern(phone, {pattern: Conf.phone.view_mask, placeholder: "x"}));
+        };
+
+        this.phone = Auth.wallet().phone ? ctrl.getPhoneWithViewPattern(Conf.phone.prefix + Auth.wallet().phone) : m.prop('');
         this.email = m.prop(Auth.wallet().email || '');
 
         this.changePassword = function (e) {
             e.preventDefault();
 
             if (!e.target.oldpassword.value || !e.target.password.value || !e.target.repassword.value) {
-                m.flashError(Conf.tr("Please, fill all required fields"));
-                return;
+                return m.flashError(Conf.tr("Please, fill all required fields"));
             }
 
             if (e.target.password.value.length < 6) {
-                m.flashError(Conf.tr("Password should have 6 chars min"));
-                return;
+                return m.flashError(Conf.tr("Password should have 6 chars min"));
             }
 
             if (e.target.password.value != e.target.repassword.value) {
-                m.flashError(Conf.tr("Passwords should match"));
-                return;
+                return m.flashError(Conf.tr("Passwords should match"));
             }
 
             if (e.target.oldpassword.value == e.target.password.value) {
-                m.flashError(Conf.tr("New password cannot be same as old"));
-                return;
+                return m.flashError(Conf.tr("New password cannot be same as old"));
             }
 
             m.onLoadingStart();
-            m.startComputation();
 
             Auth.updatePassword(e.target.oldpassword.value, e.target.password.value)
                 .then(function () {
-                    m.flashSuccess(Conf.tr("Password changed"));
+                    m.startComputation();
                     e.target.reset();
+                    m.endComputation();
+                    return m.flashSuccess(Conf.tr("Password changed"));
                 })
                 .catch(function (err) {
+                    console.error(err);
                     m.flashError(Conf.tr("Cannot change password"));
                 })
                 .then(function () {
-                    m.onLoadingEnd();
-                    m.endComputation();
+                    return m.onLoadingEnd();
                 })
         };
-
-        {/*this.bindData = function (e) {*/}
-            {/*e.preventDefault();*/}
-
-            {/*//reformat phone to database format*/}
-            {/*e.target.phone.value = VMasker.toPattern(e.target.phone.value, Conf.phone.db_mask);*/}
-            {/*var phone_number = e.target.phone.value.substr(2) ? e.target.phone.value.substr(2) : null;*/}
-
-
-            {/*if (e.target.email.value != Auth.wallet().email || phone_number != Auth.wallet().phone) {*/}
-
-                {/*m.onLoadingStart();*/}
-
-                {/*var dataToUpdate = {};*/}
-                {/*if (e.target.email.value) {*/}
-                    {/*//validate email*/}
-                    {/*var email_re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;*/}
-                    {/*if (!email_re.test(e.target.email.value)) {*/}
-                        {/*return m.flashError(Conf.tr("Invalid email"));*/}
-                    {/*}*/}
-                    {/*dataToUpdate.email = e.target.email.value*/}
-                {/*}*/}
-                {/*if (phone_number) {*/}
-                    {/*//validate phone*/}
-                    {/*if (phone_number.length > 0 && phone_number.match(/\d/g).length != Conf.phone.length) {*/}
-                        {/*m.startComputation();*/}
-                        {/*ctrl.phone = ctrl.getPhoneWithViewPattern(Conf.phone.prefix + phone_number);*/}
-                        {/*m.endComputation();*/}
-                        {/*return m.flashError(Conf.tr("Invalid phone"));*/}
-                    {/*}*/}
-                    {/*dataToUpdate.phone = phone_number*/}
-                {/*}*/}
-
-                {/*Auth.update(dataToUpdate)*/}
-                    {/*.then(function () {*/}
-        //                 m.flashSuccess(Conf.tr("Profile saved"));
-        //             })
-        //             .catch(function (err) {
-        //                 if (err.message) {
-        //
-        //                     if (err.message == 'Nothing to update') {
-        //                         m.flashSuccess(Conf.tr(err.message));
-        //                     } else {
-        //                         m.flashError(err.message);
-        //                     }
-        //
-        //                 } else {
-        //                     m.flashError(Conf.tr("Cannot update profile details"));
-        //                 }
-        //             })
-        //             .then(function () {
-        //                 console.log(Conf.phone.prefix + Auth.wallet().phone);
-        //                 ctrl.phone = ctrl.getPhoneWithViewPattern(Conf.phone.prefix + Auth.wallet().phone);
-        //                 ctrl.email = m.prop(Auth.wallet().email || '');
-        //                 m.onLoadingEnd();
-        //                 m.endComputation();
-        //             })
-        //     }
-        // }
 
         this.bindData = function (e) {
             e.preventDefault();
@@ -161,29 +107,23 @@ var Settings = module.exports = {
                     .then(function () {
                         m.flashSuccess(Conf.tr("Profile saved"));
                     })
-                    .catch(function (err) {
-                        if (err.message) {
-
-                            if (err.message == 'Nothing to update') {
-                                m.flashSuccess(Conf.tr(err.message));
-                            } else {
-                                m.flashError(Conf.tr(err.message));
-                            }
-
-                        } else {
-                            m.flashError(Conf.tr("Cannot update profile details"));
+                    .catch(function (error) {
+                        console.error(error);
+                        if (error.name === 'ApiError') {
+                            return m.flashApiError(error);
                         }
+
+                        return m.flashError(Conf.tr("Cannot update profile details"));
                     })
                     .then(function () {
-                        ctrl.phone = ctrl.getPhoneWithViewPattern(Conf.phone.prefix + Auth.wallet().phone);
+                        m.startComputation();
+                        ctrl.phone = Auth.wallet().phone ? ctrl.getPhoneWithViewPattern(Conf.phone.prefix + Auth.wallet().phone) : m.prop('');
                         ctrl.email = m.prop(Auth.wallet().email || '');
-                        m.onLoadingEnd();
                         m.endComputation();
+                        return m.onLoadingEnd();
                     })
             }
         }
-
-
     },
 
     view: function (ctrl) {
@@ -192,7 +132,7 @@ var Settings = module.exports = {
                 <div class="container">
                     <div class="row">
                         <div class="col-lg-6">
-                            <div class="panel panel-color panel-pink">
+                            <div class="panel panel-color panel-primary">
                                 <div class="panel-heading">
                                     <h3 class="panel-title">{Conf.tr("Change password")}</h3>
                                 </div>
@@ -224,7 +164,7 @@ var Settings = module.exports = {
 
                                         <div class="form-group m-t-20">
                                             <div class="col-sm-7">
-                                                <button class="btn btn-pink btn-custom w-md waves-effect waves-light"
+                                                <button class="btn btn-primary btn-custom w-md waves-effect waves-light"
                                                         type="submit">
                                                     {Conf.tr("Change")}
                                                 </button>
@@ -235,7 +175,7 @@ var Settings = module.exports = {
                             </div>
                         </div>
                         <div class="col-lg-6">
-                            <div class="panel panel-color panel-pink">
+                            <div class="panel panel-color panel-primary">
                                 <div class="panel-heading">
                                     <h3 class="panel-title">{Conf.tr("Change account info")}</h3>
                                 </div>
@@ -255,6 +195,8 @@ var Settings = module.exports = {
                                                 <input class="form-control" type="text" name="phone"
                                                        placeholder={Conf.phone.view_mask}
                                                        oninput={ctrl.addPhoneViewPattern.bind(ctrl)}
+                                                       onfocus={ctrl.addPhoneViewPattern.bind(ctrl)}
+                                                       onblur={ctrl.onBlur.bind(ctrl)}
                                                        value={ctrl.phone()}/>
                                             </div>
                                         </div>
@@ -264,7 +206,7 @@ var Settings = module.exports = {
                                                 <div class="form-group m-t-20">
                                                     <div class="col-sm-7">
                                                         <button
-                                                            class="btn btn-pink btn-custom w-md waves-effect waves-light"
+                                                            class="btn btn-primary btn-custom w-md waves-effect waves-light"
                                                             type="submit">{Conf.tr("Save")}</button>
                                                     </div>
                                                 </div>

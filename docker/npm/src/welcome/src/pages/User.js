@@ -9,6 +9,7 @@ module.exports = {
 
         this.accepted = m.prop(false);
         this.declined = m.prop(false);
+        this.mnemonic_phrase = m.prop(false);
 
         if (!Auth.enrollment()) {
             return m.route('/u');
@@ -26,51 +27,48 @@ module.exports = {
             if (e.target.password.value != e.target.password_confirm.value) {
                 return m.flashError(Conf.tr('Passwords must be equal'));
             }
-            return StellarWallet.createWallet({
-                server: Conf.wallet_host + '/v2',
-                username: e.target.login.value,
-                password: e.target.password.value,
-                accountId: Auth.keypair().accountId(),
-                publicKey: Auth.keypair().rawPublicKey().toString('base64'),
-                keychainData: Auth.keypair().seed(),
-                mainData: 'mainData',
-                kdfParams: {
-                    algorithm: 'scrypt',
-                    bits: 256,
-                    n: Math.pow(2, 11),
-                    r: 8,
-                    p: 1
-                }
-            }).then(function() {
-                var sequence = '0';
-                var userAccount = new StellarSdk.Account(Auth.keypair().accountId(), sequence);
-                var tx = new StellarSdk.TransactionBuilder(userAccount).addOperation(
-                    StellarSdk.Operation.changeTrust({
-                        asset: new StellarSdk.Asset(Auth.enrollment().asset, Conf.master_key)
-                    })).build();
-                tx.sign(Auth.keypair());
-                var xdr = tx.toEnvelope().toXDR().toString("base64");
-                return Auth.api().enrollmentAccept({
-                    id: Auth.enrollment().id,
-                    token: Auth.enrollment().otp,
-                    account_id: Auth.keypair().accountId(),
-                    tx_trust: xdr,
-                    login: e.target.login.value
-                });
-            }).then(function(){
-                m.startComputation();
-                ctrl.accepted(true);
-                m.endComputation();
-                swal(Conf.tr("Accepted") + "!",
-                    Conf.tr("Enrollment successfully accepted"),
-                    "success"
-                );
-            }).catch(function(err){
-                console.error(err);
-                return m.flashApiError(err);
-            }).then(function(){
-                m.onLoadingEnd();
-            })
+            return Conf.SmartApi.Wallets.create({
+                    username: e.target.login.value,
+                    password: e.target.password.value,
+                    accountId: Auth.keypair().accountId(),
+                    publicKey: Auth.keypair().rawPublicKey().toString('base64'),
+                    keychainData: Auth.keypair().seed(),
+                    mainData: 'mainData'
+                })
+                .then(function() {
+                    var sequence = '0';
+                    var userAccount = new StellarSdk.Account(Auth.keypair().accountId(), sequence);
+                    var tx = new StellarSdk.TransactionBuilder(userAccount).addOperation(
+                        StellarSdk.Operation.changeTrust({
+                            asset: new StellarSdk.Asset(Auth.enrollment().asset, Conf.master_key)
+                        })).build();
+                    tx.sign(Auth.keypair());
+                    var xdr = tx.toEnvelope().toXDR().toString("base64");
+                    return Conf.SmartApi.Enrollments.accept({
+                        id: Auth.enrollment().id,
+                        token: Auth.enrollment().otp,
+                        account_id: Auth.keypair().accountId(),
+                        tx_trust: xdr,
+                        login: e.target.login.value
+                    });
+                }).then(function(){
+                    m.startComputation();
+                    ctrl.accepted(true);
+                    ctrl.mnemonic_phrase(StellarSdk.getMnemonicFromSeed(Auth.keypair().seed()));
+                    m.endComputation();
+                    swal(Conf.tr("Accepted") + "!",
+                        Conf.tr("Enrollment successfully accepted"),
+                        "success"
+                    );
+                }).catch(function(err){
+                    console.error(err);
+                    if (typeof err == 'string') {
+                        return m.flashError(err);
+                    }
+                    return m.flashApiError(err);
+                }).then(function(){
+                    m.onLoadingEnd();
+                })
         };
 
         this.declineEnrollment = function () {
@@ -87,9 +85,9 @@ module.exports = {
             }, function(isConfirm){
 
                 if (isConfirm) {
-                    return Auth.api().enrollmentDecline({
+                    return Conf.SmartApi.Enrollments.decline({
                         id: Auth.enrollment().id,
-                        token: Auth.enrollment().otp
+                        token: Auth.enrollment().otp,
                     }).then(function() {
                         m.startComputation();
                         ctrl.declined(true);
@@ -124,8 +122,15 @@ module.exports = {
                                     <div>
                                     {
                                         ctrl.accepted() ?
-                                            <div class="alert alert-success">
-                                                {Conf.tr("Enrollment successfully accepted")}
+                                            <div>
+                                                <div class="alert alert-success">
+                                                    {Conf.tr("Enrollment successfully accepted")}
+                                                </div>
+                                                <div>
+                                                    <h4>{Conf.tr('Please, remember mnemonic phrase - it is NOT recoverable')}</h4>
+                                                    <kbd
+                                                        style="word-break: break-word; display: block;">{ctrl.mnemonic_phrase()}</kbd>
+                                                </div>
                                             </div>
                                         :
                                             <div class="alert alert-warning">

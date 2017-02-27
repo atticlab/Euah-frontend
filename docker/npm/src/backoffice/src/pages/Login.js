@@ -22,13 +22,10 @@ var Login = module.exports = {
                     return true;
                 })
                 .catch(err => {
-                    m.flashError(err.message ? Conf.tr(err.message) : Conf.tr('Service error. Please contact support'));
+                    console.error(err);
+                    m.flashError(Conf.tr('Login/password combination is invalid'));
                 })
         };
-
-        this.getLanguage = function () {
-
-        }
     },
 
     view: function (ctrl) {
@@ -36,7 +33,6 @@ var Login = module.exports = {
             <ul class="nav navbar-nav navbar-right pull-right hidden-xs lang-switcher">
                 <li class="dropdown">
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                        {/*<i class="fa fa-language fa-fw"></i>*/}
                         <img src={"/assets/img/flags/" + Conf.current_language + ".png"} alt=""/>
                         &nbsp; <i class="fa fa-caret-down"></i>
                     </a>
@@ -91,6 +87,9 @@ var Login = module.exports = {
                         </div>
                     </div>
                 </form>
+                <div class="m-t-10 text-center">
+                    <a href="/recovery" config={m.route}>{Conf.tr("Forgot your password?")}</a>
+                </div>
             </div>
             {m.component(Footer)}
         </div>

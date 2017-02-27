@@ -1,5 +1,6 @@
 var menuItems = require('../models/Menu-items');
 var Conf = require('../config/Config.js');
+var Auth = require('../models/Auth.js');
 
 module.exports = {
     controller: function () {
@@ -30,6 +31,13 @@ module.exports = {
                 <div id="sidebar-menu">
                     <ul>
                         {menuItems.map(function (item) {
+
+                            if (typeof item.walletonly != 'undefined' && item.walletonly) {
+                                if (!Auth.wallet()) {
+                                    return '';
+                                }
+                            }
+
                             return <li class={item.subItems ? 'has_sub' : ''}>
                                 {item.route ?
                                     <a href={item.route} config={m.route} class={ctrl.isSelected(item) ?

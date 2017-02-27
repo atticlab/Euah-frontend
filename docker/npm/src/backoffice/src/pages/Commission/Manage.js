@@ -2,13 +2,14 @@ var Conf     = require('../../config/Config.js'),
     Navbar   = require('../../components/Navbar.js'),
     Footer   = require('../../components/Footer.js'),
     Sidebar  = require('../../components/Sidebar.js'),
-    Helpers  = require('../../models/Helpers'),
+    Helpers  = require('../../components/Helpers'),
     Auth     = require('../../models/Auth');
 
 module.exports = {
     controller: function () {
         var ctrl = this;
-        if (!Auth.username()) {
+
+        if (!Auth.keypair()) {
             return m.route('/');
         }
 

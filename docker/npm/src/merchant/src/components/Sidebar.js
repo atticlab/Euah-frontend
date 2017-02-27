@@ -63,6 +63,13 @@ module.exports = {
                     </div>
                     <ul>
                         {menuItems.map(function (item) {
+
+                            if (typeof item.walletonly != 'undefined' && item.walletonly) {
+                                if (!Auth.wallet()) {
+                                    return '';
+                                }
+                            }
+
                             return <li class={item.subItems ? 'has_sub' : ''}>
                                 {item.route ?
                                     <a href={item.route} config={m.route} class={ctrl.isSelected(item) ?

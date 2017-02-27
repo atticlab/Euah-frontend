@@ -1,19 +1,24 @@
 var Localize = require('localize');
 var Locales = require('../locales/translations.js');
 var trim = require('lodash.trim');
+var smart_api = require('smart-api-js');
 
 var conf = {
     master_key:         trim(process.env.MASTER_KEY),
     horizon_host:       trim(process.env.HORIZON_HOST, '/'),
-    keyserver_host:     trim(process.env.KEYSERVER_HOST, '/'),
     api_url:            trim(process.env.API_HOST, '/'),
     emission_host:      trim(process.env.EMISSION_HOST, '/'),
-    
+    emission_path:       trim(process.env.EMISSION_PATH, '/'),
+
     roles: {
         admin   : 1,
         emission: 2
     }
 };
+
+conf.SmartApi = new smart_api({
+    host: process.env.API_HOST
+});
 
 conf.assets_url = 'assets';
 
@@ -44,8 +49,6 @@ conf.phone = {
 
 conf.horizon = new StellarSdk.Server(conf.horizon_host);
 
-conf.locales = Locales;
-
 conf.payments = {
     onpage: 10,
     onmain: 5
@@ -55,22 +58,28 @@ conf.pagination = {
     limit: 10
 };
 
+conf.locales = Locales;
+
 conf.loc = new Localize(conf.locales);
 conf.loc.throwOnMissingTranslation(false);
 conf.loc.userLanguage = (localStorage.getItem('locale')) ? (localStorage.getItem('locale')) :
     (navigator.language || navigator.userLanguage).toLowerCase().split('-')[0];
 conf.loc.setLocale(conf.loc.userLanguage);
 conf.current_language = conf.loc.userLanguage;
-
+conf.mnemonic = {langsList: ['eng', 'ukr']};
+conf.mnemonic.locale = (conf.loc.userLanguage == 'en') ? 'eng' : 'ukr';
 conf.loc.changeLocale = function (locale, e) {
     e.preventDefault();
     m.startComputation();
     conf.loc.setLocale(locale);
-    localStorage.setItem('locale', locale);
     conf.current_language = locale;
+    conf.mnemonic.locale = (locale == 'en') ? 'eng' : 'ukr';
+    localStorage.setItem('locale', locale);
     m.endComputation();
 };
+conf.tr = conf.loc.translate; //short alias for translation
 
+conf.mnemonic.totalWordsCount = 24;
 conf.tr = conf.loc.translate; //short alias for translation
 
 var errors = require('../errors/Errors');

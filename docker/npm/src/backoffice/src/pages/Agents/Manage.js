@@ -4,7 +4,7 @@ var Conf        = require('../../config/Config.js'),
     Sidebar     = require('../../components/Sidebar.js'),
     Limits      = require('../../components/Limits'),
     Restricts   = require('../../components/Restricts'),
-    Helpers     = require('../../models/Helpers'),
+    Helpers     = require('../../components/Helpers'),
     Auth        = require('../../models/Auth'),
     Pagination  = require('../../components/Pagination.js'),
     Session     = require('../../models/Session.js');
@@ -13,7 +13,7 @@ module.exports = {
     controller: function () {
         var ctrl = this;
 
-        if (!Auth.username()) {
+        if (!Auth.keypair()) {
             return m.route('/');
         }
 
@@ -22,13 +22,14 @@ module.exports = {
         this.page = (m.route.param('page')) ? m.prop(Number(m.route.param('page'))) : m.prop(1);
         this.limit = Conf.pagination.limit;
         this.offset = (ctrl.page() - 1) * ctrl.limit;
-        this.pagination_data = m.prop({func: "getAgentsList", page: ctrl.page()});
+        this.pagination_data = m.prop({module: "Agents", func: "getList", page: ctrl.page()});
 
         this.agents = m.prop([]);
 
         this.getAgents = function () {
             m.onLoadingStart();
-            return Auth.api().getAgentsList({limit: ctrl.limit, offset: ctrl.offset})
+            console.log({limit: ctrl.limit, offset: ctrl.offset});
+            return Conf.SmartApi.Agents.getList({limit: ctrl.limit, offset: ctrl.offset})
                 .then(function(agents){
                     if (typeof agents.data != 'undefined') {
                         m.startComputation();
@@ -38,10 +39,16 @@ module.exports = {
                     } else {
                         console.error('Unexpected response');
                         console.error(agents);
+                        return m.flashError(Conf.tr('Can not load agents list'));
                     }
                 })
                 .catch(function(error) {
                     console.error(error);
+                    if (error.name === 'ApiError') {
+                        return m.flashApiError(error);
+                    }
+
+                    return m.flashError(Conf.tr('Can not get agents list'));
                 })
                 .then(function() {
                     m.onLoadingEnd();

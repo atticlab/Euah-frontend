@@ -40,8 +40,7 @@ module.exports = {
             m.onLoadingStart();
             m.getPromptValue(Conf.tr("Enter password to save limits"))
                 .then(function (pwd) {
-                    return StellarWallet.getWallet({
-                        server  : Conf.keyserver_host + '/v2',
+                    return Conf.SmartApi.Wallets.get({
                         username: Auth.username(),
                         password: pwd
                     })

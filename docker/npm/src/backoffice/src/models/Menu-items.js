@@ -153,4 +153,11 @@ module.exports = [
             }
         ]
     },
+    {
+        name: 'Settings',
+        route: '/settings',
+        icon: 'fa fa-cogs',
+        walletonly: true,
+        subItems: null
+    },
 ];

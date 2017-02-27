@@ -10,7 +10,8 @@ var Conf    = require('../../config/Config.js'),
 module.exports = {
     controller: function () {
         var ctrl = this;
-        if (!Auth.username()) {
+
+        if (!Auth.keypair()) {
             return m.route('/');
         }
 
@@ -19,14 +20,14 @@ module.exports = {
         this.page = (m.route.param('page')) ? m.prop(Number(m.route.param('page'))) : m.prop(1);
         this.limit = Conf.pagination.limit;
         this.offset = (ctrl.page() - 1) * ctrl.limit;
-        this.pagination_data = m.prop({func: "getStoresList", page: ctrl.page()});
+        this.pagination_data = m.prop({module: "Merchants", func: "getStores", page: ctrl.page()});
 
         this.stores     = m.prop([]);
         this.store_id   = m.prop(false);
         this.secret_key = m.prop(false);
 
         m.onLoadingStart();
-        Auth.api().getStoresList({limit: ctrl.limit, offset: ctrl.offset})
+        Conf.SmartApi.Merchants.getStores({limit: ctrl.limit, offset: ctrl.offset})
             .then(function(stores){
                 if (typeof stores.data != 'undefined') {
                     m.startComputation();

@@ -18,20 +18,17 @@ module.exports = {
         this.order_data  = m.prop(false);
         this.qr          = m.prop(false);
 
-        this.api = new StellarWallet.Api(Conf.api_url, StellarSdk.Keypair.random());
+        Conf.SmartApi.setKeypair(Auth.keypair());
 
         m.onLoadingStart();
-        ctrl.api.getOrder({order_id: ctrl.order_id()})
+        Conf.SmartApi.Merchants.getOrder({order_id: ctrl.order_id()})
             .then(function(order){
-
                 if (!order || typeof order.data == 'undefined'){
                     return m.flashError(Conf.tr('Bad order data'));
                 }
-
                 if (order.data.status != Conf.statuses.STATUS_WAIT_PAYMENT){
                     return m.flashError(Conf.tr('Order has been already handled'));
                 }
-
                 // QR-CODE
                 var jsonData = {
                     account: order.data.store_data.merchant_id,
@@ -88,7 +85,7 @@ module.exports = {
                 transaction.memo.toString().length > Conf.payment_prefix.length
                 )
             {
-                var prefix   = transaction.memo.substr(0, Conf.payment_prefix.length);
+                var prefix = transaction.memo.substr(0, Conf.payment_prefix.length);
                 if (prefix != Conf.payment_prefix) {
                     return false;
                 }
@@ -110,9 +107,7 @@ module.exports = {
             }
 
             var wallet_data = null;
-
-            StellarWallet.getWallet({
-                server:   Conf.keyserver_host + '/v2',
+            return Conf.SmartApi.Wallets.get({
                 username: e.target.login.value,
                 password: e.target.password.value
             }).then(function (wallet) {
@@ -121,10 +116,13 @@ module.exports = {
                 return Auth.loadAccountById(StellarSdk.Keypair.fromSeed(wallet_data.getKeychainData()).accountId());
             }).then(function (account_data) {
                 if (
-                    account_data.type_i != StellarSdk.xdr.AccountType.accountRegisteredUser().value &&
-                    account_data.type_i != StellarSdk.xdr.AccountType.accountAnonymousUser().value
+                    !account_data ||
+                    typeof account_data.type_i == 'undefined' ||
+                    (
+                        account_data.type_i != StellarSdk.xdr.AccountType.accountRegisteredUser().value &&
+                        account_data.type_i != StellarSdk.xdr.AccountType.accountAnonymousUser().value
+                    )
                 ) {
-
                     return m.flashError(Conf.tr('Bad account type'));
                 }
 

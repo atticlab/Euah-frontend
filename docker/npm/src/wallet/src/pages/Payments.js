@@ -87,7 +87,7 @@ module.exports = {
             m.component(Navbar),
             <div class="wrapper">
                 <div class="container">
-                    <div class="panel panel-color panel-success">
+                    <div class="panel panel-color panel-primary">
                         <div class="panel-heading">
                             <h3 class="panel-title">{Conf.tr("Account transactions")}</h3>
                             <p class="panel-sub-title font-13">{Conf.tr("Overview of recent transactions")}.</p>
@@ -97,14 +97,15 @@ module.exports = {
                             {m.component(Payments, {payments: ctrl.payments()})}
                         </div>
 
-                        {(ctrl.next()) ?
-                            <div class="panel-footer text-center">
-                                <button class="btn btn-primary waves-effect w-md waves-light m-b-5"
-                                        onclick={ctrl.loadMorePayments.bind(ctrl)}>{Conf.tr("Show older")}
-                                </button>
-                            </div>
-                            :
-                            ''
+                        {
+                            ctrl.next() ?
+                                <div class="panel-footer text-center">
+                                    <button class="btn btn-primary waves-effect w-md waves-light m-b-5"
+                                            onclick={ctrl.loadMorePayments.bind(ctrl)}>{Conf.tr("Show older")}
+                                    </button>
+                                </div>
+                                :
+                                ''
                         }
                     </div>
                 </div>

@@ -26,4 +26,11 @@ module.exports = [
         icon: 'fa fa-list-ul',
         subItems: null
     },
+    {
+        name: 'Settings',
+        route: '/settings',
+        icon: 'fa fa-cogs',
+        walletonly: true,
+        subItems: null
+    },
 ];

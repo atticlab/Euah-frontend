@@ -8,7 +8,7 @@ module.exports = {
     controller: function () {
         var ctrl = this;
 
-        if (!Auth.username()) {
+        if (!Auth.keypair()) {
             return m.route('/');
         }
 
@@ -26,7 +26,7 @@ module.exports = {
             ctrl.cmp_phone('');
             ctrl.cmp_email('');
             m.endComputation();
-        }
+        };
 
         this.createCompany = function (e) {
             e.preventDefault();
@@ -47,17 +47,20 @@ module.exports = {
                 email   : ctrl.cmp_email()
             };
 
-            Auth.api().createCompany(form_data)
+            Conf.SmartApi.Companies.create(form_data)
                 .then(function(){
                     ctrl.clearForm();
                     m.flashSuccess(Conf.tr('Company created'));
                 })
                 .catch(function(error) {
-                    console.log(error);
-                    m.flashApiError(error);
-                });
+                    console.error(error);
+                    if (error.name === 'ApiError') {
+                        return m.flashApiError(error);
+                    }
 
-        }
+                    return m.flashError(Conf.tr("Can not create company"));
+                });
+        };
     },
 
     view: function (ctrl) {

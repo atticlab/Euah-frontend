@@ -1,11 +1,13 @@
 var Conf    = require('../config/Config.js'),
     Auth    = require('../models/Auth'),
-    Helpers = require('../models/Helpers');
+    Helpers = require('../components/Helpers'),
+    Operations = require('../components/Operations');
 
 module.exports = {
     controller: function(direction, inputs) {
         var ctrl = this;
-        if (!Auth.username()) {
+
+        if (!Auth.keypair()) {
             return m.route('/');
         }
 
@@ -259,7 +261,7 @@ module.exports = {
             var flat    = document.getElementById('flat').value;
             var percent = document.getElementById('percent').value;
 
-            return Helpers.saveCommissionOperation(opts, flat, percent).then(function(){
+            return Operations.saveCommissionOperation(opts, flat, percent).then(function(){
                 m.startComputation();
                 ctrl.flat_fee(flat);
                 ctrl.percent_fee(percent);
@@ -285,7 +287,7 @@ module.exports = {
             }
             opts.asset = new StellarSdk.Asset(document.getElementById('asset').value.toString(), Conf.master_key);
 
-            return Helpers.deleteCommissionOperation(opts).then(function(){
+            return Operations.deleteCommissionOperation(opts).then(function(){
                 ctrl.closeManageForm();
             })
 

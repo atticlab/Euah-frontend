@@ -6,7 +6,6 @@ var Auth = {
     setDefaults: function () {
         this.keypair    = m.prop(false);
         this.type       = m.prop(false);
-        this.api        = m.prop(false);
         this.enrollment = m.prop(false);
     },
 
@@ -14,9 +13,9 @@ var Auth = {
 
         Auth.type('user');
         Auth.keypair(StellarSdk.Keypair.random());
-        Auth.api(new StellarWallet.Api(Conf.api_url, Auth.keypair()));
+        Conf.SmartApi.setKeypair(Auth.keypair());
 
-        return Auth.api().getUserEnrollment({token: token})
+        return Conf.SmartApi.Enrollments.getForUser({token: token})
             .then(function (enrollment) {
                 if (typeof enrollment.data != 'undefined') {
                     Auth.enrollment(enrollment.data);
@@ -26,9 +25,13 @@ var Auth = {
                     return m.flashError(Conf.tr('Service error'));
                 }
             })
-            .catch(err => {
-                console.error(err);
-                return m.flashApiError(err);
+            .catch(error => {
+                console.error(error);
+                if (error.name === 'ApiError') {
+                    return m.flashApiError(error);
+                }
+
+                return m.flashError(Conf.tr("Can not get enrollment"));
             })
     },
 
@@ -36,9 +39,9 @@ var Auth = {
 
         Auth.type('agent');
         Auth.keypair(StellarSdk.Keypair.random());
-        Auth.api(new StellarWallet.Api(Conf.api_url, Auth.keypair()));
+        Conf.SmartApi.setKeypair(Auth.keypair());
 
-        return Auth.api().getAgentEnrollment({company_code: company_code, token: token})
+        return Conf.SmartApi.Enrollments.getForAgent({company_code: company_code, token: token})
             .then(function (enrollment) {
                 if (typeof enrollment.data != 'undefined') {
                     Auth.enrollment(enrollment.data);
@@ -48,9 +51,13 @@ var Auth = {
                     return m.flashError(Conf.tr('Service error'));
                 }
             })
-            .catch(err => {
-                console.error(err);
-                return m.flashApiError(err);
+            .catch(error => {
+                console.error(error);
+                if (error.name === 'ApiError') {
+                    return m.flashApiError(error);
+                }
+
+                return m.flashError(Conf.tr("Can not get enrollment"));
             })
     },
 

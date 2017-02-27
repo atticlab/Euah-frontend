@@ -2,14 +2,14 @@ var Conf = require('../../config/Config.js'),
     Navbar = require('../../components/Navbar.js'),
     Footer = require('../../components/Footer.js'),
     Sidebar = require('../../components/Sidebar.js'),
-    Helpers   = require('../../models/Helpers'),
-    Auth      = require('../../models/Auth');
+    Operations = require('../../components/Operations'),
+    Auth = require('../../models/Auth');
 
 module.exports = {
     controller: function () {
         var ctrl = this;
 
-        if (!Auth.username()) {
+        if (!Auth.keypair()) {
             return m.route('/');
         }
 
@@ -17,30 +17,34 @@ module.exports = {
 
         this.getEmissionKeys = function () {
             m.onLoadingStart();
-            Helpers.getEmissionKeysList()
-                .then(function(emm_keys) {
+            Operations.getEmissionKeysList()
+                .then(function (emm_keys) {
                     m.startComputation();
                     ctrl.emissions(emm_keys);
                     m.endComputation();
-                }).catch(function(err){
+                }).catch(function (err) {
                 console.error(err);
                 m.flashError(Conf.tr('Can not get emission keys list'));
-            }).then(function(){
+            }).then(function () {
                 m.onLoadingEnd();
             });
         };
 
-        this.deleteEmissionKey = function(account_id, e) {
-            Helpers.deleteMasterSigner(account_id)
-                .then(function(){
+        this.deleteEmissionKey = function (account_id, e) {
+            Operations.deleteMasterSigner(account_id)
+                .then(function () {
                     m.route(m.route())
                 })
-                .then(function(){
+                .then(function () {
                     return swal(Conf.tr("Deleted") + "!",
                         Conf.tr("Emission key successfully deleted"),
                         "success"
                     );
                 })
+                .catch(function (e) {
+                    m.flashError(Conf.tr("Cannot delete signer"));
+                    console.log(e);
+                });
         };
 
         this.getEmissionKeys();
@@ -78,7 +82,8 @@ module.exports = {
                                                     <span title={em_key}>{em_key}</span>
                                                 </td>
                                                 <td>
-                                                    <button type="submit" onclick={ctrl.deleteEmissionKey.bind(ctrl, em_key)}
+                                                    <button type="submit"
+                                                            onclick={ctrl.deleteEmissionKey.bind(ctrl, em_key)}
                                                             class="btn btn-danger btn-xs waves-effect waves-light">{Conf.tr('Delete')}</button>
                                                 </td>
                                             </tr>
@@ -104,7 +109,8 @@ module.exports = {
                                 </div>
                                 <div id="bg-warning" class="panel-collapse collapse in">
                                     <div class="portlet-body">
-                                        {Conf.tr('Please')}<a href='/emission/generate' config={m.route}> {Conf.tr("create")}</a>!
+                                        {Conf.tr('Please')}<a href='/emission/generate'
+                                                              config={m.route}> {Conf.tr("create")}</a>!
                                     </div>
                                 </div>
                             </div>

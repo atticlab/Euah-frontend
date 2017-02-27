@@ -15,12 +15,21 @@ m.flashError = function (msg) {
 };
 m.flashApiError = function (err) {
     if (err && typeof err.message != 'undefined' && err.message == 'Invalid signature') {
-        window.location.href = '/';
-        return;
+        return window.location.href = '/';
     }
     m.onLoadingEnd();
-    var msg = err.message ? Conf.tr(err.message) + (err.description ? ': ' + Conf.tr(err.description) : '') : Conf.tr('Unknown error. Contact support');
-    $.Notification.notify('error', 'top center', Conf.tr("Error"), msg);
+    if (!err.message) {
+        console.error('Unexpected ApiError response');
+        console.error(err);
+
+        return $.Notification.notify('error', 'top center', Conf.tr("Error"), Conf.tr('Service error'));
+    }
+    switch (err.message) {
+        case 'ERR_NOT_FOUND':
+            return $.Notification.notify('error', 'top center', Conf.tr("Error"), Conf.tr("Record not found") + ': ' + Conf.tr(err.description));
+        default:
+            return $.Notification.notify('error', 'top center', Conf.tr("Error"), Conf.tr('Service error'));
+    }
 };
 m.flashSuccess = function (msg) {
     m.onLoadingEnd();
@@ -44,7 +53,6 @@ m.route.mode = 'pathname';
 m.route(document.getElementById('app'), "/", {
     "/": require('./pages/AgentLogin.js'),
     "/u": require('./pages/UserLogin.js'),
-    "/logout": require('./pages/Logout.js'),
     "/agent": require('./pages/Agent.js'),
     "/user": require('./pages/User.js')
 });

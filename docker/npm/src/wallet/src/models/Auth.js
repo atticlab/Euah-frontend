@@ -1,5 +1,6 @@
 var Conf = require('../config/Config.js');
 var Errors = require('../errors/Errors.js');
+var Helpers = require('../components/Helpers');
 
 var Auth = {
     setDefaults: function () {
@@ -10,9 +11,21 @@ var Auth = {
         this.assets = m.prop([]);
         this.payments = m.prop([]);
         this.wallet = m.prop(false);
-        this.api = m.prop(false);
         this.ttl = m.prop(0);
-        this.time_live = m.prop(0);
+    },
+
+    destroySession: function () {
+        Auth.keypair(false);
+        Auth.type(false);
+        Auth.username(false);
+        Auth.balances([]);
+        Auth.assets([]);
+        Auth.payments([]);
+        Auth.wallet(false);
+        Auth.ttl(0);
+        Conf.SmartApi.Api.removeAllListeners();
+
+        return m.route('/');
     },
 
     updateBalances: function (account_id) {
@@ -25,9 +38,7 @@ var Auth = {
             .then(assets_list => {
                 Object.keys(assets_list).map(function (index) {
                     if (assets_list[index].asset_type != 'native') {
-                        assets.push({
-                            asset: assets_list[index].asset_code
-                        });
+                        assets.push(assets_list[index].asset_code);
                     }
                 });
 
@@ -43,9 +54,7 @@ var Auth = {
                             balance: response[index].balance,
                             asset: response[index].asset_code
                         });
-                        assets.push({
-                            asset: response[index].asset_code
-                        });
+                        assets.push(response[index].asset_code);
                     }
                 });
 
@@ -60,11 +69,11 @@ var Auth = {
 
                 //only unique values
                 var flags = {};
-                assets = assets.filter(function (item) {
-                    if (flags[item.asset]) {
+                assets = assets.filter(function (asset) {
+                    if (flags[asset]) {
                         return false;
                     }
-                    flags[item.asset] = true;
+                    flags[asset] = true;
                     return true;
                 });
 
@@ -86,14 +95,14 @@ var Auth = {
         return this.loadAccountById(Conf.master_key)
             .then(function (master_data) {
                 master = master_data;
-                return StellarWallet.getWallet({
-                    server: Conf.keyserver_host + '/v2',
-                    username: login,
-                    password: password
-                });
+                return Conf.SmartApi.Wallets.get({
+                        username: login,
+                        password: password,
+                    });
             })
             .then(function (wallet_data) {
                 wallet = wallet_data;
+                console.log(wallet.getKeychainData());
                 return Auth.loadAccountById(StellarSdk.Keypair.fromSeed(wallet.getKeychainData()).accountId());
             })
             .then(function (account_data) {
@@ -107,8 +116,7 @@ var Auth = {
                     }
                 }
             })
-            .catch(function (error) {
-                console.error(error);
+            .catch(function () {
                 authable = true;
                 //look like not created anonym user login, but it also can be admin
                 if (typeof master.signers != 'undefined') {
@@ -131,15 +139,20 @@ var Auth = {
                 Auth.wallet(wallet);
                 Auth.keypair(StellarSdk.Keypair.fromSeed(wallet.getKeychainData()));
                 Auth.username(wallet.username);
-                Auth.api(new StellarWallet.Api(Conf.api_host, Auth.keypair()));
-
-                Auth.api().initNonce()
-                    .then(function (ttl) {
-                        Auth.ttl(ttl);
-                        Auth.time_live(Number(ttl));
+                Conf.SmartApi.setKeypair(Auth.keypair());
+                return Conf.SmartApi.Api.getNonce()
+                    .then(() => {
+                        m.endComputation();
+                        Conf.SmartApi.Api.on('tick', function (ttl) {
+                            Auth.ttl(ttl);
+                            if (Auth.ttl() <= 0) {
+                                return Auth.destroySession();
+                            }
+                            if (document.querySelector("#spinner-time")) {
+                                document.querySelector('#spinner-time').innerHTML = Helpers.getTimeFromSeconds(Auth.ttl());
+                            }
+                        });
                     });
-
-                m.endComputation();
             });
     },
 
@@ -157,32 +170,78 @@ var Auth = {
                 }
             }
             if (seed === null) {
-                throw new Error(Conf.tr("Invalid mnemonic phrase"));
+                return reject(Conf.tr("Invalid mnemonic phrase"));
             }
-            Auth.keypair(StellarSdk.Keypair.fromSeed(seed));
-            Auth.api(new StellarWallet.Api(Conf.api_host, Auth.keypair()));
-            Auth.username(null);
-            m.endComputation();
-            return resolve();
+
+            var master = null;
+            var authable = false;
+
+            return Auth.loadAccountById(Conf.master_key)
+                .then(function (master_data) {
+                    master = master_data;
+                    return Auth.loadAccountById(StellarSdk.Keypair.fromSeed(seed).accountId());
+                })
+                .then(function (account_data) {
+                    var allow_types = [
+                        StellarSdk.xdr.AccountType.accountAnonymousUser().value,
+                        StellarSdk.xdr.AccountType.accountRegisteredUser().value
+                    ];
+                    if (account_data && typeof account_data.type_i != 'undefined') {
+                        if (allow_types.indexOf(account_data.type_i) != -1) {
+                            authable = true;
+                        }
+                    }
+                })
+                .catch(function (error) {
+                    authable = true;
+                    //look like not created anonym user login, but it also can be admin
+                    if (typeof master.signers != 'undefined') {
+                        master.signers.forEach(function (signer) {
+                            if (signer.weight == StellarSdk.xdr.SignerType.signerAdmin().value &&
+                                signer.public_key == StellarSdk.Keypair.fromSeed(seed).accountId()) {
+                                //its admin
+                                authable = false;
+                            }
+                        });
+                    }
+                })
+                .then(function () {
+                    if (!authable) {
+                        return reject(Conf.tr("Invalid mnemonic phrase"));
+                    }
+                })
+                .then(function() {
+                    Auth.keypair(StellarSdk.Keypair.fromSeed(seed));
+                    Auth.username(null);
+                    Conf.SmartApi.setKeypair(Auth.keypair());
+                    return Conf.SmartApi.Api.getNonce()
+                        .then(() => {
+                            m.endComputation();
+                            Conf.SmartApi.Api.on('tick', function (ttl) {
+                                Auth.ttl(ttl);
+                                if (Auth.ttl() <= 0) {
+                                    return Auth.destroySession();
+                                }
+                                if (document.querySelector("#spinner-time")) {
+                                    document.querySelector('#spinner-time').innerHTML = Helpers.getTimeFromSeconds(Auth.ttl());
+                                }
+                            });
+                        });
+                })
+                .then(() => {
+                    return resolve();
+                })
         });
     },
 
     registration: function (accountKeypair, login, password) {
-        return StellarWallet.createWallet({
-            server: Conf.keyserver_host + '/v2',
+        return Conf.SmartApi.Wallets.create({
             username: login,
             password: password,
             accountId: accountKeypair.accountId(),
             publicKey: accountKeypair.rawPublicKey().toString('base64'),
             keychainData: accountKeypair.seed(),
-            mainData: 'mainData',
-            kdfParams: {
-                algorithm: 'scrypt',
-                bits: 256,
-                n: Math.pow(2, 3),
-                r: 8,
-                p: 1
-            }
+            mainData: 'mainData'
         });
     },
 
@@ -191,12 +250,11 @@ var Auth = {
     },
 
     updatePassword: function (old_pwd, new_pwd) {
-        return StellarWallet.getWallet({
-            server: Conf.keyserver_host + '/v2',
+        return Conf.SmartApi.Wallets.get({
             username: Auth.username(),
             password: old_pwd
         }).then(function (wallet) {
-            return wallet.changePassword({
+            return wallet.updatePassword({
                 newPassword: new_pwd,
                 secretKey: Auth.keypair()._secretKey.toString('base64')
             });

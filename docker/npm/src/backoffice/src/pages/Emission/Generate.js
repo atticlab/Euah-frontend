@@ -2,18 +2,18 @@ var Conf       = require('../../config/Config.js'),
     Navbar     = require('../../components/Navbar.js'),
     Footer     = require('../../components/Footer.js'),
     Auth       = require('../../models/Auth'),
-    Helpers   = require('../../models/Helpers'),
+    Helpers   = require('../../components/Helpers'),
     Sidebar    = require('../../components/Sidebar.js');
 
 module.exports = {
     controller: function () {
         var ctrl = this;
 
-        if (!Auth.username()) {
+        if (!Auth.keypair()) {
             return m.route('/');
         }
 
-        this.encrypted_key = m.prop(false);
+        this.em_mnemonic = m.prop(false);
 
         this.parseFile = function (result) {
             return new Promise(function(resolve, reject) {
@@ -139,14 +139,24 @@ module.exports = {
                         if (found.weight !== Conf.roles.emission) {
                             return m.flashError(Conf.tr("Operation completed, but account $[1] is not emission key", data.account));
                         }
-                        return data.seed;
+
+                        return m.getPromptValue(Conf.tr('Enter password'))
+                    })
+                    .then(function (password) {
+                        try {
+                            var seed = sjcl.decrypt(password, atob(data.seed));
+                        } catch (err) {
+                            m.flashError(Conf.tr("Bad password"));
+                            throw new Error(Conf.tr('Bad password'));
+                        }
+                        return seed;
                     })
                     .then((seed) => {
                         m.flashSuccess(Conf.tr("Emission key was generated"));
                         m.onLoadingEnd();
                         $(e.target).trigger('reset');
                         m.startComputation();
-                        ctrl.encrypted_key(seed);
+                        ctrl.em_mnemonic(StellarSdk.getMnemonicFromSeed(seed));
                         m.endComputation();
                     })
                     .catch(function (err) {
@@ -173,7 +183,7 @@ module.exports = {
                                 <h3 class="panel-title">{Conf.tr('Generate Emission Keys')}</h3>
                             </div>
                             <div class="panel-body">
-                                {!ctrl.encrypted_key() ?
+                                {!ctrl.em_mnemonic() ?
                                     <div class="buttons" id="emission_buttons">
                                         <button class="btn btn-default" onclick={ctrl.generateTx.bind(ctrl)}
                                                 id="generate_tx">{Conf.tr('Generate Emission Key')}</button>
@@ -185,8 +195,8 @@ module.exports = {
                                     </div>
                                 :
                                     <div id="emission_form">
-                                        <h4>{Conf.tr('Please insert encrypted key to Emission Daemon. Do not forget password!! Remember - password is NOT recoverable')}</h4>
-                                        <kbd id="emission_encrypted_key" style="word-break: break-word; display: block;">{ctrl.encrypted_key()}</kbd>
+                                        <h4>{Conf.tr('Please remember mnemonic phrase of emission key. Do not forget password!! Remember - password is NOT recoverable')}</h4>
+                                        <kbd id="emission_encrypted_key" style="word-break: break-word; display: block;">{ctrl.em_mnemonic()}</kbd>
                                     </div>
                                 }
                             </div>

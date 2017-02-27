@@ -10,7 +10,7 @@ module.exports = {
     controller: function () {
         var ctrl = this;
 
-        if (!Auth.username()) {
+        if (!Auth.keypair()) {
             return m.route('/');
         }
 
@@ -61,9 +61,15 @@ module.exports = {
                     var cnt_ems = 0;
                     Object.keys(signers).forEach(function(key) {
                         var signer = signers[key];
-                        if (signer.weight == StellarSdk.xdr.SignerType.signerAdmin().value && signer.signertype) {
+                        if (
+                            signer.weight == Conf.roles.admin &&
+                            signer.signertype == StellarSdk.xdr.SignerType.signerAdmin().value
+                        ) {
                             cnt_adm++;
-                        } else if (signer.weight == StellarSdk.xdr.SignerType.signerEmission().value && signer.signertype) {
+                        } else if (
+                            signer.weight == Conf.roles.emission &&
+                            signer.signertype == StellarSdk.xdr.SignerType.signerEmission().value
+                        ) {
                             cnt_ems++;
                         }
                     });

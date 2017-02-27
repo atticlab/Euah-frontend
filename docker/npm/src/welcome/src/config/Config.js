@@ -1,12 +1,16 @@
 var Localize = require('localize');
 var Locales = require('../locales/translations.js');
+var smart_api = require('smart-api-js');
 
 var conf = {
     master_key:         process.env.MASTER_KEY,
-    wallet_host:        process.env.KEYSERVER_HOST,
     horizon_host:       process.env.HORIZON_HOST,
     api_url:            process.env.API_HOST
 };
+
+conf.SmartApi = new smart_api({
+    host: process.env.API_HOST
+});
 
 conf.horizon = new StellarSdk.Server(conf.horizon_host);
 

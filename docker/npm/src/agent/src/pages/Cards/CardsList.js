@@ -18,14 +18,14 @@ module.exports = {
         this.page = (m.route.param('page')) ? m.prop(Number(m.route.param('page'))) : m.prop(1);
         this.limit = Conf.pagination.limit;
         this.offset = (ctrl.page() - 1) * ctrl.limit;
-        this.pagination_data = m.prop({func: "getCardsList", page: ctrl.page()});
+        this.pagination_data = m.prop({module: "Cards", func: "getList", page: ctrl.page()});
 
         this.cardsList = m.prop([]);
 
         this.getCardsList = function () {
             m.onLoadingStart();
 
-            return Auth.api().getCardsList({limit: ctrl.limit, offset: ctrl.offset})
+            return Conf.SmartApi.Cards.getList({limit: ctrl.limit, offset: ctrl.offset})
                 .then(cards => {
                     if (typeof cards.data != 'undefined') {
                         m.startComputation();
@@ -39,7 +39,11 @@ module.exports = {
                 })
                 .catch(error => {
                     console.error(error);
-                    return m.flashApiError(error);
+                    if (error.name === 'ApiError') {
+                        return m.flashApiError(error);
+                    }
+
+                    return m.flashError(Conf.tr("Can not get cards"));
                 })
                 .then(() => {
                     m.onLoadingEnd();
@@ -51,7 +55,7 @@ module.exports = {
         this.getCard = function (card, e) {
             e.preventDefault();
             m.onLoadingStart();
-            return ctrl.generateQRCode(Auth.wallet().getKeychainData(), card.seed)
+            return ctrl.generateQRCode(Auth.keypair().seed(), card.seed)
                 .then(qrcode => {
                     m.startComputation();
                     Session.modal(
