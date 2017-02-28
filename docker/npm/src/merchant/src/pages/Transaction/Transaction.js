@@ -18,7 +18,7 @@ module.exports = {
         this.order_data  = m.prop(false);
         this.qr          = m.prop(false);
 
-        Conf.SmartApi.setKeypair(Auth.keypair());
+        Conf.SmartApi.setKeypair(StellarSdk.Keypair.random());
 
         m.onLoadingStart();
         Conf.SmartApi.Merchants.getOrder({order_id: ctrl.order_id()})
