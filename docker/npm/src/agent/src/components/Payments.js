@@ -8,22 +8,15 @@ module.exports = {
 
     view: function (ctrl, data) {
         return !data || !data.payments.length ?
-                <p class="text-primary">{Conf.tr("No payments yet")}</p>
+            <p class="text-primary">{Conf.tr("No payments yet")}</p>
             :
             <div>
                 <div class="visible-xs">
-                    {data.payments.map(function (payment, index) {
-                        var trans_link = payment._links.transaction.href;
-                        var trans_id = trans_link.substr(trans_link.lastIndexOf('/') + 1);
-                        var accountId = payment.to == Auth.keypair().accountId() ? payment.from : payment.to
-                        //The reason for send an amount and asset code instead of payment id is that there is
-                        //no method in SDK to get payment by id.
-                        var trans_url = '/transaction/' + trans_id + '/' + accountId + '/' + payment.amount + '/' + payment.asset_code;
+                    {data.payments.map(function (payment) {
                         return <div class="payment">
-                            <a class="account_overflow" href={trans_url} config={m.route}
-                               title={accountId}>
+                            <span class="account_overflow" title={accountId}>
                                 {accountId}
-                            </a>
+                            </span>
                             <div class="row">
                                 <div class="col-xs-7">
                                     <p class="text-muted">{DateFormat(payment.closed_at, 'dd.mm.yyyy HH:MM:ss')}</p>
@@ -62,17 +55,11 @@ module.exports = {
                         </thead>
                         <tbody>
                         {data.payments.map(function (payment) {
-                            var trans_link = payment._links.transaction.href;
-                            var trans_id = trans_link.substr(trans_link.lastIndexOf('/') + 1);
-                            var accountId = payment.to == Auth.keypair().accountId() ? payment.from : payment.to
-                            //The reason for send an amount and asset code instead of payment id is that there is
-                            //no method in SDK to get payment by id.
-                            var trans_url = '/transaction/' + trans_id + '/' + accountId + '/' + payment.amount + '/' + payment.asset_code;
                             return <tr>
                                 <td class="account-td">
-                                    <a class="account_overflow" href={trans_url} config={m.route}>
+                                    <span class="account_overflow">
                                         {accountId}
-                                    </a>
+                                    </span>
                                 </td>
                                 <td>{DateFormat(payment.closed_at, 'dd.mm.yyyy HH:MM:ss')}</td>
                                 <td>{parseFloat(payment.amount).toFixed(2)} {payment.asset_code}</td>
