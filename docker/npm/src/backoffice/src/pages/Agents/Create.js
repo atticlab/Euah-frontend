@@ -58,7 +58,6 @@ module.exports = {
 
         this.getCompanies().then(ctrl.getAssets());
 
-
         this.createAgent = function (e) {
             e.preventDefault();
 

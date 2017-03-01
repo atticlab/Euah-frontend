@@ -6,7 +6,7 @@ var Login = module.exports = {
         var ctrl = this;
 
         if (Auth.keypair()) {
-            return m.route('/cards');
+            return m.route('/payments');
         }
 
         this.login = function (e) {
@@ -16,7 +16,7 @@ var Login = module.exports = {
             Auth.login(e.target.login.value, e.target.password.value)
                 .then(function () {
                     m.onLoadingEnd();
-                    m.route('/cards');
+                    m.route('/payments');
                 })
                 .catch(err => {
                     console.log(err);

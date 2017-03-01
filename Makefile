@@ -35,7 +35,7 @@ build:
 	docker-compose build
 	docker-compose up -d
 
-dev:
+envjs:
 	@if [ ! -f ./env.js ]; then\
 	  	echo "var Env = {" >> ./env.js; \
 		./scripts/generate_js_env.sh \
@@ -43,8 +43,6 @@ dev:
 	  	echo "};" >> ./env.js; \
   		echo "module.exports = Env;" >> ./env.js; \
 	fi
-	docker-compose build
-	docker-compose up -d
 
 attach:
 	docker exec -i -t ${c} /bin/bash

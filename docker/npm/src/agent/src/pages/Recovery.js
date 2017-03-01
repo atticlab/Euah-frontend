@@ -7,7 +7,7 @@ var Recovery = module.exports = {
         this.wordNum = m.prop(1);
 
         if (Auth.keypair()) {
-            return m.route('/cards');
+            return m.route('/payments');
         }
 
         this.login = function (e) {
@@ -18,7 +18,7 @@ var Recovery = module.exports = {
                 Auth.mnemonicLogin(e.target.mnemonic.value)
                     .then(function () {
                         m.onLoadingEnd();
-                        m.route('/cards');
+                        m.route('/payments');
                     })
                     .catch(err => {
                         console.error(err);

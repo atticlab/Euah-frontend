@@ -1,5 +1,6 @@
 var Conf = require('../config/Config.js');
 var Errors = require('../errors/Errors.js');
+var Session = require('../models/Session.js');
 var Helpers = require('../components/Helpers');
 
 var Auth = {
@@ -23,7 +24,13 @@ var Auth = {
         Auth.payments([]);
         Auth.wallet(false);
         Auth.ttl(0);
+
+        //clear events
         Conf.SmartApi.Api.removeAllListeners();
+
+        //close modals
+        Session.closeModal();
+        jCloseAll();
 
         return m.route('/');
     },

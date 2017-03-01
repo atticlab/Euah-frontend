@@ -1,10 +1,12 @@
 var Conf = require('../config/Config.js'),
     Errors = require('../errors/Errors.js'),
+    Session = require('../models/Session.js'),
     Helpers = require('../components/Helpers');
 
 var Auth = {
 
     keypair:    m.prop(false),
+    type:       m.prop(false),
     assets:     m.prop([]),
     balances:   m.prop([]),
     wallet:     m.prop(false),
@@ -14,12 +16,19 @@ var Auth = {
     destroySession: function () {
 
         Auth.keypair(false);
+        Auth.type(false);
         Auth.assets([]);
         Auth.balances([]);
         Auth.wallet(false);
         Auth.username(false);
         Auth.ttl(0);
+
+        //clear events
         Conf.SmartApi.Api.removeAllListeners();
+
+        //close modals
+        Session.closeModal();
+        jCloseAll();
 
         return m.route('/');
     },
@@ -92,48 +101,57 @@ var Auth = {
 
                 return Auth.loadAccountById(StellarSdk.Keypair.fromSeed(wallet_data.getKeychainData()).accountId());
             }).then(function (account_data) {
-                if (account_data.type_i != StellarSdk.xdr.AccountType.accountDistributionAgent().value) {
-                    return m.flashError(Conf.tr('Bad account type'));
-                } else {
-                    m.startComputation();
-                    Auth.wallet(wallet_data);
-                    Auth.keypair(StellarSdk.Keypair.fromSeed(wallet_data.getKeychainData()));
-                    Auth.username(wallet_data.username);
-                    Conf.SmartApi.setKeypair(Auth.keypair());
-                    Conf.SmartApi.Api.getNonce()
-                        .then(() => {
-                            return Auth.initAgentAssets();
-                        })
-                        .then(() => {
-                            return Auth.initAgentBalances();
-                        })
-                        .then(() => {
-                            m.endComputation();
-                            Conf.SmartApi.Api.on('tick', function (ttl) {
-                                Auth.ttl(ttl);
-                                if (Auth.ttl() <= 0) {
-                                    return Auth.destroySession();
-                                }
-                                if (document.querySelector("#spinner-time")) {
-                                    document.querySelector('#spinner-time').innerHTML = Helpers.getTimeFromSeconds(Auth.ttl());
-                                }
-                            });
-                        });
 
-                    //set stream for balances update
-                    Conf.horizon.payments()
-                        .forAccount(Auth.keypair().accountId())
-                        .cursor('now')
-                        .stream({
-                            onmessage: function (message) {
-                                // Update user balance
-                                return Auth.initAgentBalances();
-                            },
-                            onerror: function () {
-                                console.log('Cannot get payment from stream');
+                m.startComputation();
+                switch (account_data.type_i) {
+                    case StellarSdk.xdr.AccountType.accountDistributionAgent().value:
+                        Auth.type('distribution');
+                        break;
+                    case StellarSdk.xdr.AccountType.accountSettlementAgent().value:
+                        Auth.type('settlement');
+                        break;
+                    default:
+                        m.endComputation();
+                        return m.flashError(Conf.tr('Bad account type'));
+                }
+
+                Auth.wallet(wallet_data);
+                Auth.keypair(StellarSdk.Keypair.fromSeed(wallet_data.getKeychainData()));
+                Auth.username(wallet_data.username);
+                Conf.SmartApi.setKeypair(Auth.keypair());
+                Conf.SmartApi.Api.getNonce()
+                    .then(() => {
+                        return Auth.initAgentAssets();
+                    })
+                    .then(() => {
+                        return Auth.initAgentBalances();
+                    })
+                    .then(() => {
+                        m.endComputation();
+                        Conf.SmartApi.Api.on('tick', function (ttl) {
+                            Auth.ttl(ttl);
+                            if (Auth.ttl() <= 0) {
+                                return Auth.destroySession();
+                            }
+                            if (document.querySelector("#spinner-time")) {
+                                document.querySelector('#spinner-time').innerHTML = Helpers.getTimeFromSeconds(Auth.ttl());
                             }
                         });
-                }
+                    });
+
+                //set stream for balances update
+                Conf.horizon.payments()
+                    .forAccount(Auth.keypair().accountId())
+                    .cursor('now')
+                    .stream({
+                        onmessage: function (message) {
+                            // Update user balance
+                            return Auth.initAgentBalances();
+                        },
+                        onerror: function () {
+                            console.log('Cannot get payment from stream');
+                        }
+                    });
             })
     },
 
@@ -158,13 +176,15 @@ var Auth = {
 
             return Auth.loadAccountById(StellarSdk.Keypair.fromSeed(seed).accountId())
                 .then(function (account_data) {
-                    var allow_types = [
-                        StellarSdk.xdr.AccountType.accountDistributionAgent().value,
-                    ];
-                    if (account_data && typeof account_data.type_i != 'undefined') {
-                        if (allow_types.indexOf(account_data.type_i) != -1) {
+                    switch (account_data.type_i) {
+                        case StellarSdk.xdr.AccountType.accountDistributionAgent().value:
+                            Auth.type('distribution');
                             authable = true;
-                        }
+                            break;
+                        case StellarSdk.xdr.AccountType.accountSettlementAgent().value:
+                            Auth.type('settlement');
+                            authable = true;
+                            break;
                     }
                 })
                 .then(function () {

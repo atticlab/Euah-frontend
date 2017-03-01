@@ -68,10 +68,10 @@ module.exports = [
                 name: 'For accounts',
                 route: '/commissions/accounts'
             },
-            // {
-            //     name: 'Fee account',
-            //     route: '/commissions/manage'
-            // }
+            {
+                name: 'Fee account',
+                route: '/commissions/manage'
+            }
         ]
     },
     {

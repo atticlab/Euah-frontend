@@ -24,9 +24,7 @@ module.exports = {
 
         this.reg_users = m.prop([]);
 
-        this.name        = m.prop(false);
-        this.surname     = m.prop(false);
-        this.middle_name = m.prop(false);
+        this.balances = m.prop([]);
 
         this.getRegisteredUsers = function () {
             m.onLoadingStart();
@@ -55,26 +53,123 @@ module.exports = {
                 });
         };
 
-        this.decommission = function (data, e) {
+        this.destroyAccount = function (reg_user, e) {
 
-            return Conf.horizon.loadAccount(data.account_id)
-                .then(function (source) {
-                    var tx = new StellarSdk.TransactionBuilder(source)
-                        .addOperation(StellarSdk.Operation.accountMerge({
-                            destination: Conf.master_key
-                        }))
-                        .build();
+            if (!reg_user || !reg_user.account_id) {
+                return m.flashError(Conf.tr("Invalid registered user data"));
+            }
 
-                    tx.sign(Auth.keypair());
+            if (!StellarSdk.Keypair.isValidPublicKey(reg_user.account_id)) {
+                return m.flashError(Conf.tr("Account is invalid"));
+            }
 
-                    return Conf.horizon.submitTransaction(tx);
+            swal({
+                title: Conf.tr("Destroy registered user") + '?',
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: Conf.tr("Yes, delete it"),
+            })
+                .then(function() {
+                    m.onLoadingStart();
+                    return Conf.horizon.loadAccount(reg_user.account_id)
+                        .then(function (source) {
+                            var tx = new StellarSdk.TransactionBuilder(source)
+                                .addOperation(StellarSdk.Operation.accountMerge({
+                                    destination: Conf.master_key
+                                }))
+                                .build();
+
+                            tx.sign(Auth.keypair());
+
+                            return Conf.horizon.submitTransaction(tx);
+                        })
+                        .then(function(){
+                            return swal(Conf.tr("Destroyed") + "!",
+                                Conf.tr("Registered user destroyed"),
+                                "success"
+                            );
+                        })
+                        .catch(function (err) {
+                            console.log(err);
+                            m.flashError(Conf.tr("Cannot destroy account"));
+                        })
+                });
+        };
+
+        this.showUserData = function (reg_user, e) {
+
+            m.onLoadingStart();
+
+            if (!reg_user || !reg_user.account_id) {
+                return m.flashError(Conf.tr("Invalid registered user data"));
+            }
+
+            if (!StellarSdk.Keypair.isValidPublicKey(reg_user.account_id)) {
+                return m.flashError(Conf.tr("Account is invalid"));
+            }
+
+            Auth.loadAccountById(reg_user.account_id)
+                .then(function (account_data) {
+                    m.startComputation();
+                    ctrl.balances([]);
+                    account_data.balances.map(function(balance) {
+                        if (typeof balance.asset_code != 'undefined') {
+                            ctrl.balances().push(balance);
+                        }
+                    });
+                    m.endComputation();
                 })
-                .then(function () {
-                    m.flashSuccess(Conf.tr("Decommission successful"));
-                })
-                .catch(function (err) {
-                    console.log(err);
-                    m.flashError(Conf.tr("Cannot make transfer"));
+                .then(() => {
+                    m.startComputation();
+                    m.onLoadingEnd();
+                    Session.modal(
+                        <div>
+                            {
+                                ctrl.balances().length ?
+                                    <div class="alert alert-success">
+                                        {
+                                            ctrl.balances().map(function (balance) {
+                                                return <p>{balance.asset_code}: {parseFloat(balance.balance).toFixed(2)}</p>
+                                            })
+                                        }
+                                    </div>
+                                :
+                                    <div class="alert alert-warning">{Conf.tr('No balances')}</div>
+                            }
+                            <table class="table">
+                                <tr>
+                                    <td>{Conf.tr('Account ID')}:</td>
+                                    <td><code>{reg_user.account_id || Conf.tr("Account ID is not approved yet")}</code></td>
+                                </tr>
+                                <tr>
+                                    <td>{Conf.tr('User ID')}:</td>
+                                    <td><code>{reg_user.id}</code></td>
+                                </tr>
+                                <tr>
+                                    <td>{Conf.tr('Passport')}:</td>
+                                    <td><code>{reg_user.passport}</code></td>
+                                </tr>
+                                <tr>
+                                    <td>{Conf.tr('IPN')}:</td>
+                                    <td><code>{reg_user.ipn_code}</code></td>
+                                </tr>
+                                <tr>
+                                    <td>{Conf.tr('Address')}:</td>
+                                    <td><code>{reg_user.address}</code></td>
+                                </tr>
+                                <tr>
+                                    <td>{Conf.tr('Phone')}:</td>
+                                    <td><code>{reg_user.phone}</code></td>
+                                </tr>
+                                <tr>
+                                    <td>{Conf.tr('E-mail')}:</td>
+                                    <td><code>{reg_user.email}</code></td>
+                                </tr>
+                            </table>
+                        </div>
+                        , Conf.tr('About user'))
+                    m.endComputation();
                 })
         };
 
@@ -102,9 +197,9 @@ module.exports = {
                                                     <th>{Conf.tr("ID")}</th>
                                                     <th>{Conf.tr("Created")}</th>
                                                     <th>{Conf.tr("Name")}</th>
-                                                    <th>{Conf.tr("Account ID")}</th>
                                                     <th>{Conf.tr('Information')}</th>
                                                     <th>{Conf.tr('Currency')}</th>
+                                                    <th>{Conf.tr('Destroy')}</th>
                                                 </tr>
                                                 </thead>
                                                 <tbody>
@@ -120,56 +215,23 @@ module.exports = {
                                                             {reg_user.surname + ' ' + reg_user.name + ' ' + reg_user.middle_name}
                                                         </td>
                                                         <td>
-                                                            {reg_user.account_id ?
-                                                                <span title={reg_user.account_id}>{reg_user.account_id.substr(0, 30) + '...'} </span>
-                                                                :
-                                                                <span>{Conf.tr("Account ID is not approved yet")}</span>
-                                                            }
-                                                        </td>
-                                                        <td>
-                                                            {
-                                                                reg_user.account_id ?
-                                                                <button
-                                                                    class="btn-xs btn-warning waves-effect waves-light"
-                                                                    onclick={function(){
-                                                                        Session.modal(
-                                                                            <table class="table">
-                                                                                <tr>
-                                                                                    <td>{Conf.tr('ID')}:</td>
-                                                                                    <td><code>{reg_user.id}</code></td>
-                                                                                </tr>
-                                                                                <tr>
-                                                                                    <td>{Conf.tr('Passport')}:</td>
-                                                                                    <td><code>{reg_user.passport}</code></td>
-                                                                                </tr>
-                                                                                <tr>
-                                                                                    <td>{Conf.tr('IPN')}:</td>
-                                                                                    <td><code>{reg_user.ipn_code}</code></td>
-                                                                                </tr>
-                                                                                <tr>
-                                                                                    <td>{Conf.tr('Address')}:</td>
-                                                                                    <td><code>{reg_user.address}</code></td>
-                                                                                </tr>
-                                                                                <tr>
-                                                                                    <td>{Conf.tr('Phone')}:</td>
-                                                                                    <td><code>{reg_user.phone}</code></td>
-                                                                                </tr>
-                                                                                <tr>
-                                                                                    <td>{Conf.tr('E-mail')}:</td>
-                                                                                    <td><code>{reg_user.email}</code></td>
-                                                                                </tr>
-                                                                            </table>
-                                                                        , Conf.tr('About user'))
-                                                                    }}
-                                                                >
-                                                                    {Conf.tr('Show data')}
-                                                                </button>
-                                                                :
-                                                                '-'
-                                                            }
+                                                            <button
+                                                                class="btn-xs btn-warning waves-effect waves-light"
+                                                                onclick={ctrl.showUserData.bind(ctrl, reg_user)}
+                                                            >
+                                                                {Conf.tr('Show data')}
+                                                            </button>
                                                         </td>
                                                         <td>
                                                             <span title={Conf.tr("Asset")}>{reg_user.asset}</span>
+                                                        </td>
+                                                        <td>
+                                                            <button
+                                                                class="btn-xs btn-danger waves-effect waves-light"
+                                                                onclick={ctrl.destroyAccount.bind(ctrl, reg_user)}
+                                                                >
+                                                                {Conf.tr('Destroy account')}
+                                                            </button>
                                                         </td>
                                                     </tr>
                                                 })}

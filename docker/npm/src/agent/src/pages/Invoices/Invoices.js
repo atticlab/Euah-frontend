@@ -1,9 +1,7 @@
 var Qr = require('kjua');
-//var Qr = require('../../node_modules/kjua/dist/kjua.min');
-// var Qr = require('../../node_modules/qrcode-npm/qrcode');
-var Conf = require('../config/Config.js');
-var Navbar = require('../components/Navbar.js');
-var Auth = require('../models/Auth.js');
+var Conf = require('../../config/Config.js');
+var Wrapper = require('../../components/Wrapper.js');
+var Auth = require('../../models/Auth.js');
 
 var Invoice = module.exports = {
 
@@ -13,7 +11,7 @@ var Invoice = module.exports = {
         this.invoiceCode = m.prop(false);
         this.qr = m.prop(false);
 
-        if (!Auth.keypair()) {
+        if (!Auth.keypair() || Auth.type() != 'settlement') {
             return m.route('/');
         }
 
@@ -22,14 +20,12 @@ var Invoice = module.exports = {
             e.preventDefault();
 
             var amount = e.target.amount.value;
-            var asset  = e.target.asset.value;
-            // TODO: check if asset is available in Auth.balances
+            var asset = e.target.asset.value;
 
             m.onLoadingStart();
 
             Conf.SmartApi.Invoices.create({asset: asset, amount: parseFloat(parseFloat(amount).toFixed(2))})
-                .then(function(response){
-
+                .then(function (response) {
                     if (
                         !response ||
                         typeof response.data == 'undefined' ||
@@ -38,9 +34,7 @@ var Invoice = module.exports = {
                         console.error(response);
                         return m.flashError(Conf.tr("Service error. Contact support"));
                     }
-
                     m.flashSuccess(Conf.tr("Invoice created"));
-
                     ctrl.invoiceCode(response.data.id);
 
                     // QR-CODE
@@ -75,7 +69,7 @@ var Invoice = module.exports = {
                 .then(() => {
                     m.onLoadingEnd();
                 })
-        }
+        };
 
         this.newForm = function (e) {
             this.invoiceCode(false);
@@ -85,8 +79,9 @@ var Invoice = module.exports = {
     view: function (ctrl) {
         var code = ctrl.qr();
 
-        return [m.component(Navbar),
-            <div class="wrapper">
+        return m.component(Wrapper, {
+            title: Conf.tr("Invoices"),
+            tpl: <div class="wrapper">
                 <div class="container">
                     <div class="row">
                         <div class="col-lg-6">
@@ -158,7 +153,6 @@ var Invoice = module.exports = {
                     </div>
                 </div>
             </div>
-
-        ];
+        });
     }
 };

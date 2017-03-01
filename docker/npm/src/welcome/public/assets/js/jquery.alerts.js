@@ -220,12 +220,12 @@
             }
         }
 
-    }
+    };
 
     // Shortuct functions
     jAlert = function (message, title, callback) {
         $.alerts.alert(message, title, callback);
-    }
+    };
 
     jConfirm = function (message, title, callback) {
         $.alerts.confirm(message, title, callback);
@@ -235,6 +235,10 @@
         $.alerts.okButton = ok_locale;
         $.alerts.cancelButton = cancel_locale;
         $.alerts.prompt(message, value, title, callback);
+    };
+
+    jCloseAll = function () {
+        $.alerts._hide();
     };
 
 })(jQuery);

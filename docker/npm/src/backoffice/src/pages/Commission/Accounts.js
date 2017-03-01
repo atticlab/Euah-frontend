@@ -93,7 +93,7 @@ module.exports = {
                 <div class="content">
                     <div class="container">
                         {
-                            ctrl.assets() ?
+                            ctrl.assets().length ?
                                 <div>
                                     <div class="col-lg-6">
                                         <div class="panel panel-primary panel-border">

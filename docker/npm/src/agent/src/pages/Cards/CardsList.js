@@ -35,6 +35,7 @@ module.exports = {
                     } else {
                         console.error('Unexpected response');
                         console.error(cards);
+                        return m.flashError(Conf.tr('Can not get cards'))
                     }
                 })
                 .catch(error => {

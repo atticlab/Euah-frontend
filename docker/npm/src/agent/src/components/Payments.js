@@ -13,6 +13,7 @@ module.exports = {
             <div>
                 <div class="visible-xs">
                     {data.payments.map(function (payment) {
+                        var accountId = payment.to == Auth.keypair().accountId() ? payment.from : payment.to;
                         return <div class="payment">
                             <span class="account_overflow" title={accountId}>
                                 {accountId}
@@ -55,6 +56,7 @@ module.exports = {
                         </thead>
                         <tbody>
                         {data.payments.map(function (payment) {
+                            var accountId = payment.to == Auth.keypair().accountId() ? payment.from : payment.to;
                             return <tr>
                                 <td class="account-td">
                                     <span class="account_overflow">

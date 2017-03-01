@@ -44,7 +44,7 @@ module.exports = {
         this.withdraw = function (e) {
             e.preventDefault();
             if (!ctrl.comm_keypair()) {
-                return ctrl.getCommissionAccountBalances();
+                return m.flashError(Conf.tr('Can not get commission account data'));
             }
             m.onLoadingStart();
             if (!e.target.asset || !e.target.amount || !e.target.to_account) {
@@ -65,9 +65,12 @@ module.exports = {
                         }))
                         .build();
 
-                    tx.sign(Auth.keypair());
+                    tx.sign(ctrl.comm_keypair());
 
                     return Conf.horizon.submitTransaction(tx);
+                })
+                .then(function(){
+                    return ctrl.getCommissionAccountBalances();
                 })
                 .then(function(){
                     return m.flashSuccess(Conf.tr('Successful withdraw'));

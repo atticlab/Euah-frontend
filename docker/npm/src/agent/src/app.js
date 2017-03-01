@@ -60,10 +60,15 @@ m.getPromptValue = function (label, errMsg = false) {
 m.route.mode = 'pathname';
 m.route(document.getElementById('app'), "/", {
     "/": require('./pages/Login.js'),
+    //for distribution
     "/transfer": require('./pages/Transfer/Transfer'),
-    "/payments": require('./pages/Payments/Payments'),
-    "/settings": require('./pages/Settings/Settings'),
     "/recovery": require('./pages/Recovery'),
     "/cards": require('./pages/Cards/CardsList'),
     "/cards/generate": require('./pages/Cards/CardsGenerate'),
+    //for settlement
+    "/invoices": require('./pages/Invoices/Invoices'),
+    "/settlement": require('./pages/Settlement/Settlement'),
+    //global
+    "/payments": require('./pages/Payments/Payments'),
+    "/settings": require('./pages/Settings/Settings'),
 });

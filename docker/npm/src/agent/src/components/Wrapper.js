@@ -171,37 +171,68 @@ module.exports = {
                                     }}
                                 >{Conf.tr("Show account")}</button>
                             </div>
-                            <ul>
-                                <li>
-                                    <a href="/cards" config={m.route} class="waves-effect waves-primary">
-                                        <i class="fa fa-qrcode"></i> <span>{Conf.tr("Scratch cards")}</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="/cards/generate" config={m.route} class="waves-effect waves-primary">
-                                        <i class="fa fa-credit-card"></i> <span>{Conf.tr("Create scratch cards")}</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="/transfer" config={m.route} class="waves-effect waves-primary">
-                                        <i class="fa fa-money"></i> <span>{Conf.tr("Transfer money")}</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="/payments" config={m.route} class="waves-effect waves-primary">
-                                        <i class="fa fa-history"></i> <span>{Conf.tr("Payments")}</span>
-                                    </a>
-                                </li>
                                 {
-                                    Auth.wallet() ?
-                                    <li>
-                                        <a href="/settings" config={m.route} class="waves-effect waves-primary">
-                                            <i class="fa fa-cogs"></i> <span>{Conf.tr("Settings")}</span>
-                                        </a>
-                                    </li>
-                                    : ''
+                                    Auth.type() == 'distribution' ?
+                                        <ul>
+                                            <li>
+                                                <a href="/cards" config={m.route} class="waves-effect waves-primary">
+                                                    <i class="fa fa-qrcode"></i> <span>{Conf.tr("Scratch cards")}</span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="/cards/generate" config={m.route} class="waves-effect waves-primary">
+                                                    <i class="fa fa-credit-card"></i> <span>{Conf.tr("Create scratch cards")}</span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="/transfer" config={m.route} class="waves-effect waves-primary">
+                                                    <i class="fa fa-money"></i> <span>{Conf.tr("Transfer money")}</span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="/payments" config={m.route} class="waves-effect waves-primary">
+                                                    <i class="fa fa-history"></i> <span>{Conf.tr("Payments")}</span>
+                                                </a>
+                                            </li>
+                                            {
+                                                Auth.wallet() ?
+                                                    <li>
+                                                        <a href="/settings" config={m.route} class="waves-effect waves-primary">
+                                                            <i class="fa fa-cogs"></i> <span>{Conf.tr("Settings")}</span>
+                                                        </a>
+                                                    </li>
+                                                    : ''
+                                            }
+                                        </ul>
+                                        :
+                                        <ul>
+                                            <li>
+                                                <a href="/settlement" config={m.route} class="waves-effect waves-primary">
+                                                    <i class="fa fa-qrcode"></i> <span>{Conf.tr("Settlement")}</span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="/invoices" config={m.route} class="waves-effect waves-primary">
+                                                    <i class="fa fa-qrcode"></i> <span>{Conf.tr("Invoices")}</span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="/payments" config={m.route} class="waves-effect waves-primary">
+                                                    <i class="fa fa-history"></i> <span>{Conf.tr("Payments")}</span>
+                                                </a>
+                                            </li>
+                                            {
+                                                Auth.wallet() ?
+                                                    <li>
+                                                        <a href="/settings" config={m.route} class="waves-effect waves-primary">
+                                                            <i class="fa fa-cogs"></i> <span>{Conf.tr("Settings")}</span>
+                                                        </a>
+                                                    </li>
+                                                    : ''
+                                            }
+                                        </ul>
+
                                 }
-                            </ul>
                             <div class="clearfix"></div>
                         </div>
                         <div class="clearfix"></div>
