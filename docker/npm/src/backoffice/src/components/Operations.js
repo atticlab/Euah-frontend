@@ -185,7 +185,7 @@ var Operations = {
                 return m.flashSuccess(Conf.tr('Emission success'));
             }).catch(function(error){
             console.error(error);
-            return m.flashError(typeof error.err_msg != 'undefined' ? Conf.tr(error.err_msg) : Conf.tr('Cannot make emission'));
+            return m.flashError((!error || typeof error.err_msg != 'undefined') ? Conf.tr(error.err_msg) : Conf.tr('Cannot make emission'));
         }).then(function(){
             m.onLoadingEnd();
         })
