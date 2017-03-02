@@ -1,13 +1,19 @@
 var Conf = require('./config/Config.js');
 var Auth = require('./models/Auth.js');
+var Session = require('./models/Session.js');
 
 // Loading spinner
 m.onLoadingStart = function () {
     document.getElementById('spinner').style.display = 'block';
-}
+};
 m.onLoadingEnd = function () {
     document.getElementById('spinner').style.display = 'none';
-}
+};
+m.predestroySession = function () {
+    Session.closeModal();
+    jCloseAll();
+    document.getElementById('spinner').style.display = 'none';
+};
 
 // Wrapper for notification which stops animation
 m.flashError = function (msg) {
@@ -15,7 +21,7 @@ m.flashError = function (msg) {
     $.Notification.notify('error', 'top center', Conf.tr("Error"), msg);
 };
 m.flashApiError = function (err) {
-    if (err && typeof err.message != 'undefined' && err.message == 'Invalid signature') {
+    if (err && typeof err.message != 'undefined' && err.message == 'ERR_BAD_SIGN') {
         return Auth.destroySession();
     }
     m.onLoadingEnd();

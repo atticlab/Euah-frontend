@@ -25,9 +25,7 @@ var Auth = {
         //clear events
         Conf.SmartApi.Api.removeAllListeners();
 
-        //close modals
-        Session.closeModal();
-        jCloseAll();
+        m.predestroySession();
 
         return m.route('/');
     },

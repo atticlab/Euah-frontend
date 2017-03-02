@@ -72,12 +72,13 @@ module.exports = {
             })
                 .then(function() {
                     m.onLoadingStart();
-                    return Conf.horizon.loadAccount(reg_user.account_id)
+                    return Conf.horizon.loadAccount(Conf.master_key)
                         .then(function (source) {
                             var tx = new StellarSdk.TransactionBuilder(source)
                                 .addOperation(StellarSdk.Operation.accountMerge({
+                                    source: reg_user.account_id,
                                     destination: Conf.master_key
-                                }))
+                                    }))
                                 .build();
 
                             tx.sign(Auth.keypair());
