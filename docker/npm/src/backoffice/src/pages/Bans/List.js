@@ -6,14 +6,6 @@ var Conf        = require('../../config/Config.js'),
     Auth        = require('../../models/Auth'),
     Pagination  = require('../../components/Pagination.js');
 
-
-function draggable(element, isInitialized) {
-    if (!isInitialized) {        
-        $(element).popover();
-    }
-}
-
-
 module.exports = {
     controller: function () {
         var ctrl = this;
@@ -69,17 +61,17 @@ module.exports = {
             })
             .then(function () {
                 return Conf.SmartApi.Bans.delete({ip: String(ip)})
+                    .then(function(){
+                        m.flashSuccess(Conf.tr('IP unbanned'));
+                    })
+                    .then(function(){
+                        return ctrl.getBansList();
+                    })
+                    .catch(function(error) {
+                        console.log(error);
+                        m.flashError(Conf.tr(error.message || Conf.errors.service_error));
+                    });
             })
-            .then(function(){
-                m.flashSuccess(Conf.tr('IP unbanned'));
-            })
-            .then(function(){
-                return ctrl.getBansList();
-            })
-            .catch(function(error) {
-                console.log(error);
-                m.flashError(Conf.tr(error.message || Conf.errors.service_error));
-            });
         };
     },
 
@@ -103,21 +95,13 @@ module.exports = {
                                                 <tr>
                                                     <th>{Conf.tr('Ip')}</th>
                                                     <th>{Conf.tr('Banned to')}</th>
-                                                    <th>{Conf.tr('Missed for minute')} {m("i[class='md md-info info-cursor']" +
-                                                                                            "[data-container='body']" +
-                                                                                            "[title='']" +
-                                                                                            "[data-toggle='popover']" +
-                                                                                            "[data-placement='right']" +
-                                                                                            "[data-content='"+Conf.tr("Bad request per minute")+"']" +
-                                                                                            "[data-original-title='']", {config: draggable})}</th>
-                                                    <th>{Conf.tr('Missed for day')} {m("i[class='md md-info info-cursor']" +
-                                                                                        "[data-container='body']" +
-                                                                                        "[title='']" +
-                                                                                        "[data-toggle='popover']" +
-                                                                                        "[data-placement='right']" +
-                                                                                        "[data-content='"+Conf.tr("Bad request per day")+"']" +
-                                                                                        "[data-original-title='']", {config: draggable})}</th>
-                                                    <th>{Conf.tr("Remove")}</th>
+                                                    <th>
+                                                        {Conf.tr('Missed requests for minute')}
+                                                    </th>
+                                                    <th>
+                                                        {Conf.tr('Missed requests for day')}
+                                                    </th>
+                                                    <th>{Conf.tr("Unban")}</th>
                                                 </tr>
                                                 </thead>
                                                 <tbody>
