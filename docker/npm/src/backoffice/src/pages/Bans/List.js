@@ -95,12 +95,6 @@ module.exports = {
                                                 <tr>
                                                     <th>{Conf.tr('Ip')}</th>
                                                     <th>{Conf.tr('Banned to')}</th>
-                                                    <th>
-                                                        {Conf.tr('Missed requests for minute')}
-                                                    </th>
-                                                    <th>
-                                                        {Conf.tr('Missed requests for day')}
-                                                    </th>
                                                     <th>{Conf.tr("Unban")}</th>
                                                 </tr>
                                                 </thead>
@@ -110,8 +104,6 @@ module.exports = {
                                                         return <tr>
                                                             <td>{Helpers.long2ip(statistic.ip)}</td>
                                                             <td>{Helpers.getDateFromTimestamp(statistic.banned_to)}</td>
-                                                            <td>{statistic.missed_for_minute}</td>
-                                                            <td>{statistic.missed_for_day}</td>
                                                             <td class="col-sm-1">
                                                             <button
                                                                class="btn btn-danger btn-custom waves-effect w-md waves-light m-b-5"
