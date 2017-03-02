@@ -71,19 +71,18 @@ module.exports = {
                     return Conf.horizon.loadAccount(Auth.keypair().accountId());
                 })
                 .then(function (source) {
-                    var memo = StellarSdk.Memo.text("card_creation");
                     var accountKeypair = null;
-                    var txBuilder = new StellarSdk.TransactionBuilder(source, {memo: memo});
+                    var txBuilder = new StellarSdk.TransactionBuilder(source);
 
                     for (var c = 0; c < ctrl.cards_count(); c++) {
                         accountKeypair = StellarSdk.Keypair.random();
 
                         accounts_data[accountKeypair.accountId()] = btoa(sjcl.encrypt(Auth.keypair().seed(), accountKeypair.seed()));
-
-                        txBuilder.addOperation(StellarSdk.Operation.payment({
+                        txBuilder.addOperation(StellarSdk.Operation.createAccount({
                             destination: accountKeypair.accountId(),
-                            amount: amount.toString(),
-                            asset: new StellarSdk.Asset(asset, Conf.master_key)
+                            accountType: StellarSdk.xdr.AccountType.accountScratchCard().value,
+                            asset: new StellarSdk.Asset(asset, Conf.master_key),
+                            amount: parseFloat(amount).toFixed(2)
                         }));
                     }
 
