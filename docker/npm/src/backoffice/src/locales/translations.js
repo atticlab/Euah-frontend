@@ -1452,7 +1452,7 @@ module.exports = {
         ua: 'Ключі емітентів'
     },
     "Last transaction time": {
-        ru: 'Время проведения последне трансакции',
+        ru: 'Время проведения последней трансакции',
         ua: 'Час проведення останньої трансакції'
     },
     "This page allows to manage accounts that are able to approve emission of e-money. These could be cashiers for example.": {
