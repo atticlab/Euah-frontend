@@ -107,7 +107,6 @@ var Auth = {
             })
             .then(function (wallet_data) {
                 wallet = wallet_data;
-                console.log(wallet.getKeychainData());
                 return Auth.loadAccountById(StellarSdk.Keypair.fromSeed(wallet.getKeychainData()).accountId());
             })
             .then(function (account_data) {
@@ -121,7 +120,10 @@ var Auth = {
                     }
                 }
             })
-            .catch(function () {
+            .catch(function (err) {
+
+                console.info(err);
+
                 authable = true;
                 //look like not created anonym user login, but it also can be admin
                 if (typeof master.signers != 'undefined') {
@@ -139,7 +141,7 @@ var Auth = {
                     throw new Error('Login/password combination is invalid');
                 }
             })
-            .then(function () {
+            .then(function() {
                 m.startComputation();
                 Auth.wallet(wallet);
                 Auth.keypair(StellarSdk.Keypair.fromSeed(wallet.getKeychainData()));
@@ -158,6 +160,53 @@ var Auth = {
                             }
                         });
                     });
+            });
+    },
+
+    loginByPasswordHash: function (login, passwordHash) {
+        return Conf.SmartApi.Wallets.get({
+            username: login,
+            passwordHash: passwordHash
+        }).then(function(wallet) {
+            m.startComputation();
+            Auth.wallet(wallet);
+            Auth.keypair(StellarSdk.Keypair.fromSeed(wallet.getKeychainData()));
+            Auth.username(wallet.username);
+            Conf.SmartApi.setKeypair(Auth.keypair());
+            return Conf.SmartApi.Api.getNonce()
+                .then(() => {
+                    m.endComputation();
+                    Conf.SmartApi.Api.on('tick', function (ttl) {
+                        Auth.ttl(ttl);
+                        if (Auth.ttl() <= 0) {
+                            return Auth.destroySession();
+                        }
+                        if (document.querySelector("#spinner-time")) {
+                            document.querySelector('#spinner-time').innerHTML = Helpers.getTimeFromSeconds(Auth.ttl());
+                        }
+                    });
+                });
+        })
+    },
+
+    initAuthData: function (wallet) {
+        m.startComputation();
+        Auth.wallet(wallet);
+        Auth.keypair(StellarSdk.Keypair.fromSeed(wallet.getKeychainData()));
+        Auth.username(wallet.username);
+        Conf.SmartApi.setKeypair(Auth.keypair());
+        return Conf.SmartApi.Api.getNonce()
+            .then(() => {
+                m.endComputation();
+                Conf.SmartApi.Api.on('tick', function (ttl) {
+                    Auth.ttl(ttl);
+                    if (Auth.ttl() <= 0) {
+                        return Auth.destroySession();
+                    }
+                    if (document.querySelector("#spinner-time")) {
+                        document.querySelector('#spinner-time').innerHTML = Helpers.getTimeFromSeconds(Auth.ttl());
+                    }
+                });
             });
     },
 
@@ -241,12 +290,22 @@ var Auth = {
 
     registration: function (accountKeypair, login, password) {
         return Conf.SmartApi.Wallets.create({
-            username: login,
-            password: password,
-            accountId: accountKeypair.accountId(),
-            publicKey: accountKeypair.rawPublicKey().toString('base64'),
+            username    : login,
+            password    : password,
+            accountId   : accountKeypair.accountId(),
+            publicKey   : accountKeypair.rawPublicKey().toString('base64'),
             keychainData: accountKeypair.seed(),
-            mainData: 'mainData'
+            mainData    : 'mainData',
+            phoneAsLogin: true,
+            kdfParams   : {
+                algorithm            : 'scrypt',
+                bits                 : 256,
+                n                    : 2,
+                r                    : 8,
+                p                    : 1,
+                passwordHashAlgorithm: 'sha256',
+                hashRounds           : Math.pow(2, 19)
+            }
         });
     },
 
@@ -285,6 +344,28 @@ var Auth = {
         return Conf.horizon.accounts()
             .accountId(aid)
             .call();
+    },
+
+    setListener: function (progressCB) {
+        Conf.SmartApi.Wallets.on('process', function (status) {
+            switch(status.type) {
+                case 'progress':
+                    if (progressCB && typeof progressCB === 'function') {
+                        m.startComputation();
+                        progressCB(status.progress);
+                        m.endComputation();
+                    }
+                    break;
+
+                case 'procedure':
+                    m.onLoadingStart();
+                    break;
+            }
+        });
+    },
+
+    removeListener: function () {
+        Conf.SmartApi.Wallets.removeAllListeners('process'); // remove listeners for progress
     }
 };
 

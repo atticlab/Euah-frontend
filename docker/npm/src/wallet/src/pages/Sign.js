@@ -3,6 +3,7 @@ var Auth = require('../models/Auth.js');
 var Conf = require('../config/Config.js');
 var PhraseWizard = require('../components/PhraseWizard.js');
 var Qr = require('kjua');
+var ProgressBar = require('../components/ProgressBar');
 
 var Sign = module.exports = {
     controller: function () {
@@ -15,6 +16,31 @@ var Sign = module.exports = {
         this.mnemonic = m.prop(false);
         this.showMnemonic = m.prop(false);
 
+        this.progress = m.prop(0);
+        this.showProgress = m.prop(false);
+
+        this.getPhoneWithViewPattern = function (number) {
+            if (number.substr(0, Conf.phone.prefix.length) != Conf.phone.prefix) {
+                number = Conf.phone.prefix;
+            }
+            return m.prop(VMasker.toPattern(number, {pattern: Conf.phone.view_mask, placeholder: "x"}));
+        };
+
+        this.addPhoneViewPattern = function (e) {
+            ctrl.login = ctrl.getPhoneWithViewPattern(e.target.value);
+        };
+
+        this.login = ctrl.getPhoneWithViewPattern(Conf.phone.prefix);
+
+        Auth.setListener(function (progress) {
+            ctrl.progress(progress);
+        });
+
+        this.onunload = function() {
+            Auth.removeListener();
+        };
+
+
         this.signup = function (e) {
             e.preventDefault();
             
@@ -26,27 +52,40 @@ var Sign = module.exports = {
                 return m.flashError(Conf.tr("Please, fill all required fields"));
             }
 
-            if (login.length < 3) {
-                return m.flashError(Conf.tr("Login should have 3 chars min"));
+            let phoneNum = VMasker.toPattern(login, Conf.phone.db_mask).substr(2);
+
+            if (phoneNum.length > 0 && phoneNum.match(/\d/g).length != Conf.phone.length) {
+                return m.flashError(Conf.tr("Invalid phone"));
             }
 
-            if (password.length < 6) {
-                return m.flashError(Conf.tr("Password should have 6 chars min"));
+            if (password.length < 8) {
+                return m.flashError(Conf.tr("Password should have 8 chars min"));
+            }
+
+            let regex = /^(?=\S*?[A-Z])(?=\S*?[a-z])((?=\S*?[0-9]))\S{1,}$/;
+            if (!regex.test(password)) {
+                return m.flashError(Conf.tr("Password must contain at least one upper case letter and one digit"));
             }
 
             if (password != rePassword) {
                 return m.flashError(Conf.tr("Passwords should match"));
             }
 
+            ctrl.showProgress(true);
             m.onLoadingStart();
             var accountKeypair = StellarSdk.Keypair.random();
             var mnemonicPhrase = StellarSdk.getMnemonicFromSeed(accountKeypair.seed(), Conf.mnemonic.locale);
 
-            Auth.registration(accountKeypair, login, password)
-                .then(function () {
-                    return Auth.login(login, password);
+            Auth.registration(accountKeypair, phoneNum, password)
+                .then(function (wallet) {
+                    return Auth.loginByPasswordHash(phoneNum, wallet.passwordHash)
                 })
                 .then(function () {
+                    m.onLoadingEnd();
+                    m.startComputation();
+                    ctrl.showProgress(false);
+                    ctrl.progress(0);
+                    m.endComputation();
                     var qr = Qr({
                         text: mnemonicPhrase,
                         crisp: true,
@@ -63,9 +102,6 @@ var Sign = module.exports = {
                     console.error(err);
                     m.flashError(err.message ? Conf.tr(err.message) : Conf.tr('Service error. Please contact support'));
                 })
-                .then(function () {
-                    m.onLoadingEnd();
-                });
         };
 
         this.goNext = function (e) {
@@ -86,56 +122,64 @@ var Sign = module.exports = {
         return <div>
             {m.component(AuthNavbar)}
             <div class="wrapper-page">
-                <div class="auth-form">
-                    <div class="text-center">
-                        <h3>{Conf.tr("Create a new account")}</h3>
+
+                {ctrl.showProgress() ?
+                    <div class="form-group m-t-10">
+                        {m(ProgressBar, {value: ctrl.progress, text: Conf.tr("Encrypting your account for security")})}
                     </div>
-                    <form class="form-horizontal m-t-30" onsubmit={ctrl.signup.bind(ctrl)}>
-                        <div id="by-login" class="tab-pane active">
-                            <div class="form-group">
-                                <div class="col-xs-12">
-                                    <input class="form-control" type="text"
-                                           placeholder={Conf.tr("Username")}
-                                           autocapitalize="none"
-                                           name="login" pattern="[A-Za-z0-9_-]+"
-                                           title={Conf.tr("Characters and numbers allowed")}/>
-                                    <i class="md md-account-circle form-control-feedback l-h-34"></i>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <div class="col-xs-12">
-                                    <input class="form-control" type="password"
-                                           autocapitalize="none"
-                                           placeholder={Conf.tr("Password")} name="password" pattern=".{6,}"
-                                           title={Conf.tr("6 characters minimum")}/>
-                                    <i class="md md-vpn-key form-control-feedback l-h-34"></i>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <div class="col-xs-12">
-                                    <input class="form-control" type="password"
-                                           autocapitalize="none"
-                                           placeholder={Conf.tr("Retype Password")} name="repassword" pattern=".{6,}"
-                                           title={Conf.tr("6 characters minimum")}/>
-                                    <i class="md md-vpn-key form-control-feedback l-h-34"></i>
-                                </div>
-                            </div>
+                    :
+                    <div class="auth-form">
+                        <div class="text-center">
+                            <h3>{Conf.tr("Create a new account")}</h3>
                         </div>
+                        <form class="form-horizontal m-t-30" onsubmit={ctrl.signup.bind(ctrl)}>
+                            <div id="by-login" class="tab-pane active">
+                                <div class="form-group">
+                                    <div class="col-xs-12">
+                                        <input class="form-control" type="tel" name="login" required="required"
+                                               placeholder={Conf.tr("Enter your mobile phone number: ") + Conf.phone.view_mask}
+                                               title={Conf.tr("Ukrainian phone number format allowed: +38 (050) 123-45-67")}
+                                               oninput={ctrl.addPhoneViewPattern.bind(ctrl)}
+                                               value={ctrl.login()}
+                                        />
+                                        <i class="md md-account-circle form-control-feedback l-h-34"></i>
+                                    </div>
+                                </div>
 
-                        <div class="form-group m-t-20 text-center">
-                            <button class="form-control btn btn-primary btn-lg btn-custom waves-effect w-md waves-light m-b-5">
-                                {Conf.tr("Create")}</button>
+                                <div class="form-group">
+                                    <div class="col-xs-12">
+                                        <input class="form-control" type="password"
+                                               autocapitalize="none"
+                                               placeholder={Conf.tr("Password")} name="password" pattern=".{6,}"
+                                               title={Conf.tr("6 characters minimum")}/>
+                                        <i class="md md-vpn-key form-control-feedback l-h-34"></i>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="col-xs-12">
+                                        <input class="form-control" type="password"
+                                               autocapitalize="none"
+                                               placeholder={Conf.tr("Retype Password")} name="repassword" pattern=".{6,}"
+                                               title={Conf.tr("6 characters minimum")}/>
+                                        <i class="md md-vpn-key form-control-feedback l-h-34"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group m-t-20 text-center">
+                                <button class="form-control btn btn-primary btn-lg btn-custom waves-effect w-md waves-light m-b-5">
+                                    {Conf.tr("Create")}</button>
+                            </div>
+                        </form>
+
+                        <div class="m-t-10">
+                            <a href="/" config={m.route} class="">{Conf.tr("Log in")}</a>
+                            <a href={Conf.smartmoney_host + "/docs/api-reference"} target="_blank"
+                               class="pull-right">{Conf.tr("Help")}</a>
                         </div>
-                    </form>
-
-                    <div class="m-t-10">
-                        <a href="/" config={m.route} class="">{Conf.tr("Log in")}</a>
-                        <a href={Conf.smartmoney_host + "/docs/api-reference"} target="_blank"
-                           class="pull-right">{Conf.tr("Help")}</a>
                     </div>
-                </div>
+                }
             </div>
         </div>
     },
