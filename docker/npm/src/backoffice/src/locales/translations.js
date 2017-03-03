@@ -1680,6 +1680,19 @@ module.exports = {
         ru: 'Приглашение принято',
         ua: 'Запрошення прийнято'
     },
+    "Log in to SmartMoney via mnemonic phrase": {
+        ru: 'Войдите в SmartMoney с помощью мнемонической фразы',
+        ua: 'Увійдіть в SmartMoney за допомогою мнемонічной фрази'
+    },
+    "Enter your mnemonic phrase word number $[1] of $[2]" : {
+        'en': "Enter your mnemonic phrase word number $[1] of $[2].",
+        'ru': "Введите Вашу мнемоническую фразу. Слово №$[1] из $[2].",
+        'ua': "Введіть Вашу мнемонічну фразу. Слово №$[1] із $[2]."
+    },
+    "Mnemonic phrase" : {
+        'ru': "Мнемоническая фраза",
+        'ua': "Мнемонічна фраза"
+    },
 
     "en": {
         ru: 'ru',

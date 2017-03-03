@@ -935,7 +935,6 @@ module.exports = {
         ru: 'Запись не найдена',
         ua: 'Запис не знайдено'
     },
-
     //error descriptions
     "invoice": {
         ru: 'инвойс',
