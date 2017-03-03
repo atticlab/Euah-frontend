@@ -64,11 +64,12 @@ module.exports = {
             }
 
             swal({
-                title: Conf.tr("Destroy registered user") + '?',
+                title: Conf.tr("Destroy registered user account") + '?',
                 type: "warning",
                 showCancelButton: true,
                 confirmButtonColor: "#DD6B55",
                 confirmButtonText: Conf.tr("Yes, delete it"),
+                cancelButtonText: Conf.tr("Cancel")
             })
                 .then(function() {
                     m.onLoadingStart();

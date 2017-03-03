@@ -101,6 +101,7 @@ module.exports = {
                 showCancelButton: true,
                 confirmButtonColor: "#DD6B55",
                 confirmButtonText: Conf.tr("Yes, decline it"),
+                cancelButtonText: Conf.tr("Cancel"),
                 closeOnConfirm: false,
                 html: false
             }, function () {

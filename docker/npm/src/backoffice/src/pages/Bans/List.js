@@ -58,6 +58,7 @@ module.exports = {
                 showCancelButton: true,
                 confirmButtonColor: "#DD6B55",
                 confirmButtonText: Conf.tr("Yes, delete it"),
+                cancelButtonText: Conf.tr("Cancel"),
             })
             .then(function () {
                 return Conf.SmartApi.Bans.delete({ip: String(ip)})

@@ -42,6 +42,7 @@ module.exports = {
                 showCancelButton: true,
                 confirmButtonColor: "#DD6B55",
                 confirmButtonText: Conf.tr("Yes, delete it"),
+                cancelButtonText: Conf.tr("Cancel")
             })
                 .then(function() {
                 m.onLoadingStart();
