@@ -53,51 +53,51 @@ module.exports = {
                 });
         };
 
-        this.destroyAccount = function (reg_user, e) {
-
-            if (!reg_user || !reg_user.account_id) {
-                return m.flashError(Conf.tr("Invalid registered user data"));
-            }
-
-            if (!StellarSdk.Keypair.isValidPublicKey(reg_user.account_id)) {
-                return m.flashError(Conf.tr("Account is invalid"));
-            }
-
-            swal({
-                title: Conf.tr("Destroy registered user account") + '?',
-                type: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#DD6B55",
-                confirmButtonText: Conf.tr("Yes, delete it"),
-                cancelButtonText: Conf.tr("Cancel")
-            })
-                .then(function() {
-                    m.onLoadingStart();
-                    return Conf.horizon.loadAccount(Conf.master_key)
-                        .then(function (source) {
-                            var tx = new StellarSdk.TransactionBuilder(source)
-                                .addOperation(StellarSdk.Operation.accountMerge({
-                                    source: reg_user.account_id,
-                                    destination: Conf.master_key
-                                    }))
-                                .build();
-
-                            tx.sign(Auth.keypair());
-
-                            return Conf.horizon.submitTransaction(tx);
-                        })
-                        .then(function(){
-                            return swal(Conf.tr("Destroyed") + "!",
-                                Conf.tr("Registered user destroyed"),
-                                "success"
-                            );
-                        })
-                        .catch(function (err) {
-                            console.log(err);
-                            m.flashError(Conf.tr("Cannot destroy account"));
-                        })
-                });
-        };
+        // this.destroyAccount = function (reg_user, e) {
+        //
+        //     if (!reg_user || !reg_user.account_id) {
+        //         return m.flashError(Conf.tr("Invalid registered user data"));
+        //     }
+        //
+        //     if (!StellarSdk.Keypair.isValidPublicKey(reg_user.account_id)) {
+        //         return m.flashError(Conf.tr("Account is invalid"));
+        //     }
+        //
+        //     swal({
+        //         title: Conf.tr("Destroy registered user account") + '?',
+        //         type: "warning",
+        //         showCancelButton: true,
+        //         confirmButtonColor: "#DD6B55",
+        //         confirmButtonText: Conf.tr("Yes, delete it"),
+        //         cancelButtonText: Conf.tr("Cancel")
+        //     })
+        //         .then(function() {
+        //             m.onLoadingStart();
+        //             return Conf.horizon.loadAccount(Conf.master_key)
+        //                 .then(function (source) {
+        //                     var tx = new StellarSdk.TransactionBuilder(source)
+        //                         .addOperation(StellarSdk.Operation.accountMerge({
+        //                             source: reg_user.account_id,
+        //                             destination: Conf.master_key
+        //                             }))
+        //                         .build();
+        //
+        //                     tx.sign(Auth.keypair());
+        //
+        //                     return Conf.horizon.submitTransaction(tx);
+        //                 })
+        //                 .then(function(){
+        //                     return swal(Conf.tr("Destroyed") + "!",
+        //                         Conf.tr("Registered user destroyed"),
+        //                         "success"
+        //                     );
+        //                 })
+        //                 .catch(function (err) {
+        //                     console.log(err);
+        //                     m.flashError(Conf.tr("Cannot destroy account"));
+        //                 })
+        //         });
+        // };
 
         this.showUserData = function (reg_user, e) {
 
@@ -201,7 +201,7 @@ module.exports = {
                                                     <th>{Conf.tr("Name")}</th>
                                                     <th>{Conf.tr('Information')}</th>
                                                     <th>{Conf.tr('Currency')}</th>
-                                                    <th>{Conf.tr('Destroy')}</th>
+                                                    {/*<th>{Conf.tr('Destroy')}</th>*/}
                                                 </tr>
                                                 </thead>
                                                 <tbody>
@@ -227,14 +227,14 @@ module.exports = {
                                                         <td>
                                                             <span title={Conf.tr("Asset")}>{reg_user.asset}</span>
                                                         </td>
-                                                        <td>
-                                                            <button
-                                                                class="btn-xs btn-danger waves-effect waves-light"
-                                                                onclick={ctrl.destroyAccount.bind(ctrl, reg_user)}
-                                                                >
-                                                                {Conf.tr('Destroy account')}
-                                                            </button>
-                                                        </td>
+                                                        {/*<td>*/}
+                                                            {/*<button*/}
+                                                                {/*class="btn-xs btn-danger waves-effect waves-light"*/}
+                                                                {/*onclick={ctrl.destroyAccount.bind(ctrl, reg_user)}*/}
+                                                                {/*>*/}
+                                                                {/*{Conf.tr('Destroy account')}*/}
+                                                            {/*</button>*/}
+                                                        {/*</td>*/}
                                                     </tr>
                                                 })}
                                                 </tbody>
