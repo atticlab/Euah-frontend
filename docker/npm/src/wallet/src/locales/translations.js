@@ -214,18 +214,18 @@ module.exports = {
     },
     "Invoice": {
         'en': "Invoice",
-        'ru': "Счет-фактура",
-        'ua': "Рахунок-фактура"
+        'ru': "Инвойс",
+        'ua': "Інвойс"
     },
     "Invoice created": {
         'en': "Invoice created",
-        'ru': "Счет-фактура создан",
-        'ua': "Рахунок-фактура створений"
+        'ru': "Инвойс создан",
+        'ua': "Інвойс створений"
     },
     "Create a new invoice": {
         'en': "Create a new invoice",
-        'ru': "Создать новый счет-фактуру",
-        'ua': "Створити новий рахунок-фактуру"
+        'ru': "Создать новый инвойс",
+        'ua': "Створити новий інвойс"
     },
     "Create": {
         'en': "Create",
@@ -234,13 +234,13 @@ module.exports = {
     },
     "Invoice code": {
         'en': "Invoice code",
-        'ru': "Код счета-фактуры",
-        'ua': "Код рахунку-фактури"
+        'ru': "Код инвойса",
+        'ua': "Код інвойсу"
     },
     "Copy this invoice code and share it with someone you need to get money from": {
         'en': "Copy this invoice code and share it with someone you need to get money from",
-        'ru': "Скопируйте этот код счета-фактуры и поделитесь им с тем, от кого ожидаете средства",
-        'ua': "Скопіюйте цей код рахунку-фактури та поділіться ним з тим, від кого очікуєте кошти"
+        'ru': "Скопируйте этот код инвойса и поделитесь им с тем, от кого ожидаете средства",
+        'ua': "Скопіюйте цей код інвойсу та поділіться ним з тим, від кого очікуєте кошти"
     },
     "Create new": {
         'en': "Create new",
@@ -398,13 +398,13 @@ module.exports = {
     },
     "Invalid invoice currency": {
         'en': "Invalid invoice currency",
-        'ru': "Неверная валюта счета-фактури",
-        'ua': "Невірна валюта рахунку-фактури"
+        'ru': "Неверная валюта инвойса",
+        'ua': "Невірна валюта інвойсу"
     },
     "Invoice requested": {
         'en': "Invoice requested",
-        'ru': "Счет-фактура запрошен",
-        'ua': "Рахунок-фактура запрошений"
+        'ru': "Инвойс запрошен",
+        'ua': "Інвойс запрошений"
     },
     "User not found! Check phone number": {
         'en': "User not found! Check phone number",
@@ -492,8 +492,8 @@ module.exports = {
         'ua': "Текст опис"
     },
     "Pay by invoice code": {
-        'ru': "Запросить счет-фактуру",
-        'ua': "Запросити рахунок-фактуру"
+        'ru': "Запросить инвойс",
+        'ua': "Запросити інвойс"
     },
     "Request": {
         'en': "Request",
