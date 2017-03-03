@@ -40,8 +40,8 @@ module.exports = {
         ua: "Картки поповнення"
     },
     "Amount": {
-        ru: "Количество",
-        ua: "Кількість"
+        ru: "Сумма",
+        ua: "Сума"
     },
     "Currency": {
         ru: "Валюта",
@@ -318,6 +318,38 @@ module.exports = {
     "No payments yet": {
         ru: 'Нет проведенных платежей',
         ua: 'Немає проведених платежів'
+    },
+    "Create a new invoice": {
+        ru: 'Создать новый инвойс',
+        ua: 'Створити новий інвойс'
+    },
+    "Invoices": {
+        ru: 'Инвойсы',
+        ua: 'Інвойси'
+    },
+    "Settlement": {
+        ru: 'Погашение',
+        ua: 'Погашення'
+    },
+    "Make settlement": {
+        ru: 'Сделать погашение',
+        ua: 'Зробити погашення'
+    },
+    "Submit": {
+        ru: 'Принять',
+        ua: 'Прийняти'
+    },
+    "Copy this invoice code and share it with someone you need to get money from": {
+        ru: 'Скопируйте этот инвойс и отправьте тому, от кого вы желаете получить платеж',
+        ua: 'Скопіюйте цей інвойс і надішліть тому, від кого ви бажаєте отримати платіж'
+    },
+    "Transfer successful": {
+        ru: 'Платеж выполнен',
+        ua: 'Платіж виконаний'
+    },
+    "Success": {
+        ru: 'Успех',
+        ua: 'Успіх'
     },
 
     //error descriptions
