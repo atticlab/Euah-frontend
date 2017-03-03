@@ -84,7 +84,7 @@ module.exports = {
 
     view: function (ctrl) {
         return m.component(Wrapper, {
-            title: Conf.tr("Cards"),
+            title: Conf.tr("Payments"),
             tpl: <div class="wrapper">
                 <div class="wrapper">
                     <div class="container">
