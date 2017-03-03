@@ -13,6 +13,7 @@ module.exports = {
                         <div class="text-right flags">
                             <a onclick={Conf.loc.changeLocale.bind(ctrl, 'en')} href="#"><img src="/assets/img/uk.png" alt="UK"/></a>
                             <a onclick={Conf.loc.changeLocale.bind(ctrl, 'ua')} href="#"><img src="/assets/img/ua.png" alt="UA"/></a>
+                            <a onclick={Conf.loc.changeLocale.bind(ctrl, 'ru')} href="#"><img src="/assets/img/ru.png" alt="RU"/></a>
                         </div>
                     </div>
 
