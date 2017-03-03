@@ -13,6 +13,15 @@ module.exports = {
             return m.route('/');
         }
 
+        this.getPhoneWithViewPattern = function (number) {
+            if (number.substr(0, Conf.phone.prefix.length) != Conf.phone.prefix) {
+                number = Conf.phone.prefix;
+            }
+            return m.prop(VMasker.toPattern(number, {pattern: Conf.phone.view_mask, placeholder: "x"}));
+        };
+
+        this.username = ctrl.getPhoneWithViewPattern(Conf.phone.prefix + Auth.wallet().username);
+
         // We'll query balances on each page load until we receive some money and start a stream
         if (!Auth.payments().length) {
             Auth.updateBalances(Auth.keypair().accountId())
@@ -70,7 +79,7 @@ module.exports = {
                                     <img src="/assets/img/no-avatar.png" class="img-responsive img-circle" alt="user"/>
                                     <div class="wid-u-info">
                                         {(Auth.username()) ?
-                                          <h4 class="m-t-0 m-b-5">{Conf.tr("Welcome")}, {Auth.username()}</h4> : ''
+                                          <h4 class="m-t-0 m-b-5">{Conf.tr("Welcome")}, {ctrl.username()}</h4> : ''
                                         }
                                         <p>
                                             <button
