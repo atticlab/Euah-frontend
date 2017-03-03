@@ -26,7 +26,7 @@ m.predestroySession = function () {
 // Wrapper for notification which stops animation
 m.flashError = function (msg) {
     m.onLoadingEnd();
-    $.Notification.notify('error', 'top center', "Error", msg);
+    $.Notification.notify('error', 'top center', Conf.tr("Error"), msg);
 };
 m.flashApiError = function (err) {
     if (err && typeof err.message != 'undefined' && err.message == 'ERR_BAD_SIGN') {
@@ -48,7 +48,7 @@ m.flashApiError = function (err) {
 };
 m.flashSuccess = function (msg) {
     m.onLoadingEnd();
-    $.Notification.notify('success', 'top center', "Success", msg);
+    $.Notification.notify('success', 'top center', Conf.tr("Success"), msg);
 };
 
 m.getPromptValue = function (label, errMsg = false) {
