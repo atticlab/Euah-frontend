@@ -99,7 +99,7 @@ module.exports = {
                                                 <h3 class="panel-title">{Conf.tr('Manage commission account balances')}</h3>
                                             </div>
                                             <div class="panel-body">
-                                                <div class="col-lg-6">
+                                                <div class="col-lg-12">
                                                     <form class="form-horizontal" role="form" method="post" onsubmit={ctrl.withdraw.bind(ctrl)}>
                                                         <div class="form-group">
                                                             <label for="to_account" class="col-md-2 control-label">{Conf.tr("Withdraw to account")}</label>

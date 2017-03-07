@@ -153,7 +153,7 @@ module.exports = {
                                             <h3 class="panel-title">{Conf.tr("Select asset")}</h3>
                                         </div>
                                         <div class="panel-body">
-                                            <div class="col-lg-6">
+                                            <div class="col-lg-12">
                                                 <form class="form-horizontal" role="form" method="post" onsubmit={ctrl.manageCommission.bind(ctrl)}>
 
                                                     <div class="form-group">

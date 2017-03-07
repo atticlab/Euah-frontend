@@ -295,7 +295,7 @@ module.exports = {
     },
 
     view: function(ctrl, direction, inputs) {
-        return <div class="col-lg-6">
+        return <div class="col-lg-12">
             <div class="panel panel-primary panel-border">
                 <div class="panel-heading">
                     <h3 class="panel-title">{Conf.tr("Fee for direction")}: {Conf.tr(direction)}</h3>

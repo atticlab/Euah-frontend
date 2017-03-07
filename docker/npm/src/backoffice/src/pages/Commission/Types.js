@@ -178,7 +178,7 @@ module.exports = {
                                             <h3 class="panel-title">{Conf.tr("Select account type to edit fees")}</h3>
                                         </div>
                                         <div class="panel-body">
-                                            <div class="col-lg-6">
+                                            <div class="col-lg-12">
                                                 <form class="form-horizontal" id="commission_form" role="form"
                                                       method="post" onsubmit={ctrl.setParams.bind(ctrl)}>
                                                     <div class="form-group">

@@ -63,8 +63,8 @@ module.exports = {
                                 <div class="col-lg-6">
                                     <form class="form-horizontal" onsubmit={ctrl.addBan.bind(ctrl)}>
                                         <div class="form-group">
-                                            <label for="ip" class="col-md-2 control-label">{Conf.tr("Ip")}</label>
-                                            <div class="col-md-4">
+                                            <label for="ip" class="col-md-4 control-label">{Conf.tr("Ip")}</label>
+                                            <div class="col-md-8">
                                                 <input class="form-control"
                                                        name="ip"
                                                        id="ip"
@@ -76,8 +76,8 @@ module.exports = {
                                         </div>
                                         <div class="form-group">
                                             <label for="ttl"
-                                                   class="col-md-2 control-label">{Conf.tr("Time of ban (in seconds)")}</label>
-                                            <div class="col-md-4">
+                                                   class="col-md-4 control-label">{Conf.tr("Time of ban (in seconds)")}</label>
+                                            <div class="col-md-8">
                                                 <input class="form-control"
                                                        name="ttl"
                                                        id="ttl"
@@ -88,7 +88,7 @@ module.exports = {
                                             </div>
                                         </div>
                                         <div class="form-group m-b-0">
-                                            <div class="col-sm-offset-2 col-sm-9">
+                                            <div class="col-sm-offset-4 col-sm-4">
                                                 <button type="submit"
                                                         class="btn btn-primary btn-custom waves-effect w-md waves-light m-b-5">
                                                     {Conf.tr('Add')}
