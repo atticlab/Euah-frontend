@@ -1452,7 +1452,7 @@ module.exports = {
         ua: 'Ключі емітентів'
     },
     "Last transaction time": {
-        ru: 'Время проведения последне трансакции',
+        ru: 'Время проведения последней трансакции',
         ua: 'Час проведення останньої трансакції'
     },
     "This page allows to manage accounts that are able to approve emission of e-money. These could be cashiers for example.": {
@@ -1679,6 +1679,23 @@ module.exports = {
     "Enrollment approved": {
         ru: 'Приглашение принято',
         ua: 'Запрошення прийнято'
+    },
+    "Log in to SmartMoney via mnemonic phrase": {
+        ru: 'Войдите в SmartMoney с помощью мнемонической фразы',
+        ua: 'Увійдіть в SmartMoney за допомогою мнемонічной фрази'
+    },
+    "Enter your mnemonic phrase word number $[1] of $[2]" : {
+        'en': "Enter your mnemonic phrase word number $[1] of $[2].",
+        'ru': "Введите Вашу мнемоническую фразу. Слово №$[1] из $[2].",
+        'ua': "Введіть Вашу мнемонічну фразу. Слово №$[1] із $[2]."
+    },
+    "Mnemonic phrase" : {
+        'ru': "Мнемоническая фраза",
+        'ua': "Мнемонічна фраза"
+    },
+    "Passwords should match": {
+        ru: 'Пароли должны совпадать',
+        ua: 'Паролі повинні співпадати'
     },
 
     "en": {

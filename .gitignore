@@ -7,3 +7,6 @@ logs
 .idea
 env.js
 .env
+**/package.json
+**/Gulpfile.js
+**/public/build
