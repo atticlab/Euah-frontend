@@ -49,6 +49,38 @@
 					</form>
 				</div>
 			</div>
+
+			<div class="col-lg-6 col-lg-offset-3 m-t-20">
+				<div class="panel panel-color panel-primary">
+					<div class="panel-heading">
+						<h3 class="panel-title">Generate mnemonic phrase from seed</h3>
+					</div>
+					<div class="panel-body">
+						<form class="form-horizontal" onsubmit="getMnemonicFromSeed(); return false;">
+							<div class="form-group">
+								<div class="col-xs-12">
+									<label for="seed">Seed:</label>
+									<input class="form-control" type="password" name="seed" id="seed"/>
+								</div>
+							</div>
+
+							<div class="form-group">
+								<div class="col-xs-12">
+									<label for="mnemonic">Mnemonic phrase:</label>
+									<textarea class="form-control" rows="7" name="mnemonic" id="mnemonic"></textarea>
+								</div>
+							</div>
+							<div class="form-group m-t-20">
+								<div class="col-sm-7">
+									<button
+											class="btn btn-primary btn-custom w-md waves-effect waves-light"
+											type="submit">Generate</button>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
 		</div>
 	</div>
 
@@ -89,7 +121,17 @@
 			if(tr){
 				$(this).text(tr);
 			}
-		})
+		});
+
+		function getMnemonicFromSeed() {
+			$('#mnemonic').val('');
+			try {
+				$('#mnemonic').val(StellarSdk.getMnemonicFromSeed($('#seed').val()));
+			} catch (error) {
+				console.error(error);
+				alert('Bad seed. Check data');
+			}
+		}
 
 	</script>
 
