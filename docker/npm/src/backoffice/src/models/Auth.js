@@ -66,6 +66,7 @@ var Auth = {
             })
             .catch(function (err) {
                 console.error(err);
+                m.onLoadingEnd();
                 //if admin additional data not found on api
                 if (err && typeof(err.description) != 'undefined' && typeof(err.message) != 'undefined'
                     && err.description === "admin" && err.message === 'ERR_NOT_FOUND') {
@@ -174,6 +175,7 @@ var Auth = {
             })
             .catch(function (err) {
                 console.error(err);
+                m.onLoadingEnd();
                 //if admin additional data not found on api
                 if (err && typeof(err.description) != 'undefined' && typeof(err.message) != 'undefined'
                     && err.description === "admin" && err.message === 'ERR_NOT_FOUND') {
