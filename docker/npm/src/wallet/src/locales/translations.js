@@ -7,7 +7,7 @@ module.exports = {
     "Transfer money": {
         'en': "Transfer money",
         'ru': "Перевод денег",
-        'ua': "Переведення грошей"
+        'ua': "Переказ грошей"
     },
     "Create invoice": {
         'en': "Create invoice",
@@ -187,10 +187,10 @@ module.exports = {
         'ru': "Символы и цифры разрешены",
         'ua': "Символи та цифри дозволені"
     },
-    "6 characters minimum": {
-        'en': "6 characters minimum",
-        'ru': "Минимум 6 символов",
-        'ua': "Мінімум 6 символів"
+    "8 characters minimum": {
+        'en': "8 characters minimum",
+        'ru': "Минимум 8 символов",
+        'ua': "Мінімум 8 символів"
     },
     "Log in": {
         'en': "Log in",
@@ -434,7 +434,7 @@ module.exports = {
     "Transfer successful": {
         'en': "Transfer successful",
         'ru': "Успешно переведено",
-        'ua': "Успішно переведено"
+        'ua': "Успішний переказ"
     },
     "Cannot make transfer": {
         'en': "Cannot make transfer",
@@ -449,12 +449,12 @@ module.exports = {
     "Transfer": {
         'en': "Transfer",
         'ru': "Перевод",
-        'ua': "Переведення"
+        'ua': "Переказ"
     },
     "Transfer type": {
         'en': "Transfer type",
         'ru': "Тип перевода",
-        'ua': "Тип переведення"
+        'ua': "Тип переказу"
     },
     "by account ID": {
         'en': "By account ID",
@@ -1018,7 +1018,7 @@ module.exports = {
     },
     "Password must contain at least one upper case letter, one lower case letter and one digit": {
         ru: "Пароль должен содержать как минимум одну букву в верхнем регистре, одну букву в нижнем регистре и одну цифру",
-        ua: "Пароль повинен складатися як мінімум з однієї букви у верхньому регістрі, однієї букви в нижньому регістрі та однієї цифри"
+        ua: "Пароль повинен складатися як мінімум з однієї літери у верхньому регістрі, однієї букви в нижньому регістрі та однієї цифри"
     },
     "You have $[1] attempts left": {
         ru: "Попыток осталось: $[1]",
@@ -1052,6 +1052,14 @@ module.exports = {
     "Please wait...": {
         ru: "Пожалуйста подождите...",
         ua: "Будь-ласка зачекайте..."
+    },
+    "Decrypting your old password and encrypting your new password": {
+        ru: "Расшифрование старого пароля и шифрование нового пароля",
+        ua: "Розшифрування старого паролю і шифрування нового паролю"
+    },
+    "Password must contain at least one upper case letter and one digit": {
+        ru: "Пароль должен содержать, как минимум одну большую букву и одну цифру",
+        ua: "Пароль повинен містити, як мінімум одну велику літеру і одну цифру"
     },
     "en": {
         ru: 'ru',

@@ -99,7 +99,7 @@ module.exports = {
 
     "Account ID" : {
         ru: 'Номер счета',
-        ua: 'номер рахунку'
+        ua: 'Номер рахунку'
     },
     "Account Info": {
         ru: 'Информацию по счету',
@@ -108,6 +108,10 @@ module.exports = {
     "Account": {
         ru: 'Счет',
         ua: 'Рахунок'
+    },
+    "Asset code must be 12 symbols maximum": {
+        ru: 'Код валюты может состоять максимум из 12 символов',
+        ua: 'Код валюти може складатись максимум з 12 символів'
     },
     "Actions": {
         ru: 'Управление',
@@ -1429,7 +1433,7 @@ module.exports = {
     },
     "Change password": {
         ru: 'Изменить пароль',
-        ua: 'Ім\'я агента'
+        ua: 'Змінити пароль'
     },
     "Last transactions": {
         ru: 'Последние трансакции',
