@@ -21,19 +21,39 @@ module.exports = {
         this.acceptEnrollment = function (e) {
             e.preventDefault();
             m.onLoadingStart();
-            if (!e.target.login || !e.target.password || !e.target.password_confirm) {
+            if (!e.target.password || !e.target.password_confirm) {
                 return m.flashError(Conf.tr('Fill all required fields'));
             }
             if (e.target.password.value != e.target.password_confirm.value) {
                 return m.flashError(Conf.tr('Passwords must be equal'));
             }
+
+            if (e.target.password.value.length < 8) {
+                return m.flashError(Conf.tr("Password should have 8 chars min"));
+            }
+
+            let regex = /^(?=\S*?[A-Z])(?=\S*?[a-z])((?=\S*?[0-9]))\S{1,}$/;
+            if (!regex.test(e.target.password.value)) {
+                return m.flashError(Conf.tr("Password must contain at least one upper case letter, one lower case letter and one digit"));
+            }
+
             return Conf.SmartApi.Wallets.create({
-                    username: e.target.login.value,
+                    username: Auth.enrollment().user_data.phone,
                     password: e.target.password.value,
                     accountId: Auth.keypair().accountId(),
                     publicKey: Auth.keypair().rawPublicKey().toString('base64'),
                     keychainData: Auth.keypair().seed(),
-                    mainData: 'mainData'
+                    mainData: 'mainData',
+                    phoneAsLogin: true,
+                    kdfParams   : {
+                        algorithm            : 'scrypt',
+                        bits                 : 256,
+                        n                    : 2,
+                        r                    : 8,
+                        p                    : 1,
+                        passwordHashAlgorithm: 'sha256',
+                        hashRounds           : Math.pow(2, 19)
+                    }
                 })
                 .then(function() {
                     var sequence = '0';
@@ -49,7 +69,7 @@ module.exports = {
                         token: Auth.enrollment().otp,
                         account_id: Auth.keypair().accountId(),
                         tx_trust: xdr,
-                        login: e.target.login.value
+                        login: Auth.enrollment().user_data.phone
                     });
                 }).then(function(){
                     m.startComputation();
@@ -151,7 +171,7 @@ module.exports = {
                                                 <form id="reg_form" method="post" role="form" onsubmit={ctrl.acceptEnrollment.bind(ctrl)}>
                                                     <div class="form-group">
                                                         <div>{Conf.tr('Login')}:</div>
-                                                        <input type="text" class="form-control" id="login" name="login" required="required"/>
+                                                        <input type="text" class="form-control" value={VMasker.toPattern(Conf.phone.prefix + Auth.enrollment().user_data.phone, {pattern: Conf.phone.view_mask, placeholder: "x"})} readonly="readonly"/>
                                                     </div>
 
                                                     <div class="form-group">

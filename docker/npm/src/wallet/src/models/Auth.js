@@ -142,25 +142,8 @@ var Auth = {
                 }
             })
             .then(function() {
-                m.startComputation();
-                Auth.wallet(wallet);
-                Auth.keypair(StellarSdk.Keypair.fromSeed(wallet.getKeychainData()));
-                Auth.username(wallet.username);
-                Conf.SmartApi.setKeypair(Auth.keypair());
-                return Conf.SmartApi.Api.getNonce()
-                    .then(() => {
-                        m.endComputation();
-                        Conf.SmartApi.Api.on('tick', function (ttl) {
-                            Auth.ttl(ttl);
-                            if (Auth.ttl() <= 0) {
-                                return Auth.destroySession();
-                            }
-                            if (document.querySelector("#spinner-time")) {
-                                document.querySelector('#spinner-time').innerHTML = Helpers.getTimeFromSeconds(Auth.ttl());
-                            }
-                        });
-                    });
-            });
+                return Auth.initAuthData(wallet);
+            })
     },
 
     loginByPasswordHash: function (login, passwordHash) {
@@ -168,24 +151,7 @@ var Auth = {
             username: login,
             passwordHash: passwordHash
         }).then(function(wallet) {
-            m.startComputation();
-            Auth.wallet(wallet);
-            Auth.keypair(StellarSdk.Keypair.fromSeed(wallet.getKeychainData()));
-            Auth.username(wallet.username);
-            Conf.SmartApi.setKeypair(Auth.keypair());
-            return Conf.SmartApi.Api.getNonce()
-                .then(() => {
-                    m.endComputation();
-                    Conf.SmartApi.Api.on('tick', function (ttl) {
-                        Auth.ttl(ttl);
-                        if (Auth.ttl() <= 0) {
-                            return Auth.destroySession();
-                        }
-                        if (document.querySelector("#spinner-time")) {
-                            document.querySelector('#spinner-time').innerHTML = Helpers.getTimeFromSeconds(Auth.ttl());
-                        }
-                    });
-                });
+            return Auth.initAuthData(wallet);
         })
     },
 

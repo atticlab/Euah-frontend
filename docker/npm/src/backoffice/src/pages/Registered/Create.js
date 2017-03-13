@@ -12,6 +12,25 @@ module.exports = {
             return m.route('/');
         }
 
+        this.addPhoneViewPattern = function (e) {
+            ctrl.phone = ctrl.getPhoneWithViewPattern(e.target.value);
+        };
+
+        this.getPhoneWithViewPattern = function (number) {
+            if (!number.length || number.substr(0, Conf.phone.prefix.length) != Conf.phone.prefix) {
+                number = Conf.phone.prefix;
+            }
+            return m.prop(VMasker.toPattern(number, {pattern: Conf.phone.view_mask, placeholder: "x"}));
+        };
+
+        this.onBlur = function (e) {
+            var phone = e.target.value;
+            if (!e.target.value || e.target.value == Conf.phone.prefix || e.target.value.substr(0, Conf.phone.prefix.length) != Conf.phone.prefix) {
+                phone = '';
+            }
+            this.phone = m.prop(VMasker.toPattern(phone, {pattern: Conf.phone.view_mask, placeholder: "x"}));
+        };
+
         this.asset          = m.prop('');
         this.surname        = m.prop('');
         this.name           = m.prop('');
@@ -58,15 +77,32 @@ module.exports = {
 
             m.onLoadingStart();
 
+            //reformat phone to database format
+            e.target.phone.value = VMasker.toPattern(e.target.phone.value, Conf.phone.db_mask);
+            var phone_number = e.target.phone.value.substr(2) ? e.target.phone.value.substr(2) : '';
+
+            if (!phone_number) {
+                return m.flashError(Conf.tr('Check phone number'));
+            }
+
+            if (phone_number.match(/\d/g).length != Conf.phone.length) {
+                m.startComputation();
+                ctrl.phone = ctrl.getPhoneWithViewPattern(Conf.phone.prefix + phone_number);
+                m.endComputation();
+                return m.flashError(Conf.tr("Invalid phone"));
+            }
+
+            m.startComputation();
             ctrl.asset(e.target.asset.value);
             ctrl.surname(e.target.surname.value);
             ctrl.name(e.target.name.value);
             ctrl.middle_name(e.target.middle_name.value);
             ctrl.email(e.target.email.value);
-            ctrl.phone(e.target.phone.value);
+            ctrl.phone = ctrl.getPhoneWithViewPattern(Conf.phone.prefix + phone_number);
             ctrl.address(e.target.address.value);
             ctrl.ipn_code(e.target.ipn_code.value);
             ctrl.passport(e.target.passport.value);
+            m.endComputation();
 
             var form_data = {
                 asset       : ctrl.asset(),
@@ -74,13 +110,18 @@ module.exports = {
                 name        : ctrl.name(),
                 middle_name : ctrl.middle_name(),
                 email       : ctrl.email(),
-                phone       : ctrl.phone(),
+                phone       : phone_number,
                 address     : ctrl.address(),
                 ipn_code    : ctrl.ipn_code(),
                 passport    : ctrl.passport()
             };
 
-            Conf.SmartApi.Regusers.create(form_data)
+            return Conf.SmartApi.Wallets.notExist({
+                    username: phone_number
+                })
+                .then(function () {
+                    return Conf.SmartApi.Regusers.create(form_data)
+                })
                 .then(function() {
                     ctrl.clearForm();
                     m.flashSuccess(Conf.tr('Success') + '. ' + Conf.tr('Enrollment was sent to email'));
@@ -90,7 +131,9 @@ module.exports = {
                     if (error.name === 'ApiError') {
                         return m.flashApiError(error);
                     }
-
+                    if (error.name) {
+                        return m.flashError(Conf.tr(error.name) + ': ' + Conf.tr(error.message));
+                    }
                     return m.flashError(Conf.tr('Can not create registered user'));
                 });
         };
@@ -128,6 +171,21 @@ module.exports = {
                                                     </div>
                                                 </div>
                                                 <div class="form-group">
+                                                    <label for="input_phone" class="col-md-2 control-label">{Conf.tr("Login/phone")}</label>
+                                                    <div class="col-md-6">
+                                                        <input
+                                                            class="form-control"
+                                                            type="text"
+                                                            name="phone"
+                                                            id="input_phone"
+                                                            placeholder={Conf.phone.view_mask}
+                                                            oninput={ctrl.addPhoneViewPattern.bind(ctrl)}
+                                                            onfocus={ctrl.addPhoneViewPattern.bind(ctrl)}
+                                                            onblur={ctrl.onBlur.bind(ctrl)}
+                                                            value={ctrl.phone()}/>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
                                                     <label for="input_surname" class="col-md-2 control-label">{Conf.tr("Surname")}</label>
                                                     <div class="col-md-6">
                                                         <input class="form-control" name="surname"
@@ -157,14 +215,6 @@ module.exports = {
                                                         <input class="form-control" name="email"
                                                                value={ctrl.email()}
                                                                id="input_email" type="text" />
-                                                    </div>
-                                                </div>
-                                                <div class="form-group">
-                                                    <label for="input_phone" class="col-md-2 control-label">{Conf.tr("Phone")}</label>
-                                                    <div class="col-md-6">
-                                                        <input class="form-control" name="phone"
-                                                               value={ctrl.phone()}
-                                                               id="input_phone" type="text" />
                                                     </div>
                                                 </div>
                                                 <div class="form-group">

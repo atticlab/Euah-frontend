@@ -20,7 +20,7 @@ module.exports = {
             ctrl.url('');
             ctrl.name('');
             m.endComputation();
-        }
+        };
 
         this.createStore = function (e) {
             e.preventDefault();
@@ -38,7 +38,7 @@ module.exports = {
             Conf.SmartApi.Merchants.createStore(form_data)
                 .then(function(){
                     ctrl.clearForm();
-                    return m.flashSuccess('Store created');
+                    return m.flashSuccess(Conf.tr('Store created'));
                 })
                 .catch(function(error) {
                     console.error(error);
