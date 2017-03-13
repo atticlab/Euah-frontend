@@ -90,13 +90,13 @@ module.exports = {
                                     <div class="form-group">
                                         <label for="description" class="col-sm-1 control-label">{Conf.tr('Account')}</label>
                                         <div class="col-md-8">
-                                            <input name="account_id" class="form-control" placeholder="Account ID" required="required"/>
+                                            <input name="account_id" class="form-control" placeholder={Conf.tr("Account ID")} required="required"/>
                                         </div>
                                     </div>
                                     <div class="form-group">
                                         <label for="amount" class="col-sm-1 control-label">{Conf.tr('Amount')}</label>
                                         <div class="col-md-8">
-                                            <input type="number" min="0.01" step="0.01" class="form-control" id="amount" name="amount" placeholder="Amount" required="required"/>
+                                            <input type="number" min="0.01" step="0.01" class="form-control" id="amount" name="amount" placeholder={Conf.tr("Amount")} required="required"/>
                                         </div>
                                     </div>
                                     <div class="form-group">

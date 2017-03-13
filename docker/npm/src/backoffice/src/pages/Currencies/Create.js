@@ -16,6 +16,15 @@ module.exports = {
             e.preventDefault();
 
             var asset_code = e.target.code.value;
+
+            if (typeof asset_code != 'string' || !asset_code.length) {
+                return m.flashError(Conf.tr("Invalid asset code"));
+            }
+
+            if (asset_code.length > 12) {
+                return m.flashError(Conf.tr("Asset code must be 12 symbols maximum"));
+            }
+
             var isAnonymous = e.target.anonymous.checked;
 
             m.onLoadingStart();

@@ -103,76 +103,91 @@ module.exports = {
 
             m.onLoadingStart();
 
-            if (!reg_user || !reg_user.account_id) {
+            if (!reg_user) {
                 return m.flashError(Conf.tr("Invalid registered user data"));
             }
 
-            if (!StellarSdk.Keypair.isValidPublicKey(reg_user.account_id)) {
-                return m.flashError(Conf.tr("Account is invalid"));
-            }
+            m.startComputation();
+            ctrl.balances([]);
+            m.endComputation();
 
-            Auth.loadAccountById(reg_user.account_id)
-                .then(function (account_data) {
-                    m.startComputation();
-                    ctrl.balances([]);
-                    account_data.balances.map(function(balance) {
-                        if (typeof balance.asset_code != 'undefined') {
-                            ctrl.balances().push(balance);
-                        }
-                    });
-                    m.endComputation();
-                })
-                .then(() => {
-                    m.startComputation();
-                    m.onLoadingEnd();
-                    Session.modal(
-                        <div>
-                            {
-                                ctrl.balances().length ?
-                                    <div class="alert alert-success">
-                                        {
-                                            ctrl.balances().map(function (balance) {
-                                                return <p>{balance.asset_code}: {parseFloat(balance.balance).toFixed(2)}</p>
-                                            })
-                                        }
-                                    </div>
-                                :
-                                    <div class="alert alert-warning">{Conf.tr('No balances')}</div>
+            if (reg_user.account_id) {
+                if (!StellarSdk.Keypair.isValidPublicKey(reg_user.account_id)) {
+                    return m.flashError(Conf.tr("Account is invalid"));
+                }
+                Auth.loadAccountById(reg_user.account_id)
+                    .then(function (account_data) {
+                        m.startComputation();
+                        account_data.balances.map(function(balance) {
+                            if (typeof balance.asset_code != 'undefined') {
+                                ctrl.balances().push(balance);
                             }
-                            <table class="table">
-                                <tr>
-                                    <td>{Conf.tr('Account ID')}:</td>
-                                    <td><code>{reg_user.account_id || Conf.tr("Account ID is not approved yet")}</code></td>
-                                </tr>
-                                <tr>
-                                    <td>{Conf.tr('User ID')}:</td>
-                                    <td><code>{reg_user.id}</code></td>
-                                </tr>
-                                <tr>
-                                    <td>{Conf.tr('Passport')}:</td>
-                                    <td><code>{reg_user.passport}</code></td>
-                                </tr>
-                                <tr>
-                                    <td>{Conf.tr('IPN')}:</td>
-                                    <td><code>{reg_user.ipn_code}</code></td>
-                                </tr>
-                                <tr>
-                                    <td>{Conf.tr('Address')}:</td>
-                                    <td><code>{reg_user.address}</code></td>
-                                </tr>
-                                <tr>
-                                    <td>{Conf.tr('Phone')}:</td>
-                                    <td><code>{reg_user.phone}</code></td>
-                                </tr>
-                                <tr>
-                                    <td>{Conf.tr('E-mail')}:</td>
-                                    <td><code>{reg_user.email}</code></td>
-                                </tr>
-                            </table>
-                        </div>
-                        , Conf.tr('About user'))
-                    m.endComputation();
-                })
+                        });
+                        m.endComputation();
+                    })
+                    .then(() => {
+                        m.onLoadingEnd();
+                        return ctrl.showData(reg_user);
+                    })
+                    .catch((error) => {
+                        console.error(error);
+                        return m.flashError(Conf.tr("Can not get registered user account data"));
+                    })
+            } else {
+                m.onLoadingEnd();
+                return ctrl.showData(reg_user);
+            }
+        };
+
+        this.showData = function(reg_user) {
+            m.startComputation();
+            Session.modal(
+                <div>
+                    {
+                        ctrl.balances().length ?
+                            <div class="alert alert-success">
+                                {
+                                    ctrl.balances().map(function (balance) {
+                                        return <p>{balance.asset_code}: {parseFloat(balance.balance).toFixed(2)}</p>
+                                    })
+                                }
+                            </div>
+                            :
+                            <div class="alert alert-warning">{Conf.tr('No balances')}</div>
+                    }
+                    <table class="table">
+                        <tr>
+                            <td>{Conf.tr('Account ID')}:</td>
+                            <td><code>{reg_user.account_id || Conf.tr("Account ID is not approved yet")}</code></td>
+                        </tr>
+                        <tr>
+                            <td>{Conf.tr('User ID')}:</td>
+                            <td><code>{reg_user.id}</code></td>
+                        </tr>
+                        <tr>
+                            <td>{Conf.tr('Passport')}:</td>
+                            <td><code>{reg_user.passport}</code></td>
+                        </tr>
+                        <tr>
+                            <td>{Conf.tr('IPN')}:</td>
+                            <td><code>{reg_user.ipn_code}</code></td>
+                        </tr>
+                        <tr>
+                            <td>{Conf.tr('Address')}:</td>
+                            <td><code>{reg_user.address}</code></td>
+                        </tr>
+                        <tr>
+                            <td>{Conf.tr('Phone')}:</td>
+                            <td><code>{reg_user.phone}</code></td>
+                        </tr>
+                        <tr>
+                            <td>{Conf.tr('E-mail')}:</td>
+                            <td><code>{reg_user.email}</code></td>
+                        </tr>
+                    </table>
+                </div>
+                , Conf.tr('About user'));
+            m.endComputation();
         };
 
         this.getRegisteredUsers();

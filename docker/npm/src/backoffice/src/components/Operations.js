@@ -87,6 +87,10 @@ var Operations = {
 
     saveCommissionOperation: function (opts, flat, percent) {
 
+        if (percent >= 100) {
+            return m.flashError(Conf.tr('Maximum percent commission must be less than 100%'));
+        }
+
         return Conf.horizon.loadAccount(Conf.master_key)
             .then(function (source) {
                 var op = StellarSdk.Operation.setCommission(opts, flat.toString(), percent.toString());
