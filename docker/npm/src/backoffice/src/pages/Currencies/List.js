@@ -65,6 +65,9 @@ module.exports = {
                         return ctrl.getAssets();
                     })
                     .then(function(){
+                        m.onLoadingEnd();
+                    })
+                    .then(function(){
                         return swal(Conf.tr("Deleted") + "!",
                             Conf.tr("Currency successfully deleted"),
                             "success"
@@ -73,9 +76,6 @@ module.exports = {
                     .catch(function(err){
                         console.log(err);
                         return m.flashError(Conf.tr(err));
-                    })
-                    .then(function(){
-                        m.onLoadingEnd();
                     });
             });
 
@@ -102,7 +102,6 @@ module.exports = {
                                     <table class="table table-bordered">
                                         <thead>
                                         <tr>
-                                            <th>{Conf.tr("Type")}</th>
                                             <th>{Conf.tr("Code")}</th>
                                             <th>{Conf.tr("Issuer")}</th>
                                             <th>{Conf.tr("Allow anonymous accounts")}</th>
@@ -112,13 +111,12 @@ module.exports = {
                                         <tbody>
                                         {ctrl.assets().map(function (asset) {
                                             return <tr>
-                                                <td class="col-sm-1">{asset.asset_type}</td>
                                                 <td class="col-sm-1">{asset.asset_code}</td>
                                                 <td class="col-sm-1">{asset.asset_issuer}</td>
-                                                <td class="col-sm-1"><span class="label label-primary">{asset.is_anonymous}</span></td>
+                                                <td class="col-sm-1"><span class="label label-primary">{Conf.tr(asset.is_anonymous)}</span></td>
                                                 <td class="col-sm-1">
                                                     <button
-                                                       class="btn btn-danger btn-custom waves-effect w-md waves-light m-b-5"
+                                                       class="btn btn-danger btn-custom waves-effect w-md waves-light"
                                                        onclick={ctrl.deleteAsset.bind(ctrl, asset.asset_code)}
                                                     >{Conf.tr('Delete')}</button>
                                                 </td>

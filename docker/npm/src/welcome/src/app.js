@@ -14,9 +14,6 @@ m.flashError = function (msg) {
     $.Notification.notify('error', 'top center', Conf.tr("Error"), msg);
 };
 m.flashApiError = function (err) {
-    if (err && typeof err.message != 'undefined' && err.message == 'Invalid signature') {
-        return window.location.href = '/';
-    }
     m.onLoadingEnd();
     if (!err.message) {
         console.error('Unexpected ApiError response');
@@ -27,6 +24,8 @@ m.flashApiError = function (err) {
     switch (err.message) {
         case 'ERR_NOT_FOUND':
             return $.Notification.notify('error', 'top center', Conf.tr("Error"), Conf.tr("Record not found") + ': ' + Conf.tr(err.description));
+        case 'ERR_ALREADY_EXISTS':
+            return $.Notification.notify('error', 'top center', Conf.tr("Error"), Conf.tr("Record already exists") + ': ' + Conf.tr(err.description));
         default:
             return $.Notification.notify('error', 'top center', Conf.tr("Error"), Conf.tr('Service error'));
     }
