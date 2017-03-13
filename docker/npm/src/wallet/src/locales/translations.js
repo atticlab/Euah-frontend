@@ -413,8 +413,8 @@ module.exports = {
     },
     "Account is invalid": {
         'en': "Account is invalid",
-        'ru': "Неверный счет",
-        'ua': "Невірний рахунок"
+        'ru': "Неверный номер счета",
+        'ua': "Невірний номер рахунку"
     },
     "Amount is invalid": {
         'en': "Amount is invalid",
@@ -879,10 +879,11 @@ module.exports = {
     },
     "The website is for information only. The National Bank of Ukraine is not responsible for possible consequences resulting from the use of information on the website. The National Bank of Ukraine owns the copyright to the materials posted on the website, unless otherwise expressly stated in the text. The materials can be used for further dissemination only with prior consent of the National Bank of Ukraine and with reference to the source. All changes and amendments to such information can be made only with the National Bank of Ukraine’s prior consent." : {
         'ua': "Сайт має виключно інформаційне значення. Національний банк України не несе відповідальності за можливі наслідки використання інформації на сайті. Крім випадків, коли інше прямо вказано у тексті, авторське право щодо матеріалів, розміщених на цьому сайті, належить Національному банку України. Матеріали сайту можуть бути використані для подальшого поширення виключно за попередньою згодою Національного банку України із посиланням на джерело. Всі зміни та правки до такої інформації можуть вноситися тільки за попередньою згодою Національного банку України.",
-        'ru': ""
+        'ru': "Сайт имеет исключительно информационное значение. Национальный банк Украины не несет ответственности за возможные последствия использования информации на сайте. Кроме случаев, когда иное прямо указано в тексте, авторское право в отношении материалов, размещенных на этом сайте, принадлежит Национальному банку Украины. Материалы сайта могут быть использованы для дальнейшего распространения исключительно с предварительного согласия Национального банка Украины со ссылкой на источник. Все изменения и правки к такой информации могут вноситься только с предварительного согласия Национального банка Украины."
     },
     "PROSTIR" : {
-        'ua': "ПРОСТІР"
+        'ua': "ПРОСТІР",
+        'ru': "ПРОСТІР"
     },
     "All rights reserved": {
         'ua': "Всі права захищені",
@@ -1046,6 +1047,7 @@ module.exports = {
         ru: "Шифрование учетной записи для безопасности",
         ua: "Шифрування облікового запису для безпеки"
     },
+
     "Please wait...": {
         ru: "Пожалуйста подождите...",
         ua: "Будь-ласка зачекайте..."
