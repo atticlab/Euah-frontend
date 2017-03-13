@@ -738,8 +738,8 @@ module.exports = {
     },
     "Your account" : {
         'en': "Your account",
-        'ru': "Ваш счет",
-        'ua': "Ваш раханок"
+        'ru': "Ваш номер счета",
+        'ua': "Ваш номер рахунку"
     },
     "Show account" : {
         'en': "Show account",
@@ -835,10 +835,11 @@ module.exports = {
         'ua': "Тепер Ви сможете відновити доступ до системи, використовуючи свою мнемонічну фразу."
     },
     "Account created successfully" : {
-        'ru' : "",
-        'ua' : ""
+        'ru' : "Учетная запись успешно создана",
+        'ua' : "Обліковий запис успішно створений"
     },
     "Log in to SmartMoney" : {
+        'ru': "Войти в SmartMoney",
         'ua': "Увійти до SmartMoney"
     },
     "Help" :{
@@ -1052,4 +1053,8 @@ module.exports = {
         ru: "Пожалуйста подождите...",
         ua: "Будь-ласка зачекайте..."
     },
+    "en": {
+        ru: 'ru',
+        ua: 'ua'
+    }
 };
