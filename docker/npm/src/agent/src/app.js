@@ -42,6 +42,8 @@ m.flashApiError = function (err) {
     switch (err.message) {
         case 'ERR_NOT_FOUND':
             return $.Notification.notify('error', 'top center', Conf.tr("Error"), Conf.tr("Record not found") + ': ' + Conf.tr(err.description));
+        case 'ERR_ALREADY_EXISTS':
+            return $.Notification.notify('error', 'top center', Conf.tr("Error"), Conf.tr("Record already exists") + ': ' + Conf.tr(err.description));
         default:
             return $.Notification.notify('error', 'top center', Conf.tr("Error"), Conf.tr('Service error'));
     }

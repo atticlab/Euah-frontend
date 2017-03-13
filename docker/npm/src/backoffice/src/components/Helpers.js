@@ -52,10 +52,18 @@ var Helpers = {
     },
 
     getTextAgentType: function (type) {
-        var prefix = 'account';
-        var text_type = StellarSdk.xdr.AccountType._byValue.get(type).name;
-        text_type = text_type.slice(prefix.length);
-        return Conf.tr(text_type);
+        switch (type) {
+            case StellarSdk.xdr.AccountType.accountMerchant().value:
+                return Conf.tr("Merchant");
+            case StellarSdk.xdr.AccountType.accountDistributionAgent().value:
+                return Conf.tr("Distribution");
+            case StellarSdk.xdr.AccountType.accountSettlementAgent().value:
+                return Conf.tr("Settlement");
+            case StellarSdk.xdr.AccountType.accountExchangeAgent().value:
+                return Conf.tr("Exchange");
+            default:
+                return Conf.tr("Unknown agent type");
+        }
     },
 
     getEnrollmentStageStatus: function (stage_status) {

@@ -124,7 +124,7 @@ module.exports = {
 
                                         <div class="form-group m-b-0">
                                             <div class="col-sm-offset-2 col-sm-9">
-                                                <button type="submit" class="btn btn-primary btn-custom waves-effect w-md waves-light m-b-5">Add</button>
+                                                <button type="submit" class="btn btn-primary btn-custom waves-effect w-md waves-light">{Conf.tr('Add')}</button>
                                             </div>
                                         </div>
                                     </form>

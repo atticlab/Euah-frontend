@@ -12,29 +12,17 @@ module.exports = {
             return m.route('/');
         }
 
-        // this.getPromptValue = function (label) {
-        //     return new Promise(function (resolve, reject) {
-        //         jPrompt(label, '', Conf.tr("Message"), Conf.tr("OK"), Conf.tr("Cancel"), function (result) {
-        //             if (result) {
-        //                 resolve(result);
-        //             } else {
-        //                 reject(new Error(Conf.tr("Empty password")));
-        //             }
-        //         });
-        //     });
-        // };
-
         this.createAsset = function (e) {
             e.preventDefault();
 
             var asset_code = e.target.code.value;
+            var isAnonymous = e.target.anonymous.checked;
 
             m.onLoadingStart();
 
             Conf.horizon.loadAccount(Conf.master_key)
                 .then(function (source) {
                     var asset = new StellarSdk.Asset(asset_code, Conf.master_key);
-                    var isAnonymous = true;
                     var isDelete = false;
                     var op = StellarSdk.Operation.manageAssets(asset, isAnonymous, isDelete);
                     var tx = new StellarSdk.TransactionBuilder(source).addOperation(op).build();
@@ -68,16 +56,23 @@ module.exports = {
                                 <div class="col-lg-6">
                                     <form class="form-horizontal" onsubmit={ctrl.createAsset.bind(ctrl)}>
                                         <div class="form-group">
-                                            <label for="code" class="col-md-2 control-label">{Conf.tr("Code")}</label>
+                                            <label for="code" class="col-md-1 control-label">{Conf.tr("Code")}</label>
                                             <div class="col-md-4">
                                                 <input class="form-control" name="code" id="code"
                                                        placeholder={Conf.tr("Currency Code")}
                                                        type="text" value="" required="required"/>
                                             </div>
                                         </div>
-
+                                        <div class="form-group">
+                                            <div class="checkbox checkbox-primary col-md-offset-1">
+                                                <input name="anonymous" id="anonymous" type="checkbox" checked="checked"/>
+                                                    <label for="anonymous">
+                                                        {Conf.tr('Allow anonymous accounts')}
+                                                    </label>
+                                            </div>
+                                        </div>
                                         <div class="form-group m-b-0">
-                                            <div class="col-sm-offset-2 col-sm-9">
+                                            <div class="col-sm-offset-1 col-sm-10">
                                                 <button type="submit" class="btn btn-primary btn-custom waves-effect w-md waves-light m-b-5">{Conf.tr('Create')}</button>
                                             </div>
                                         </div>

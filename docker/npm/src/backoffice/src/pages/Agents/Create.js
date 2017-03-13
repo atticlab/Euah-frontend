@@ -147,7 +147,7 @@ module.exports = {
                                                 <div class="col-sm-offset-2 col-sm-3">
                                                     <button type="submit"
                                                             class="btn btn-primary btn-custom waves-effect w-md waves-light m-b-5">
-                                                        Create
+                                                        {Conf.tr('Create')}
                                                     </button>
                                                 </div>
                                             </div>
