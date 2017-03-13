@@ -923,6 +923,10 @@ module.exports = {
     "logo-image": {
         'ua': "logo-image-ua"
     },
+    "Bad account id": {
+        ru: 'Неверный номер счета',
+        ua: 'Хибний номер рахунку'
+    },
 
     //errors global
     "Error": {

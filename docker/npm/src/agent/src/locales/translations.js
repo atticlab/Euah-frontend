@@ -364,6 +364,10 @@ module.exports = {
         'ru': "Мнемоническая фраза",
         'ua': "Мнемонічна фраза"
     },
+    "Bad account id": {
+        ru: 'Неверный номер счета',
+        ua: 'Хибний номер рахунку'
+    },
     //error descriptions
     "invoice": {
         ru: 'инвойс',
