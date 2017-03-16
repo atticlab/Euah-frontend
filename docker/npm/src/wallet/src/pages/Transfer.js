@@ -30,6 +30,7 @@ var Invoice = module.exports = {
         if (!Auth.keypair()) {
             return m.route('/');
         }
+        Conf.SmartApi.Api.refreshNonce();
 
         this.changeTransferType = function (e) {
             e.preventDefault();
@@ -110,6 +111,7 @@ var Invoice = module.exports = {
                     return m.flashError(Conf.tr("Can not request invoice"));
                 })
                 .then(() => {
+                    Conf.SmartApi.Api.refreshNonce();
                     return m.onLoadingEnd();
                 })
         };
@@ -145,8 +147,8 @@ var Invoice = module.exports = {
                             phone : phoneNum
                         })
                         .then(function (walletData) {
-                            if (walletData && walletData.accountId) {
-                                ctrl.processPayment(walletData.accountId, memoText, amount, asset);
+                            if (walletData && walletData.data.accountId) {
+                                ctrl.processPayment(walletData.data.accountId, memoText, amount, asset);
                             }
                         })
                         .catch(function (err) {
@@ -164,8 +166,8 @@ var Invoice = module.exports = {
                             email : email
                         })
                         .then(function (walletData) {
-                            if (walletData && walletData.accountId) {
-                                ctrl.processPayment(walletData.accountId, memoText, amount, asset);
+                            if (walletData && walletData.data.accountId) {
+                                ctrl.processPayment(walletData.data.accountId, memoText, amount, asset);
                             }
                         })
                         .catch(function (err) {
@@ -216,6 +218,7 @@ var Invoice = module.exports = {
                     ctrl.infoPhone('');
                     ctrl.infoEmail('');
                     m.endComputation();
+                    Conf.SmartApi.Api.refreshNonce();
                 });
         }
     },

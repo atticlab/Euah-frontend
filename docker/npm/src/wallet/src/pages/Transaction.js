@@ -11,6 +11,7 @@ var Transaction = module.exports = {
         if (!Auth.keypair()) {
             return m.route('/');
         }
+        Conf.SmartApi.Api.refreshNonce();
 
         this.navbar = new Navbar.controller();
 

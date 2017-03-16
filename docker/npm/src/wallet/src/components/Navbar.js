@@ -11,6 +11,7 @@ module.exports = {
 
         this.toggleVisible = function () {
             this.visible(!this.visible());
+            Conf.SmartApi.Api.refreshNonce();
 
             if (this.visible()) {
                 $('#mobile-spec-menu').css('max-height', $(window).height() - $('.topbar-main').height());
@@ -18,6 +19,7 @@ module.exports = {
         };
 
         this.refreshPage = function () {
+            Conf.SmartApi.Api.refreshNonce();
             m.route(m.route());
         };
 
