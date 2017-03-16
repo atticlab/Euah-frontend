@@ -16,6 +16,7 @@ var Invoice = module.exports = {
         if (!Auth.keypair()) {
             return m.route('/');
         }
+        Conf.SmartApi.Api.refreshNonce();
 
         //create invoice function
         this.createInvoice = function (e) {
@@ -73,6 +74,7 @@ var Invoice = module.exports = {
                     return m.flashError(Conf.tr("Can not create invoice"));
                 })
                 .then(() => {
+                    Conf.SmartApi.Api.refreshNonce();
                     m.onLoadingEnd();
                 })
         }

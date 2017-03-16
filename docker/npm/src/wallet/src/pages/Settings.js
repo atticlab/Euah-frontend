@@ -11,6 +11,7 @@ var Settings = module.exports = {
         if (!Auth.keypair()) {
             return m.route('/');
         }
+        Conf.SmartApi.Api.refreshNonce();
 
         this.progress = m.prop(0);
         this.showProgress = m.prop(false);
@@ -57,6 +58,7 @@ var Settings = module.exports = {
             m.startComputation();
             ctrl.showProgress(true);
             m.endComputation();
+            Conf.SmartApi.Api.refreshNonce();
 
             Auth.updatePassword(oldPass, pass)
                 .then(function () {
@@ -95,6 +97,8 @@ var Settings = module.exports = {
                     }
                 }
                 dataToUpdate.email = e.target.email.value;
+
+                Conf.SmartApi.Api.refreshNonce();
 
                 Auth.update(dataToUpdate)
                     .then(function () {

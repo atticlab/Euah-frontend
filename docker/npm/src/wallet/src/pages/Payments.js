@@ -12,9 +12,11 @@ module.exports = {
         this.payments = m.prop([]);
         this.next = m.prop(false);
 
+
         if (!Auth.keypair()) {
             return m.route('/');
         }
+        Conf.SmartApi.Api.refreshNonce();
 
         this.checkNextPaymentsExist = function () {
 

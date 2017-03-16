@@ -12,6 +12,7 @@ module.exports = {
         if (!Auth.keypair()) {
             return m.route('/');
         }
+        Conf.SmartApi.Api.refreshNonce();
 
         this.getPhoneWithViewPattern = function (number) {
             if (number.substr(0, Conf.phone.prefix.length) != Conf.phone.prefix) {
@@ -20,7 +21,7 @@ module.exports = {
             return m.prop(VMasker.toPattern(number, {pattern: Conf.phone.view_mask, placeholder: "x"}));
         };
 
-        this.username = ctrl.getPhoneWithViewPattern(Conf.phone.prefix + Auth.wallet().username);
+        this.username = Auth.username() ? ctrl.getPhoneWithViewPattern(Conf.phone.prefix + Auth.username()) : null;
 
         // We'll query balances on each page load until we receive some money and start a stream
         if (!Auth.payments().length) {
