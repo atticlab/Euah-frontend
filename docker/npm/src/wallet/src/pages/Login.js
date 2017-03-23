@@ -90,7 +90,7 @@ var Login = module.exports = {
                     :
                     <div class="auth-form">
                         <div class="text-center">
-                            <h3>{Conf.tr("Log in to SmartMoney")}</h3>
+                            <h3>{Conf.tr("Log in to OpenbankIT")}</h3>
                         </div>
                         <form class="form-horizontal m-t-30" onsubmit={ctrl.login.bind(ctrl)}>
                             <div class="form-group">

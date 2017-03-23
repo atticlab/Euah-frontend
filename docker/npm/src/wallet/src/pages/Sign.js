@@ -175,7 +175,7 @@ var Sign = module.exports = {
 
                         <div class="m-t-10">
                             <a href="/" config={m.route} class="">{Conf.tr("Log in")}</a>
-                            <a href={Conf.smartmoney_host + "/docs/api-reference"} target="_blank"
+                            <a href={Conf.openbankit_host + "/docs/api-reference"} target="_blank"
                                class="pull-right">{Conf.tr("Help")}</a>
                         </div>
                     </div>

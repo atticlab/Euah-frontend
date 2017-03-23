@@ -557,9 +557,9 @@ module.exports = {
         ru: 'Последовательность',
         ua: 'Послідовність'
     },
-    "SmartBank Admin Panel": {
-        ru: 'Панель Администратора SmartBank',
-        ua: "Панель Адмiнiстратора SmartBank",
+    "OpenbankIT Admin Panel": {
+        ru: 'Панель Администратора OpenbankIT',
+        ua: "Панель Адмiнiстратора OpenbankIT",
     },
     "Status": {
         ru: 'Статус',
@@ -1684,9 +1684,9 @@ module.exports = {
         ru: 'Приглашение принято',
         ua: 'Запрошення прийнято'
     },
-    "Log in to SmartMoney via mnemonic phrase": {
-        ru: 'Войдите в SmartMoney с помощью мнемонической фразы',
-        ua: 'Увійдіть в SmartMoney за допомогою мнемонічной фрази'
+    "Log in to OpenbankIT via mnemonic phrase": {
+        ru: 'Войдите в OpenbankIT с помощью мнемонической фразы',
+        ua: 'Увійдіть в OpenbankIT за допомогою мнемонічной фрази'
     },
     "Enter your mnemonic phrase word number $[1] of $[2]" : {
         'en': "Enter your mnemonic phrase word number $[1] of $[2].",

@@ -245,7 +245,7 @@ module.exports = {
                                 <div class="col-sm-12">
                                     <div class="page-title-box">
                                         <ol class="breadcrumb pull-right">
-                                            <li class="active">Smartmoney</li>
+                                            <li class="active">OpenbankIT</li>
                                             <li class="active">{title}</li>
                                         </ol>
                                         <h4 class="page-title">{title}</h4>

@@ -11,7 +11,7 @@ module.exports = {
                 <div class="topbar-main m-b-20">
                     <div class="container">
                         <div class="logo m-b-20">
-                            <a href="/" class="logo"><i class="md md-equalizer"></i> <span>SmartMoney Ledger Viewer</span> </a>
+                            <a href="/" class="logo"><i class="md md-equalizer"></i> <span>OpenbankIT Ledger Viewer</span> </a>
                         </div>
                         <ul class="nav navbar-nav navbar-right pull-right hidden-xs">
                             <li class="dropdown">
