@@ -2,6 +2,8 @@ var AuthNavbar = require('../components/AuthNavbar.js');
 var Auth = require('../models/Auth.js');
 var Conf = require('../config/Config.js');
 const ProgressBar = require('../components/ProgressBar');
+var Qr = require('kjua');
+const QR_TYPE_LINK_TO_WALLET = 3;
 
 var Login = module.exports = {
     controller: function () {
@@ -36,6 +38,8 @@ var Login = module.exports = {
         this.username = ctrl.getPhoneWithViewPattern(Conf.phone.prefix);
         this.progress = m.prop(0);
         this.showProgress = m.prop(false);
+
+        this.qr = m.prop(false);
 
         this.login = function(e) {
             e.preventDefault();
@@ -73,9 +77,51 @@ var Login = module.exports = {
                     m.onLoadingEnd();
                 })
         };
+
+
+        this.viewSettings = function (e) {
+            e.preventDefault();
+            console.info(Conf);
+
+            if (Conf) {
+                var qrData = {
+                    horizonHost: Conf.horizon_host || '',
+                    apiHost: Conf.api_host || '',
+                    infoHost: Conf.info_host || '',
+                    t: QR_TYPE_LINK_TO_WALLET
+                };
+
+                var qrCode = Qr({
+                    text: JSON.stringify(qrData),
+                    crisp: true,
+                    fill: '#000',
+                    ecLevel: 'L',
+                    size: 240,
+                    minVersion: 4
+                });
+
+                m.startComputation();
+                ctrl.qr(qrCode);
+                m.endComputation();
+            } else {
+                m.flashError(Conf.tr("Error! Settings are not available!"));
+            }
+        };
+
+        this.hideSettings = function (e) {
+            e.preventDefault();
+
+            m.startComputation();
+            ctrl.qr(false);
+            m.endComputation();
+        };
     },
 
     view: function (ctrl) {
+        if (ctrl.qr()) {
+            return Login.viewSettingsQr(ctrl);
+        }
+
         return <div>
             {m.component(AuthNavbar)}
 
@@ -120,13 +166,42 @@ var Login = module.exports = {
                             </div>
                         </form>
 
-                        <div class="m-t-10">
-                            <a href="/sign" config={m.route} class="">{Conf.tr("Create an account")}</a>
-                            <a href="/recovery" config={m.route} class="pull-right">{Conf.tr("Forgot your password?")}</a>
+                        <div class="m-t-5 text-center">
+                            <a href="/sign" config={m.route} class="pull-left m-t-5">{Conf.tr("Create an account")}</a>
+                            <button class="btn btn-icon btn-info waves-effect waves-light m-b-5" onclick={ctrl.viewSettings.bind(ctrl)}>
+                                <i class="md md-phonelink"></i></button>
+                            <a href="/recovery" config={m.route} class="pull-right m-t-5">{Conf.tr("Forgot your password?")}</a>
                         </div>
                     </div>
                 }
             </div>
         </div>
-    }
+    },
+
+    viewSettingsQr: function (ctrl) {
+        var qrCode = ctrl.qr();
+        // ctrl.qr(false);
+
+        return <div>
+            {m.component(AuthNavbar)}
+
+            <div class="wrapper-page">
+                <div class="panel panel-color panel-success">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">{Conf.tr("Settings for mobile-wallet")}</h3>
+                        <p class="panel-sub-title font-13">{Conf.tr("Scan this QR-code with your mobile-wallet to link it to web-wallet")}</p>
+                    </div>
+                    <div class="panel-body">
+                        <div class="text-center">
+                            <p><img src={qrCode.src} alt=""/></p>
+                            <div class="text-center">
+                                <button class="btn btn-primary btn-custom waves-effect w-md waves-light m-t-20 m-b-5"
+                                        onclick={ctrl.hideSettings.bind(ctrl)}>{Conf.tr("Back")}</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    },
 };
