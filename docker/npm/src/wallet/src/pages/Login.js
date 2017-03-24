@@ -85,9 +85,7 @@ var Login = module.exports = {
 
             if (Conf) {
                 var qrData = {
-                    horizonHost: Conf.horizon_host || '',
-                    apiHost: Conf.api_host || '',
-                    infoHost: Conf.info_host || '',
+                    systemHost: Conf.host || '',
                     t: QR_TYPE_LINK_TO_WALLET
                 };
 

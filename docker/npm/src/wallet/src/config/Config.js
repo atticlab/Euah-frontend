@@ -6,6 +6,7 @@ var smart_api = require('smart-api-js');
 
 var conf = {
     master_key:         trim(process.env.MASTER_KEY),
+    host:               trim(process.env.SYSTEM_HOST),
     horizon_host:       trim(process.env.HORIZON_HOST, '/'),
     keyserver_host:     trim(process.env.KEYSERVER_HOST, '/'),
     api_host:           trim(process.env.API_HOST, '/'),
