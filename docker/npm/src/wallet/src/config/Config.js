@@ -12,7 +12,7 @@ var conf = {
     api_host:           trim(process.env.API_HOST, '/'),
     info_host:          trim(process.env.INFO_HOST, '/'),
     exchange_host:      trim(process.env.EXCHANGE_HOST, '/'),
-    smartmoney_host:    trim(process.env.SMARTMONEY_HOST, '/'),
+    openbankit_host:    trim(process.env.OPENBANKIT_HOST, '/'),
 };
 
 conf.SmartApi = new smart_api({

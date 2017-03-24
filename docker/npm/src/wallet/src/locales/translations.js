@@ -838,9 +838,9 @@ module.exports = {
         'ru' : "Учетная запись успешно создана",
         'ua' : "Обліковий запис успішно створений"
     },
-    "Log in to SmartMoney" : {
-        'ru': "Войти в SmartMoney",
-        'ua': "Увійти до SmartMoney"
+    "Log in to OpenbankIT" : {
+        'ru': "Войти в OpenbankIT",
+        'ua': "Увійти до OpenbankIT"
     },
     "Help" :{
         'ua': "Допомога",
@@ -854,9 +854,9 @@ module.exports = {
         'ua': "Забули пароль?",
         'ru': "Забыли пароль?",
     },
-    "Log in to SmartMoney via mnemonic phrase" : {
-        'ua': "Увійти до SmartMoney за допомогою мнемонічної фрази",
-        'ru': "Войти в SmartMoney с помощью мнемонической фразы",
+    "Log in to OpenbankIT via mnemonic phrase" : {
+        'ua': "Увійти до OpenbankIT за допомогою мнемонічної фрази",
+        'ru': "Войти в OpenbankIT с помощью мнемонической фразы",
     },
     "This is a QR-code with a mnemonic phrase that is used for account recovering. It is very important to keep your mnemonic phrase in a safe and private place" : {
         'ua': "Це QR-код з мнемонічною фразою, яка використовується для відновлення вашого аккаунту. Дуже важливо зберігати вашу мнемонічну фразу в безпечному та надійному місці",

@@ -2,8 +2,8 @@ version: '2'
 services:
   nginx:
     restart: always
-    image: smartmoney/frontend/nginx
-    container_name: smartmoney-frontend-nginx
+    image: openbankit/frontend/nginx
+    container_name: openbankit-frontend-nginx
     build: docker/nginx
     ports:
       - "8010:80"
@@ -13,8 +13,8 @@ services:
       - .env
 
   npm:
-    image: smartmoney/frontend/npm
-    container_name: smartmoney-frontend-npm
+    image: openbankit/frontend/npm
+    container_name: openbankit-frontend-npm
     build: docker/npm
     volumes:
       - ./docker/npm/src:/src

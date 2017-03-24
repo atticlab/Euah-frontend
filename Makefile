@@ -31,7 +31,7 @@ build:
 	  	read -p "Enter welcome host (with protocol and port [optional]):" welcome_host; echo "WELCOME_HOST=$$welcome_host" >> ./.env; \
 	  	read -p "Enter api host (with protocol and port [optional]):" api_host; echo "API_HOST=$$api_host" >> ./.env; \
 	  	read -p "Enter stellar network:" stellar_network; echo "STELLAR_NETWORK=$$stellar_network" >> ./.env; \
-	  	read -p "Enter smartmoney host with protocol (for docs link):" sm_host; echo "SMARTMONEY_HOST=$$sm_host" >> ./.env; \
+	  	read -p "Enter openbankit host with protocol (for docs link):" sm_host; echo "OPENBANKIT_HOST=$$sm_host" >> ./.env; \
 	fi
 	docker-compose build
 	docker-compose up -d
