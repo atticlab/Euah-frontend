@@ -85,8 +85,11 @@ var Login = module.exports = {
 
             if (Conf) {
                 var qrData = {
-                    systemHost: Conf.host || '',
-                    t: QR_TYPE_LINK_TO_WALLET
+                    horizon  : Conf.horizon_host || '',
+                    api      : Conf.api_host || '',
+                    info     : Conf.info_host || '',
+                    masterKey: Conf.master_key || '',
+                    t        : QR_TYPE_LINK_TO_WALLET
                 };
 
                 var qrCode = Qr({
@@ -165,10 +168,18 @@ var Login = module.exports = {
                         </form>
 
                         <div class="m-t-5 text-center">
-                            <a href="/sign" config={m.route} class="pull-left m-t-5">{Conf.tr("Create an account")}</a>
-                            <button class="btn btn-icon btn-info waves-effect waves-light m-b-5" onclick={ctrl.viewSettings.bind(ctrl)}>
-                                <i class="md md-phonelink"></i></button>
-                            <a href="/recovery" config={m.route} class="pull-right m-t-5">{Conf.tr("Forgot your password?")}</a>
+                            <div class="row">
+                                <div class="col-xs-4">
+                                    <a href="/sign" config={m.route} class="pull-left">{Conf.tr("Create an account")}</a>
+                                </div>
+                                <div class="col-xs-4">
+                                    <button class="btn btn-icon btn-info waves-effect waves-light m-b-5" onclick={ctrl.viewSettings.bind(ctrl)}>
+                                        <i class="md md-phonelink"></i></button>
+                                </div>
+                                <div class="col-xs-4">
+                                    <a href="/recovery" config={m.route} class="pull-right">{Conf.tr("Forgot your password?")}</a>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 }
@@ -177,9 +188,6 @@ var Login = module.exports = {
     },
 
     viewSettingsQr: function (ctrl) {
-        var qrCode = ctrl.qr();
-        // ctrl.qr(false);
-
         return <div>
             {m.component(AuthNavbar)}
 
@@ -191,7 +199,7 @@ var Login = module.exports = {
                     </div>
                     <div class="panel-body">
                         <div class="text-center">
-                            <p><img src={qrCode.src} alt=""/></p>
+                            <img src={ctrl.qr().src} alt=""/>
                             <div class="text-center">
                                 <button class="btn btn-primary btn-custom waves-effect w-md waves-light m-t-20 m-b-5"
                                         onclick={ctrl.hideSettings.bind(ctrl)}>{Conf.tr("Back")}</button>
