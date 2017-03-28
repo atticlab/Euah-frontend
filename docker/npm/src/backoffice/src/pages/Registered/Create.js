@@ -156,8 +156,8 @@ module.exports = {
                                         <div class="col-lg-6">
                                             <form class="form-horizontal" role="form" method="post" onsubmit={ctrl.createRegisteredUser.bind(ctrl)}>
                                                 <div class="form-group">
-                                                    <label for="select" class="col-lg-2 control-label">{Conf.tr("Currency")}</label>
-                                                    <div class="col-lg-6">
+                                                    <label for="select" class="col-md-2 control-label">{Conf.tr("Currency")}</label>
+                                                    <div class="col-md-6">
                                                         <select class="form-control" name="asset" id="input_asset">
                                                             {
                                                                 ctrl.assets().map(function (asset) {
@@ -190,6 +190,7 @@ module.exports = {
                                                     <div class="col-md-6">
                                                         <input class="form-control" name="surname"
                                                                value={ctrl.surname()}
+                                                               oninput={m.withAttr("value", ctrl.surname)}
                                                                id="input_surname" type="text" />
                                                     </div>
                                                 </div>
@@ -198,6 +199,7 @@ module.exports = {
                                                     <div class="col-md-6">
                                                         <input class="form-control" name="name"
                                                                value={ctrl.name()}
+                                                               oninput={m.withAttr("value", ctrl.name)}
                                                                id="input_name" type="text" />
                                                     </div>
                                                 </div>
@@ -206,6 +208,7 @@ module.exports = {
                                                     <div class="col-md-6">
                                                         <input class="form-control" name="middle_name"
                                                                value={ctrl.middle_name()}
+                                                               oninput={m.withAttr("value", ctrl.middle_name)}
                                                                id="input_middle_name" type="text" />
                                                     </div>
                                                 </div>
@@ -214,6 +217,7 @@ module.exports = {
                                                     <div class="col-md-6">
                                                         <input class="form-control" name="email"
                                                                value={ctrl.email()}
+                                                               oninput={m.withAttr("value", ctrl.email)}
                                                                id="input_email" type="text" />
                                                     </div>
                                                 </div>
@@ -222,6 +226,7 @@ module.exports = {
                                                     <div class="col-md-6">
                                                         <input class="form-control" name="address"
                                                                value={ctrl.address()}
+                                                               oninput={m.withAttr("value", ctrl.address)}
                                                                id="input_address" type="text" />
                                                     </div>
                                                 </div>
@@ -230,6 +235,7 @@ module.exports = {
                                                     <div class="col-md-6">
                                                         <input class="form-control" name="ipn_code"
                                                                value={ctrl.ipn_code()}
+                                                               oninput={m.withAttr("value", ctrl.ipn_code)}
                                                                id="input_ipn_code" type="text" />
                                                     </div>
                                                 </div>
@@ -238,6 +244,7 @@ module.exports = {
                                                     <div class="col-md-6">
                                                         <input class="form-control" name="passport"
                                                                value={ctrl.passport()}
+                                                               oninput={m.withAttr("value", ctrl.passport)}
                                                                id="input_passport" type="text" />
                                                     </div>
                                                 </div>

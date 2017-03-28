@@ -18,6 +18,19 @@ module.exports = {
         this.order_data  = m.prop(false);
         this.qr          = m.prop(false);
 
+        this.getPhoneWithViewPattern = function (number) {
+            if (number.substr(0, Conf.phone.prefix.length) != Conf.phone.prefix) {
+                number = Conf.phone.prefix;
+            }
+            return m.prop(VMasker.toPattern(number, {pattern: Conf.phone.view_mask, placeholder: "x"}));
+        };
+
+        this.addPhoneViewPattern = function (e) {
+            ctrl.login = ctrl.getPhoneWithViewPattern(e.target.value);
+        };
+
+        this.login = ctrl.getPhoneWithViewPattern(Conf.phone.prefix);
+
         Conf.SmartApi.setKeypair(StellarSdk.Keypair.random());
 
         m.onLoadingStart();
@@ -106,9 +119,15 @@ module.exports = {
                 return m.flashError(Conf.tr('Fill all required fields'));
             }
 
+            let phoneNum = VMasker.toPattern(e.target.login.value, Conf.phone.db_mask).substr(2);
+
+            if (phoneNum.length > 0 && phoneNum.match(/\d/g).length != Conf.phone.length) {
+                return m.flashError(Conf.tr("Invalid phone"));
+            }
+
             var wallet_data = null;
             return Conf.SmartApi.Wallets.get({
-                username: e.target.login.value,
+                username: phoneNum,
                 password: e.target.password.value
             }).then(function (wallet) {
                 wallet_data = wallet;
@@ -123,7 +142,19 @@ module.exports = {
                         account_data.type_i != StellarSdk.xdr.AccountType.accountAnonymousUser().value
                     )
                 ) {
-                    return m.flashError(Conf.tr('Bad account type'));
+                    return Promise.reject('Bad account type');
+                }
+
+                var balance = 0;
+
+                account_data.balances.map(function (b) {
+                    if (typeof b.asset_code != 'undefined' && b.asset_code == ctrl.order_data().currency) {
+                        balance = parseFloat(parseFloat(b.balance).toFixed(2));
+                    }
+                });
+
+                if (balance < parseFloat(parseFloat(ctrl.order_data().amount).toFixed(2))) {
+                    return Promise.reject('Not enough funds');
                 }
 
                 return Conf.horizon.loadAccount(account_data.id);
@@ -143,6 +174,12 @@ module.exports = {
 
             }).catch(error => {
                 console.error(error);
+                if (typeof error == 'string') {
+                    return m.flashError(Conf.tr(error));
+                }
+                if (error && typeof error.name != 'undefined' && error.name == 'ApiError') {
+                    return m.flashError(Conf.tr('Login/password combination is invalid'));
+                }
                 return m.flashError(Conf.tr('Cannot make transfer'));
             }).then(() => {
                 m.onLoadingEnd();
@@ -203,14 +240,20 @@ module.exports = {
                                             <form class="form-horizontal m-t-20" method="POST" onsubmit={ctrl.confirmPayment.bind(ctrl)}>
                                                 <div class="form-group">
                                                     <div class="col-lg-12">
-                                                        <input class="form-control" type="text" required="required" name="login" placeholder={Conf.tr('Login')}/>
-                                                            <i class="md md-account-circle form-control-feedback l-h-34"></i>
+                                                        <input
+                                                            class="form-control"
+                                                            type="text"
+                                                            required="required"
+                                                            name="login"
+                                                            placeholder={Conf.tr('Phone')}
+                                                            oninput={ctrl.addPhoneViewPattern.bind(ctrl)}
+                                                            value={ctrl.login()}
+                                                        />
                                                     </div>
                                                 </div>
                                                 <div class="form-group">
                                                     <div class="col-lg-12">
-                                                        <input class="form-control" type="password" required="required" name="password" placeholder={Conf.tr('password')}/>
-                                                            <i class="md md-vpn-key form-control-feedback l-h-34"></i>
+                                                        <input class="form-control" type="password" required="required" name="password" placeholder={Conf.tr('Password')}/>
                                                     </div>
                                                 </div>
                                                 <div class="form-group text-right m-t-20 text-center">

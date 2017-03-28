@@ -47,7 +47,7 @@ var Login = module.exports = {
             </ul>
             <div class="wrapper-page">
                 <div class="text-center logo">
-                    <img src="/assets/img/logo.svg" alt="OpenbankIT logo"/>
+                    <img src="/assets/img/logo.svg" alt="logo"/>
                     <h4>{Conf.tr('Welcome host')}</h4>
                 </div>
 

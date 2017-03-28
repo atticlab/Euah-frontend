@@ -1324,12 +1324,12 @@ module.exports = {
         ua: 'Повне ім\'я'
     },
     "Record not found": {
-        ru: 'Приглашение не найдено',
-        ua: 'Запрошення не знайдено'
+        ru: 'Не найдено',
+        ua: 'Не знайдено'
     },
     "enrollment": {
-        ru: 'Регистрация',
-        ua: 'Реєстрація'
+        ru: 'приглашение',
+        ua: 'запрошення'
     },
 
     "Don't create account (mnemonic phrase only)": {

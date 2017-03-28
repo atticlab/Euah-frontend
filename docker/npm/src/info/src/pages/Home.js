@@ -30,19 +30,19 @@ module.exports = {
 
                 ctrl.payments_data().map(function(res, index) {
                     if (index == 0) {
-                        min   = Helpers.formatAmount(res.amount);
-                        max   = Helpers.formatAmount(res.amount);
+                        min   = Helpers.round(res.amount, 2);
+                        max   = Helpers.round(res.amount, 2);
                     }
-                    total += Helpers.formatAmount(res.amount);
-                    if (res.amount < min) { min = Helpers.formatAmount(res.amount);}
-                    if (res.amount > max) { max = Helpers.formatAmount(res.amount);}
+                    total += Helpers.round(res.amount, 2);
+                    if (res.amount < min) { min = Helpers.round(res.amount, 2);}
+                    if (res.amount > max) { max = Helpers.round(res.amount, 2);}
                 });
 
                 m.startComputation();
-                ctrl.total_sum(Helpers.formatAmount(total));
-                ctrl.max_tx(Helpers.formatAmount(max));
-                ctrl.min_tx(Helpers.formatAmount(min));
-                ctrl.avg_tx(Helpers.formatAmount(Math.floor(total / ctrl.payments_data().length)));
+                ctrl.total_sum(Helpers.round(total, 2));
+                ctrl.max_tx(Helpers.round(max, 2));
+                ctrl.min_tx(Helpers.round(min, 2));
+                ctrl.avg_tx(Helpers.round(Math.floor(total / ctrl.payments_data().length), 2));
                 m.endComputation();
 
                 m.onLoadingEnd();
@@ -103,7 +103,7 @@ module.exports = {
                                 }
 
                                 ctrl.payments_data().unshift(res);
-                                ctrl.payments_amount().unshift(Helpers.formatAmount(res.amount));
+                                ctrl.payments_amount().unshift(Helpers.round(res.amount, 2));
                                 while (ctrl.payments_data().length > Conf.limit) {
                                     ctrl.payments_data().pop();
                                     ctrl.payments_amount().pop();
@@ -123,7 +123,7 @@ module.exports = {
 
                                     m.startComputation();
                                     ctrl.payments_data().unshift(res);
-                                    ctrl.payments_amount().unshift(Helpers.formatAmount(res.amount));
+                                    ctrl.payments_amount().unshift(Helpers.round(res.amount, 2));
                                     while (ctrl.payments_data().length > Conf.limit) {
                                         ctrl.payments_data().pop();
                                         ctrl.payments_amount().pop();
@@ -165,13 +165,13 @@ module.exports = {
                                 <div class="widget-simple text-center card-box">
                                     <div class="col-lg-6 be2in1">
                                         <h3 class="text-primary"><span class="counter" id="total_sum">{ctrl.total_sum()}</span> ₴</h3>
-                                        <p class="text-muted">
+                                        <p class="text-muted long-p">
                                             {Conf.tr('Recent transactions sum')}
                                         </p>
                                     </div>
                                     <div class="col-lg-6 be2in1">
                                         <h3 class="text-primary"><span id="last_tx_time">{ctrl.last_tx_time()}</span></h3>
-                                        <p class="text-muted">
+                                        <p class="text-muted long-p">
                                             {Conf.tr('Last transaction time')}
                                         </p>
                                     </div>

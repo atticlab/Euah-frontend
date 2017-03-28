@@ -100,7 +100,7 @@ module.exports = {
                                 </table>
                             </div>
                         </div>
-                        , Conf.tr("Agent data"), 'small');
+                        , Conf.tr("Agent data"), 'medium');
                     m.endComputation();
                 });
         }

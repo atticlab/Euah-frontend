@@ -2,8 +2,26 @@ var Conf = require('../config/Config');
 
 var Helpers = {
 
-    formatAmount: function (amount) {
-        return parseFloat(parseFloat(amount).toFixed(2));
+    round: function(value, precision) {
+        value = parseFloat(value);
+
+        if (!isFinite(value)) {
+            return value;
+        }
+        if (!precision){
+            return Math.round(value);
+        }
+        var parts = value.toString().split('.');
+        if (typeof parts[1] == 'undefined' || parts[1] <= 0 || parts[1].length <= precision) {
+            return value;
+        }
+        if (parts[1].length > precision + 1) {
+            parts[1] = parts[1].slice(0, ((parts[1].length - precision - 1)) * -1);
+        }
+        var correct = Math.pow(10, (parts[1].length + 1) * -1);
+        var divider = Math.pow(10, parts[1].length - 1);
+
+        return Math.round(((parts[0] + '.' + parts[1])*1 + correct) * divider) / divider;
     },
 
     buildPaymentsChart: function (array) {

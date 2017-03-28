@@ -30,7 +30,8 @@ build:
 	  	read -p "Enter welcome host (with protocol and port [optional]):" welcome_host; echo "WELCOME_HOST=$$welcome_host" >> ./.env; \
 	  	read -p "Enter api host (with protocol and port [optional]):" api_host; echo "API_HOST=$$api_host" >> ./.env; \
 	  	read -p "Enter stellar network:" stellar_network; echo "STELLAR_NETWORK=$$stellar_network" >> ./.env; \
-	  	read -p "Enter openbankit host with protocol (for docs link):" sm_host; echo "OPENBANKIT_HOST=$$sm_host" >> ./.env; \
+	  	read -p "Enter url for help (with protocol and port [optional]):" help_url; echo "HELP_URL=$$help_url" >> ./.env; \
+	  	read -p "Enter project name (use for labels):" project_name; echo "PROJECT_NAME=$$project_name" >> ./.env; \
 	fi
 	docker-compose build
 	docker-compose up -d

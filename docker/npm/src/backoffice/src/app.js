@@ -29,22 +29,46 @@ m.flashError = function (msg) {
     $.Notification.notify('error', 'top center', Conf.tr("Error"), msg);
 };
 m.flashApiError = function (err) {
+    console.error(err);
+
     if (err && typeof err.message != 'undefined' && err.message == 'ERR_BAD_SIGN') {
         return Auth.destroySession();
     }
     m.onLoadingEnd();
     if (!err.message) {
         console.error('Unexpected ApiError response');
-        console.error(err);
 
         return $.Notification.notify('error', 'top center', Conf.tr("Error"), Conf.tr('Service error'));
     }
+
     switch (err.message) {
+        case 'ERR_UNKNOWN':
+            return $.Notification.notify('error', 'top center', Conf.tr("Error"), Conf.tr("Unknown error") + (Conf.tr(err.description) ? ': ' + Conf.tr(err.description) : ''));
+        case 'ERR_BAD_SIGN':
+            return $.Notification.notify('error', 'top center', Conf.tr("Error"), Conf.tr("Bad sign") + (Conf.tr(err.description) ? ': ' + Conf.tr(err.description) : ''));
+        case 'ERR_BAD_TYPE':
+            return $.Notification.notify('error', 'top center', Conf.tr("Error"), Conf.tr("Bad account type for this operation") + (Conf.tr(err.description) ? ': ' + Conf.tr(err.description) : ''));
         case 'ERR_NOT_FOUND':
-            return $.Notification.notify('error', 'top center', Conf.tr("Error"), Conf.tr("Record not found") + ': ' + Conf.tr(err.description));
+            return $.Notification.notify('error', 'top center', Conf.tr("Error"), Conf.tr("Record not found") + (Conf.tr(err.description) ? ': ' + Conf.tr(err.description) : ''));
         case 'ERR_ALREADY_EXISTS':
-            return $.Notification.notify('error', 'top center', Conf.tr("Error"), Conf.tr("Record already exists") + ': ' + Conf.tr(err.description));
+            return $.Notification.notify('error', 'top center', Conf.tr("Error"), Conf.tr("Record already exists") + (Conf.tr(err.description) ? ': ' + Conf.tr(err.description) : ''));
+        case 'ERR_INV_EXPIRED':
+            return $.Notification.notify('error', 'top center', Conf.tr("Error"), Conf.tr("Invoice expired") + (Conf.tr(err.description) ? ': ' + Conf.tr(err.description) : ''));
+        case 'ERR_INV_REQUESTED':
+            return $.Notification.notify('error', 'top center', Conf.tr("Error"), Conf.tr("Invoice has already been requested") + (Conf.tr(err.description) ? ': ' + Conf.tr(err.description) : ''));
+        case 'ERR_BAD_PARAM':
+            return $.Notification.notify('error', 'top center', Conf.tr("Error"), Conf.tr("Bad parameter") + (Conf.tr(err.description) ? ': ' + Conf.tr(err.description) : ''));
+        case 'ERR_EMPTY_PARAM':
+            return $.Notification.notify('error', 'top center', Conf.tr("Error"), Conf.tr("Empty parameter") + (Conf.tr(err.description) ? ': ' + Conf.tr(err.description) : ''));
+        case 'ERR_SERVICE':
+            return $.Notification.notify('error', 'top center', Conf.tr("Error"), Conf.tr("Service error") + (Conf.tr(err.description) ? ': ' + Conf.tr(err.description) : ''));
+        case 'ERR_IP_BLOCKED':
+            return $.Notification.notify('error', 'top center', Conf.tr("Error"), Conf.tr("IP is blocked") + (Conf.tr(err.description) ? ': ' + Conf.tr(err.description) : ''));
+        case 'ERR_TX':
+            return $.Notification.notify('error', 'top center', Conf.tr("Error"), Conf.tr("Transaction error") + (Conf.tr(err.description) ? ': ' + Conf.tr(err.description) : ''));
+
         default:
+            console.error('Unexpected ApiError message');
             return $.Notification.notify('error', 'top center', Conf.tr("Error"), Conf.tr('Service error'));
     }
 };

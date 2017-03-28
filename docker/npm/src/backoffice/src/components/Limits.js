@@ -129,9 +129,12 @@ module.exports = {
                     m.onLoadingEnd();
                     m.flashSuccess(Conf.tr("Limits saved successfully"))
                 })
-                .catch((err) => {
-                    console.log(err);
-                    m.flashError(Conf.tr("Error saving limits") + " | " + err);
+                .catch((error) => {
+                    console.log(error);
+                    if (error && typeof error.name != 'undefined' && error.name === 'ApiError') {
+                        return m.flashError(Conf.tr('Wrong password'));
+                    }
+                    return m.flashError(Conf.tr("Error saving limits"));
                 });
         };
 

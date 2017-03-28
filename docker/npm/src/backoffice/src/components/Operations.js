@@ -187,12 +187,13 @@ var Operations = {
             .then(function (response) {
                 console.log(response);
                 return m.flashSuccess(Conf.tr('Emission success'));
-            }).catch(function(error){
-            console.error(error);
-            return m.flashError((!error || typeof error.err_msg != 'undefined') ? Conf.tr(error.err_msg) : Conf.tr('Cannot make emission'));
-        }).then(function(){
-            m.onLoadingEnd();
-        })
+            })
+            .catch(function(error){
+                console.error(error);
+                return m.flashError(Conf.tr('Cannot make emission'));
+            }).then(function(){
+                m.onLoadingEnd();
+            })
     },
 
 };

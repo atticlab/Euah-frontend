@@ -164,8 +164,8 @@ module.exports = {
 
     //error messages
     "Record not found": {
-        ru: 'Запись не найдена',
-        ua: 'Запис не знайдено'
+        ru: 'Не найдено',
+        ua: 'Не знайдено'
     },
     "Transfer money": {
         ru: 'Перевод денег',
@@ -363,9 +363,9 @@ module.exports = {
         ru: 'Успех',
         ua: 'Успіх'
     },
-    "Log in to OpenbankIT via mnemonic phrase": {
-        ru: 'Войдите в OpenbankIT с помощью мнемонической фразы',
-        ua: 'Увійдіть в OpenbankIT за допомогою мнемонічной фрази'
+    "Log in via mnemonic phrase": {
+        ru: 'Войдите с помощью мнемонической фразы',
+        ua: 'Увійдіть за допомогою мнемонічной фрази'
     },
     "Enter your mnemonic phrase word number $[1] of $[2]" : {
         'en': "Enter your mnemonic phrase word number $[1] of $[2].",

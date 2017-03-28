@@ -1,20 +1,24 @@
 var Conf = require('../config/Config.js'),
     Navbar = require('../components/Navbar.js'),
     Helpers = require('../components/Helpers.js'),
+    Session = require('../models/Session.js'),
     Footer = require('../components/Footer.js');
 
 module.exports = {
     controller: function () {
         var ctrl = this;
 
-        this.account_id      = m.route.param('account_id');
-        this.is_agent        = m.prop(false);
-        this.account_type    = m.prop(false);
-        this.payments_data   = m.prop([]);
-        this.payments_amount = m.prop([]);
-        this.total_sum_plus  = m.prop(0);
-        this.total_sum_minus = m.prop(0);
-        this.account_data    = m.prop(null);
+        this.account_id       = m.route.param('account_id');
+        this.is_agent         = m.prop(false);
+        this.account_type     = m.prop(false);
+        this.payments_data    = m.prop([]);
+        this.payments_amount  = m.prop([]);
+        this.total_sum_plus   = m.prop(0);
+        this.total_sum_minus  = m.prop(0);
+        this.account_data     = m.prop(null);
+        this.account_balances = m.prop([]);
+
+
 
         this.updatePaymentsStatistic = function () {
             m.onLoadingStart();
@@ -47,6 +51,11 @@ module.exports = {
                 .then(function (account_data) {
                     m.startComputation();
                     ctrl.account_data(account_data);
+                    account_data.balances.map(function (b) {
+                        if (b.asset_type != 'native') {
+                            ctrl.account_balances().push(b);
+                        }
+                    })
                     switch(account_data.type_i) {
                         case 3:
                         case 4:
@@ -142,16 +151,55 @@ module.exports = {
                         <div class="row">
 
                             <div class="row">
-                                <div class="col-sm-12 col-lg-6">
+                                <div class="col-sm-12 col-lg-4">
                                     <div class="widget-simple text-center card-box">
                                         <h3 class="text-primary"><span class="counter" id="total_sum_plus">{ctrl.total_sum_plus()}</span> ₴</h3>
-                                        <p class="text-muted">{Conf.tr('Last received funds amount')}</p>
+                                        <p class="text-muted long-p">{Conf.tr('Last received funds amount')}</p>
                                     </div>
                                 </div>
-                                <div class="col-sm-12 col-lg-6">
+                                <div class="col-sm-12 col-lg-4">
                                     <div class="widget-simple text-center card-box">
                                         <h3 class="text-danger"><span class="counter" id="total_sum_minus">{ctrl.total_sum_minus()}</span> ₴</h3>
-                                        <p class="text-muted">{Conf.tr('Last spent funds amount')}</p>
+                                        <p class="text-muted long-p">{Conf.tr('Last spent funds amount')}</p>
+                                    </div>
+                                </div>
+                                <div class="col-sm-12 col-lg-4">
+                                    <div class="widget-simple text-center card-box">
+                                        <h3 class="text-danger">{
+                                            ctrl.account_balances() && ctrl.account_balances().length ?
+                                                ctrl.account_balances().length > 1 ?
+                                                    <button
+                                                        class="btn-xs btn-warning waves-effect waves-light m-t-10"
+                                                        onclick={function(){
+                                                            Session.modal(
+                                                                <table class="table table-bordered">
+                                                                    <tbody>
+                                                                    {
+                                                                        ctrl.account_balances().map(b => {
+                                                                            return <tr>
+                                                                                    <td>
+                                                                                        {parseFloat(b.balance).toFixed(2)}
+                                                                                    </td>
+                                                                                    <td>{b.asset_code}</td>
+                                                                                </tr>
+                                                                        })
+                                                                    }
+                                                                    </tbody>
+                                                                </table>
+                                                                , Conf.tr("Account ID" + ': ' + ctrl.account_id ), 'medium')
+                                                        }}
+                                                    >{Conf.tr("Show balances")}</button>
+                                                    :
+                                                    ctrl.account_balances().map(b => {
+                                                        return <span class="label label-primary">
+                                                                {parseFloat(b.balance).toFixed(2) + " " + b.asset_code}
+                                                            </span>
+                                                    })
+                                                :
+                                                '0.00'
+                                        }
+                                        </h3>
+                                        <p class="text-muted">{Conf.tr('Current balances')}</p>
                                     </div>
                                 </div>
                             </div>
@@ -176,16 +224,6 @@ module.exports = {
                                                         }
                                                         <p>{Conf.tr('Account ID')}: {ctrl.account_id}</p>
                                                         <p>{Conf.tr('Account type')}: {ctrl.account_type()}</p>
-                                                        <p>{Conf.tr('Account balance')}:
-                                                        {
-                                                            ctrl.account_data().balances.map(function (b) {
-                                                                return b.asset_type != 'native' ?
-                                                                    <span class="label label-success m-l-10">{parseFloat(b.balance).toFixed(2)} {b.asset_code}</span>
-                                                                    :
-                                                                    ''
-                                                            })
-                                                        }
-                                                        </p>
                                                     </div>
 
                                                     :

@@ -51,7 +51,7 @@ var Settings = module.exports = {
 
             let regex = /^(?=\S*?[A-Z])(?=\S*?[a-z])((?=\S*?[0-9]))\S{1,}$/;
             if (!regex.test(pass)) {
-                return m.flashError(Conf.tr("Password must contain at least one upper case letter and one digit"));
+                return m.flashError(Conf.tr("Password must contain at least one upper case letter, one lower case letter and one digit"));
             }
 
             m.onLoadingStart();

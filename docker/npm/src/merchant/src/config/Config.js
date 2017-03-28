@@ -6,6 +6,7 @@ var conf = {
     master_key:         process.env.MASTER_KEY,
     horizon_host:       process.env.HORIZON_HOST,
     api_url:            process.env.API_HOST,
+    project_name:       process.env.PROJECT_NAME,
     roles: {
         admin   : 1,
         emission: 2

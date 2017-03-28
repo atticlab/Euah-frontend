@@ -557,9 +557,9 @@ module.exports = {
         ru: 'Последовательность',
         ua: 'Послідовність'
     },
-    "OpenbankIT Admin Panel": {
-        ru: 'Панель Администратора OpenbankIT',
-        ua: "Панель Адмiнiстратора OpenbankIT",
+    "Admin panel": {
+        ru: 'Панель администратора',
+        ua: "Панель адмiнiстратора",
     },
     "Status": {
         ru: 'Статус',
@@ -1684,9 +1684,9 @@ module.exports = {
         ru: 'Приглашение принято',
         ua: 'Запрошення прийнято'
     },
-    "Log in to OpenbankIT via mnemonic phrase": {
-        ru: 'Войдите в OpenbankIT с помощью мнемонической фразы',
-        ua: 'Увійдіть в OpenbankIT за допомогою мнемонічной фрази'
+    "Log in via mnemonic phrase": {
+        ru: 'Войдите с помощью мнемонической фразы',
+        ua: 'Увійдіть за допомогою мнемонічной фрази'
     },
     "Enter your mnemonic phrase word number $[1] of $[2]" : {
         'en': "Enter your mnemonic phrase word number $[1] of $[2].",
@@ -1801,6 +1801,10 @@ module.exports = {
     "Account is invalid": {
         'ru': "Неверный номер счета",
         'ua': "Невірний номер рахунку"
+    },
+    "Record not found": {
+        ru: 'Не найдено',
+        ua: 'Не знайдено'
     },
     "Record already exists": {
         'ru': "Учетная запись уже существует",

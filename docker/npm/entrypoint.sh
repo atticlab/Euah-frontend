@@ -17,5 +17,12 @@ do
     rm -rf ${DIR}/node_modules
     ln -s  /src/node_modules ${DIR}/node_modules
 
+    if [ "${DIR}" != "offline" ]
+    then
+      echo "copy logos..."
+      cp -rf /tmp/logo.svg ${DIR}/public/assets/img
+      cp -rf /tmp/logo-white.svg ${DIR}/public/assets/img
+    fi
+
     cd ${DIR} && ./node_modules/.bin/gulp js
 done

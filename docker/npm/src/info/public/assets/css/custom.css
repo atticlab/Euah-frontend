@@ -9,8 +9,17 @@
   z-index: 10000;
 }
 
+.long-p {
+  display: inline-block;
+  width: 90%;
+  white-space: nowrap;
+  overflow: hidden !important;
+  text-overflow: ellipsis;
+  margin-bottom: 1px;
+}
+
 #spinner i {
-  position: absolute;
+  position: fixed;
   top: 50%;
   left: 50%;
   margin-left: -30px;

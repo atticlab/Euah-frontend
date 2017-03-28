@@ -12,7 +12,7 @@ module.exports = {
         return <div class="topbar">
             <div class="topbar-left">
                 <div class="text-center">
-                    <a href="/" class="logo"><i class="md md-equalizer"></i> <span>OpenbankIT</span> </a>
+                    <a href="/" class="logo"><i class="md md-equalizer"></i> <span>{Conf.project_name}</span> </a>
                 </div>
             </div>
 

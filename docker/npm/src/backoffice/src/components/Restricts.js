@@ -53,8 +53,11 @@ module.exports = {
                     m.onLoadingEnd();
                     m.flashSuccess(Conf.tr("Restricts saved successfully"))
                 })
-                .catch((err) => {
-                    console.log(err);
+                .catch((error) => {
+                    console.log(error);
+                    if (error && typeof error.name != 'undefined' && error.name === 'ApiError') {
+                        return m.flashError(Conf.tr('Wrong password'));
+                    }
                     m.flashError(Conf.tr("Error saving restricts"));
                 });
         };

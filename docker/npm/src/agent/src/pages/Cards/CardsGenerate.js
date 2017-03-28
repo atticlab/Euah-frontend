@@ -142,7 +142,7 @@ module.exports = {
                                         </div>
                                         <div class="col-md-2">
                                             <div class="form-group">
-                                                <label class="control-label"
+                                                <label class="control-label long-label"
                                                        for="cards_count">{Conf.tr('Amount of cards')}</label>
                                                 <input class="vertical-spin form-control"
                                                        oninput={ctrl.updateCardsSum.bind(ctrl)}
@@ -155,7 +155,7 @@ module.exports = {
                                         <div style="float:left;"><h2 style="padding-top: 17px;">*</h2></div>
                                         <div class="col-md-2">
                                             <div class="form-group">
-                                                <label class="control-label"
+                                                <label class="control-label long-label"
                                                        for="cards_amount">{Conf.tr('Value of a card')}</label>
                                                 <input class="vertical-spin form-control"
                                                        oninput={ctrl.updateCardsSum.bind(ctrl)}

@@ -838,9 +838,9 @@ module.exports = {
         'ru' : "Учетная запись успешно создана",
         'ua' : "Обліковий запис успішно створений"
     },
-    "Log in to OpenbankIT" : {
-        'ru': "Войти в OpenbankIT",
-        'ua': "Увійти до OpenbankIT"
+    "Log in" : {
+        'ru': "Войти",
+        'ua': "Увійти"
     },
     "Help" :{
         'ua': "Допомога",
@@ -854,9 +854,9 @@ module.exports = {
         'ua': "Забули пароль?",
         'ru': "Забыли пароль?",
     },
-    "Log in to OpenbankIT via mnemonic phrase" : {
-        'ua': "Увійти до OpenbankIT за допомогою мнемонічної фрази",
-        'ru': "Войти в OpenbankIT с помощью мнемонической фразы",
+    "Log in via mnemonic phrase" : {
+        'ua': "Увійти за допомогою мнемонічної фрази",
+        'ru': "Войти с помощью мнемонической фразы",
     },
     "This is a QR-code with a mnemonic phrase that is used for account recovering. It is very important to keep your mnemonic phrase in a safe and private place" : {
         'ua': "Це QR-код з мнемонічною фразою, яка використовується для відновлення вашого аккаунту. Дуже важливо зберігати вашу мнемонічну фразу в безпечному та надійному місці",
@@ -938,8 +938,8 @@ module.exports = {
 
     //error messages
     "Record not found": {
-        ru: 'Запись не найдена',
-        ua: 'Запис не знайдено'
+        ru: 'Не найдено',
+        ua: 'Не знайдено'
     },
     //error descriptions
     "invoice": {
@@ -1056,10 +1056,6 @@ module.exports = {
     "Decrypting your old password and encrypting your new password": {
         ru: "Расшифрование старого пароля и шифрование нового пароля",
         ua: "Розшифрування старого паролю і шифрування нового паролю"
-    },
-    "Password must contain at least one upper case letter and one digit": {
-        ru: "Пароль должен содержать, как минимум одну большую букву и одну цифру",
-        ua: "Пароль повинен містити, як мінімум одну велику літеру і одну цифру"
     },
     "en": {
         ru: 'ru',

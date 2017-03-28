@@ -553,9 +553,9 @@ module.exports = {
         ru: 'Последовательность',
         ua: 'Послідовність'
     },
-    "OpenbankIT Admin Panel": {
-        ru: 'Панель Администратора OpenbankIT',
-        ua: "Панель Адмiнiстратора OpenbankIT",
+    "Admin panel": {
+        ru: 'Панель администратора',
+        ua: "Панель адмiнiстратора",
     },
     "Status": {
         ru: 'Статус',
@@ -1481,9 +1481,9 @@ module.exports = {
         ru: 'Подождите, идет загрузка данных',
         ua: 'Зачекайте, іде завантаження даних'
     },
-    "Log in to OpenbankIT via mnemonic phrase": {
-        ru: 'Войдите в OpenbankIT с помощью мнемонической фразы',
-        ua: 'Увійдіть в OpenbankIT за допомогою мнемонічной фрази'
+    "Log in via mnemonic phrase": {
+        ru: 'Войдите с помощью мнемонической фразы',
+        ua: 'Увійдіть за допомогою мнемонічной фрази'
     },
     "Enter your mnemonic phrase word number $[1] of $[2]" : {
         'en': "Enter your mnemonic phrase word number $[1] of $[2].",
@@ -1547,12 +1547,12 @@ module.exports = {
         ru: "Вже існує",
     },
     "Order date" :{
-        ua: "Дата заказа",
-        ru: "Дата замовлення",
+        ru: "Дата заказа",
+        ua: "Дата замовлення",
     },
     "Record not found" :{
-        ua: "Не найдено",
-        ru: "Не знайдено",
+        ru: "Не найдено",
+        ua: "Не знайдено",
     },
     "Order amount" :{
         ua: "Сумма заказа",

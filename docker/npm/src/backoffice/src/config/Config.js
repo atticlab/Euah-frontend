@@ -8,8 +8,8 @@ var conf = {
     horizon_host:       trim(process.env.HORIZON_HOST, '/'),
     api_url:            trim(process.env.API_HOST, '/'),
     emission_host:      trim(process.env.EMISSION_HOST, '/'),
-    emission_path:       trim(process.env.EMISSION_PATH, '/'),
-
+    emission_path:      trim(process.env.EMISSION_PATH, '/'),
+    project_name:       process.env.PROJECT_NAME,
     roles: {
         admin   : 1,
         emission: 2

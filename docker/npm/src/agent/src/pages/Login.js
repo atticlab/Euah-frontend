@@ -49,7 +49,7 @@ var Login = module.exports = {
 
             <div class="wrapper-page">
                 <div class="text-center">
-                    <h1 class="text-primary">OpenbankIT</h1>
+                    <h1 class="text-primary">{Conf.project_name}</h1>
                     <div class="text-muted">{Conf.tr('Agent dashboard')}</div>
                 </div>
 
