@@ -530,7 +530,7 @@ module.exports = {
         'ru': "Платежей пока нет",
         'ua': "Платежів поки немає"
     },
-    "anonymous_user" : {
+    "Anonymous user" : {
         'en': "Anonymous user",
         'ru': "Анонимный пользователь",
         'ua': "Анонімний користувач"
@@ -743,8 +743,8 @@ module.exports = {
     },
     "Show account" : {
         'en': "Show account",
-        'ru': "Показать счет",
-        'ua': "Показати рахунок"
+        'ru': "Показать номер счета",
+        'ua': "Показати номер рахунку"
     },
     "Mnemonic" : {
         'en': "Mnemonic",

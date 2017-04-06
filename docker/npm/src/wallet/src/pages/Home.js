@@ -68,7 +68,7 @@ module.exports = {
     },
 
     view: function (ctrl) {
-        var type = Auth.type() ? Auth.type() : 'anonymous_user';
+        var type = Auth.type() ? Auth.type() : 'Anonymous user';
         return [
             m.component(Navbar),
             <div class="wrapper">
