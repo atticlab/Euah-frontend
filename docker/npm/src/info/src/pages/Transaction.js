@@ -52,6 +52,15 @@ module.exports = {
                         ctrl.tx_type(Conf.tr('Merchant'));
                         ctrl.tx_label('warning');
                     }
+
+                    if (
+                        Conf.opi_prefix && typeof transaction.memo != 'undefined'
+                        && transaction.memo.substring(0, Conf.opi_prefix.length) == Conf.opi_prefix
+                        )
+                    {
+                        ctrl.tx_type(Conf.tr('External payment'));
+                        ctrl.tx_label('warning');
+                    }
                     m.endComputation();
 
                     return Conf.horizon.accounts()

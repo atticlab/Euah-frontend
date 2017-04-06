@@ -77,6 +77,7 @@ m.route(document.getElementById('app'), "/", {
     "/invoice": require('./pages/Invoice.js'),
     "/sign": require('./pages/Sign.js'),
     "/transfer": require('./pages/Transfer.js'),
+    "/external": require('./pages/ExternalTransfer.js'),
     "/settings": require('./pages/Settings.js'),
     //"/hd": require('./pages/Hd.js'),
     "/transaction/:trans_id/:target_acc/:amount/:asset": require('./pages/Transaction.js'),

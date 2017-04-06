@@ -25,26 +25,60 @@ module.exports = {
                         </thead>
                         <tbody>
                         {data.payments.map(function (payment) {
-                            return <tr>
-                                <td>{payment.id}</td>
-                                <td>{DateFormat(payment.closed_at, 'dd.mm.yyyy HH:MM:ss')}</td>
-                                <td>{parseFloat(payment.amount).toFixed(2)}</td>
-                                <td>{payment.asset_code}</td>
-                                <td>
-                                    <a href={"/analytics/account/" + payment.from} config={m.route}>
+                            switch (payment.type_i) { //check the type of the 1st op
+                                case (StellarSdk.xdr.OperationType.externalPayment().value):
+                                {
+                                    return <tr>
+                                        <td>{payment.id}</td>
+                                        <td>{DateFormat(payment.closed_at, 'dd.mm.yyyy HH:MM:ss')}</td>
+                                        <td>{parseFloat(payment.amount).toFixed(2)}</td>
+                                        <td>{payment.asset_code}</td>
+                                        <td>
+                                            <a href={"/analytics/account/" + payment.from} config={m.route}>
                                             <span title={payment.from}>
                                                 {payment.from.substr(0, 15) + '...'}
                                             </span>
-                                    </a>
-                                </td>
-                                <td>
-                                    <a href={"/analytics/account/" + payment.to} config={m.route}>
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <span class="label label-primary">{Conf.tr('External payment')}</span>&nbsp;
+                                            <span title={payment.destinationAccount}>
+                                                {payment.destinationAccount.substr(0, 15) + '...'}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                }
+                                    break;
+                                case (StellarSdk.xdr.OperationType.payment().value):
+                                {
+                                    return <tr>
+                                        <td>{payment.id}</td>
+                                        <td>{DateFormat(payment.closed_at, 'dd.mm.yyyy HH:MM:ss')}</td>
+                                        <td>{parseFloat(payment.amount).toFixed(2)}</td>
+                                        <td>{payment.asset_code}</td>
+                                        <td>
+                                            <a href={"/analytics/account/" + payment.from} config={m.route}>
+                                            <span title={payment.from}>
+                                                {payment.from.substr(0, 15) + '...'}
+                                            </span>
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <a href={"/analytics/account/" + payment.to} config={m.route}>
                                             <span title={payment.to}>
                                                 {payment.to.substr(0, 15) + '...'}
                                             </span>
-                                    </a>
-                                </td>
-                            </tr>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                                    break;
+                                default:
+                                {
+                                    console.error("Unknown payment type");
+                                    console.log(payment);
+                                }
+                            }
                         })}
                         </tbody>
                     </table>

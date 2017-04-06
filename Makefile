@@ -27,6 +27,7 @@ build:
 	  	read -p "Enter info host (with protocol and port [optional]):" info_host; echo "INFO_HOST=$$info_host" >> ./.env; \
 	  	read -p "Enter exchange host (with protocol and port [optional]):" exchange_host; echo "EXCHANGE_HOST=$$exchange_host" >> ./.env; \
 	  	read -p "Enter merchant host (with protocol and port [optional]):" merchant_host; echo "MERCHANT_HOST=$$merchant_host" >> ./.env; \
+	  	read -p "Enter OPI host (with protocol and port [optional]):" opium_host; echo "OPIUM_HOST=$$opium_host" >> ./.env; \
 	  	read -p "Enter welcome host (with protocol and port [optional]):" welcome_host; echo "WELCOME_HOST=$$welcome_host" >> ./.env; \
 	  	read -p "Enter api host (with protocol and port [optional]):" api_host; echo "API_HOST=$$api_host" >> ./.env; \
 	  	read -p "Enter stellar network:" stellar_network; echo "STELLAR_NETWORK=$$stellar_network" >> ./.env; \

@@ -209,6 +209,7 @@ var Invoice = module.exports = {
                     m.flashSuccess(Conf.tr("Transfer successful"));
                 })
                 .catch(function (err) {
+                    console.error(err);
                     m.flashError(Conf.tr("Cannot make transfer"));
                 })
                 .then(function () {
@@ -306,6 +307,7 @@ var Invoice = module.exports = {
                                     </div>
                                     <div class="form-group">
                                         <button class="btn btn-primary btn-custom">{Conf.tr("Transfer")}</button>
+                                        <a href="/external" config={m.route} class="pull-right btn btn-primary btn-warning">{Conf.tr("Transfer to external bank account")}</a>
                                     </div>
                                 </div>
                             </div>

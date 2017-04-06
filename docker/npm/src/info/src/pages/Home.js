@@ -253,24 +253,68 @@ module.exports = {
                                     </thead>
                                     <tbody>
                                     {
-                                        ctrl.payments_data().map(function(payment){
-                                            return <tr>
-                                                <td><a href={"/transaction/" + payment._links.transaction.href.split(/[\/ ]+/).pop()} config={m.route}>{payment.id}</a></td>
-                                                <td><a href={"/account/" + payment.from} config={m.route}>{_.trunc(payment.from, {length: 15})}</a></td>
-                                                <td><a href={"/account/" + payment.to} config={m.route}>{_.trunc(payment.to, {length: 15})}</a></td>
-                                                <td>
-                                                    <div class="label label-success">
-                                                        {
-                                                            payment.fee.type_i > 0 ?
-                                                                parseFloat(payment.amount-payment.fee.amount_changed).toFixed(2) + ' + ' + parseFloat(payment.fee.amount_changed).toFixed(2)
-                                                                    :
-                                                                parseFloat(payment.amount).toFixed(2)
+                                        ctrl.payments_data().map(function(payment) {
+                                            switch (payment.type_i) { //check the type of the 1st op
+                                                case (StellarSdk.xdr.OperationType.externalPayment().value): {
+                                                    return <tr>
+                                                        <td><a
+                                                            href={"/transaction/" + payment._links.transaction.href.split(/[\/ ]+/).pop()}
+                                                            config={m.route}>{payment.id}</a></td>
+                                                        <td><a href={"/account/" + payment.from}
+                                                               config={m.route}>{_.trunc(payment.from, {length: 15})}</a>
+                                                        </td>
+                                                        <td>
+                                                            <span class="label label-primary">{Conf.tr('External payment')}</span>&nbsp;
+                                                            <span title={payment.destinationAccount}>
+                                                                {payment.destinationAccount.substr(0, 15) + '...'}
+                                                            </span>
+                                                        </td>
+                                                        <td>
+                                                            <div class="label label-success">
+                                                                {
+                                                                    payment.fee.type_i > 0 ?
+                                                                    parseFloat(payment.amount - payment.fee.amount_changed).toFixed(2) + ' + ' + parseFloat(payment.fee.amount_changed).toFixed(2)
+                                                                        :
+                                                                        parseFloat(payment.amount).toFixed(2)
 
-                                                        }
-                                                        {payment.asset_code}
-                                                    </div>
-                                                </td>
-                                            </tr>
+                                                                }
+                                                                {payment.asset_code}
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    }
+                                                    break;
+                                                case (StellarSdk.xdr.OperationType.payment().value): {
+                                                        return <tr>
+                                                            <td><a
+                                                                href={"/transaction/" + payment._links.transaction.href.split(/[\/ ]+/).pop()}
+                                                                config={m.route}>{payment.id}</a></td>
+                                                            <td><a href={"/account/" + payment.from}
+                                                                   config={m.route}>{_.trunc(payment.from, {length: 15})}</a>
+                                                            </td>
+                                                            <td><a href={"/account/" + payment.to}
+                                                                   config={m.route}>{_.trunc(payment.to, {length: 15})}</a>
+                                                            </td>
+                                                            <td>
+                                                                <div class="label label-success">
+                                                                    {
+                                                                        payment.fee.type_i > 0 ?
+                                                                        parseFloat(payment.amount - payment.fee.amount_changed).toFixed(2) + ' + ' + parseFloat(payment.fee.amount_changed).toFixed(2)
+                                                                            :
+                                                                            parseFloat(payment.amount).toFixed(2)
+
+                                                                    }
+                                                                    {payment.asset_code}
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                    break;
+                                                default: {
+                                                    console.error("Unknown payment type");
+                                                    console.log(payment);
+                                                }
+                                            }
                                         })
                                     }
                                     </tbody>
@@ -280,15 +324,20 @@ module.exports = {
                             <div class="payments visible-xs">
                                 {
                                     ctrl.payments_data().map(function(payment) {
-                                        return <div class="payment">
-                                            <p><span>{Conf.tr('Payment from')}: </span><a href={"/account/" + payment.from} config={m.route}>{_.trunc(payment.from, {length: 15})}</a></p>
-                                            <p><span>{Conf.tr('Payment to')}: </span><a href={"/account/" + payment.to} config={m.route}>{_.trunc(payment.to, {length: 15})}</a></p>
-                                            <hr/>
-                                                <div class="row">
-                                                    <div class="col-xs-7">
-                                                        <span>{Conf.tr('Transaction id')}: </span><a href={"/transaction/" + payment._links.transaction.href.split(/[\/ ]+/).pop()} config={m.route}>{payment.id}</a>
-                                                    </div>
-                                                    <div class="col-xs-5 text-right">
+                                        switch (payment.type_i) { //check the type of the 1st op
+                                            case (StellarSdk.xdr.OperationType.externalPayment().value): {
+                                                return <div class="payment">
+                                                    <p><span>{Conf.tr('Payment from')}: </span><a href={"/account/" + payment.from} config={m.route}>{_.trunc(payment.from, {length: 15})}</a></p>
+                                                    <p><span>{Conf.tr('Payment to')}: </span>
+                                                        <span class="label label-primary">{Conf.tr('External payment')}</span>&nbsp;
+                                                        <span class="account_overflow">{payment.destinationAccount}</span>
+                                                    </p>
+                                                    <hr/>
+                                                    <div class="row">
+                                                        <div class="col-xs-7">
+                                                            <span>{Conf.tr('Transaction id')}: </span><a href={"/transaction/" + payment._links.transaction.href.split(/[\/ ]+/).pop()} config={m.route}>{payment.id}</a>
+                                                        </div>
+                                                        <div class="col-xs-5 text-right">
                                                         <span class="label label-success">
                                                             <i class="fa fa-sign-in fa-fw" aria-hidden="true"></i>
                                                             &nbsp;
@@ -299,10 +348,43 @@ module.exports = {
                                                             }
                                                             {payment.asset_code}
                                                         </span>
+                                                        </div>
+                                                        <div class="clearfix"></div>
                                                     </div>
-                                                    <div class="clearfix"></div>
                                                 </div>
-                                        </div>
+                                            }
+                                            break;
+                                            case (StellarSdk.xdr.OperationType.payment().value): {
+                                                return <div class="payment">
+                                                    <p><span>{Conf.tr('Payment from')}: </span><a href={"/account/" + payment.from} config={m.route}>{_.trunc(payment.from, {length: 15})}</a></p>
+                                                    <p><span>{Conf.tr('Payment to')}: </span><a href={"/account/" + payment.to} config={m.route}>{_.trunc(payment.to, {length: 15})}</a></p>
+                                                    <hr/>
+                                                    <div class="row">
+                                                        <div class="col-xs-7">
+                                                            <span>{Conf.tr('Transaction id')}: </span><a href={"/transaction/" + payment._links.transaction.href.split(/[\/ ]+/).pop()} config={m.route}>{payment.id}</a>
+                                                        </div>
+                                                        <div class="col-xs-5 text-right">
+                                                        <span class="label label-success">
+                                                            <i class="fa fa-sign-in fa-fw" aria-hidden="true"></i>
+                                                            &nbsp;
+                                                            { payment.fee.type_i > 0 ?
+                                                            parseFloat(payment.amount-payment.fee.amount_changed).toFixed(2) + ' + ' + parseFloat(payment.fee.amount_changed).toFixed(2)
+                                                                :
+                                                                parseFloat(payment.amount).toFixed(2)
+                                                            }
+                                                            {payment.asset_code}
+                                                        </span>
+                                                        </div>
+                                                        <div class="clearfix"></div>
+                                                    </div>
+                                                </div>
+                                            }
+                                            break;
+                                            default: {
+                                                console.error("Unknown payment type");
+                                                console.log(payment);
+                                            }
+                                        }
                                     })
                                 }
                             </div>

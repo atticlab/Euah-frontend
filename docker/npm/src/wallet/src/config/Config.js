@@ -11,6 +11,7 @@ var conf = {
     api_host:           trim(process.env.API_HOST, '/'),
     info_host:          trim(process.env.INFO_HOST, '/'),
     exchange_host:      trim(process.env.EXCHANGE_HOST, '/'),
+    opium_host:         trim(process.env.OPIUM_HOST, '/'),
     help_url:           trim(process.env.HELP_URL, '/'),
     project_name:       process.env.PROJECT_NAME,
 };

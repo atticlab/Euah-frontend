@@ -13,41 +13,75 @@ module.exports = {
             <div>
                 <div class="visible-xs">
                     {data.payments.map(function (payment, index) {
-                        var trans_link = payment._links.transaction.href;
-                        var trans_id = trans_link.substr(trans_link.lastIndexOf('/') + 1);
-                        var accountId = payment.to == Auth.keypair().accountId() ? payment.from : payment.to;
-                        //The reason for send an amount and asset code instead of payment id is that there is
-                        //no method in SDK to get payment by id.
-                        var trans_url = '/transaction/' + trans_id + '/' + accountId + '/' + payment.amount + '/' + payment.asset_code;
-                        return <div class="payment">
-                            <a class="account_overflow" href={trans_url} config={m.route}
-                               title={accountId}>
-                                {accountId}
-                            </a>
-                            <div class="row">
-                                <div class="col-xs-7">
-                                    <p class="text-muted">{DateFormat(payment.closed_at, 'dd.mm.yyyy HH:MM:ss')}</p>
+                        switch (payment.type_i) { //check the type of the 1st op
+                            case (StellarSdk.xdr.OperationType.externalPayment().value):
+                            {
+                                return <div class="payment">
+                                    <span class="label label-primary">{Conf.tr('External payment')}</span>&nbsp;
+                                    <span class="account_overflow">{payment.destinationAccount}</span>
+                                    <div class="row">
+                                        <div class="col-xs-7">
+                                            <p class="text-muted">{DateFormat(payment.closed_at, 'dd.mm.yyyy HH:MM:ss')}</p>
+                                        </div>
+                                        <div class="col-xs-5 text-right">
+                                            <span class="label label-danger">
+                                                <i class="fa fa-sign-out fa-fw"
+                                                   aria-hidden="true"></i>
+                                                &nbsp;
+                                                {parseFloat(payment.amount).toFixed(2)} {payment.asset_code}
+                                            </span>
+                                        </div>
+                                        <div class="clearfix"></div>
+                                    </div>
                                 </div>
-                                <div class="col-xs-5 text-right">
-                                    {payment.to == Auth.keypair().accountId() ?
-                                        <span class="label label-success">
+                            }
+                            break;
+                            case (StellarSdk.xdr.OperationType.payment().value):
+                            {
+                                var trans_link = payment._links.transaction.href;
+                                var trans_id = trans_link.substr(trans_link.lastIndexOf('/') + 1);
+                                var accountId = payment.to == Auth.keypair().accountId() ? payment.from : payment.to;
+                                //The reason for send an amount and asset code instead of payment id is that there is
+                                //no method in SDK to get payment by id.
+                                var trans_url = '/transaction/' + trans_id + '/' + accountId + '/' + payment.amount + '/' + payment.asset_code;
+                                return <div class="payment">
+                                    <a class="account_overflow" href={trans_url} config={m.route}
+                                       title={accountId}>
+                                        {accountId}
+                                    </a>
+                                    <div class="row">
+                                        <div class="col-xs-7">
+                                            <p class="text-muted">{DateFormat(payment.closed_at, 'dd.mm.yyyy HH:MM:ss')}</p>
+                                        </div>
+                                        <div class="col-xs-5 text-right">
+
+                                            {payment.to == Auth.keypair().accountId() ?
+                                                <span class="label label-success">
                                                                     <i class="fa fa-sign-in fa-fw"
                                                                        aria-hidden="true"></i>
-                                            &nbsp;
-                                            {parseFloat(payment.amount).toFixed(2)} {payment.asset_code}
+                                                    &nbsp;
+                                                    {parseFloat(payment.amount).toFixed(2)} {payment.asset_code}
                                                                 </span>
-                                        :
-                                        <span class="label label-danger">
+                                                :
+                                                <span class="label label-danger">
                                                                     <i class="fa fa-sign-out fa-fw"
                                                                        aria-hidden="true"></i>
-                                            &nbsp;
-                                            {parseFloat(payment.amount).toFixed(2)} {payment.asset_code}
+                                                    &nbsp;
+                                                    {parseFloat(payment.amount).toFixed(2)} {payment.asset_code}
                                                                 </span>
-                                    }
+                                            }
+                                        </div>
+                                        <div class="clearfix"></div>
+                                    </div>
                                 </div>
-                                <div class="clearfix"></div>
-                            </div>
-                        </div>
+                            }
+                                break;
+                            default:
+                            {
+                                console.error("Unknown payment type");
+                                console.log(payment);
+                            }
+                        }
                     })}
                 </div>
                 <div class="hidden-xs">
@@ -61,39 +95,68 @@ module.exports = {
                         </tr>
                         </thead>
                         <tbody>
-                        {data.payments.map(function (payment) {
-                            var trans_link = payment._links.transaction.href;
-                            var trans_id = trans_link.substr(trans_link.lastIndexOf('/') + 1);
-                            var accountId = payment.to == Auth.keypair().accountId() ? payment.from : payment.to
-                            //The reason for send an amount and asset code instead of payment id is that there is
-                            //no method in SDK to get payment by id.
-                            var trans_url = '/transaction/' + trans_id + '/' + accountId + '/' + payment.amount + '/' + payment.asset_code;
-                            return <tr>
-                                <td class="account-td">
-                                    <a class="account_overflow" href={trans_url} config={m.route}>
-                                        {accountId}
-                                    </a>
-                                </td>
-                                <td>{DateFormat(payment.closed_at, 'dd.mm.yyyy HH:MM:ss')}</td>
-                                <td>{parseFloat(payment.amount).toFixed(2)} {payment.asset_code}</td>
-                                <td>
-                                    {payment.to == Auth.keypair().accountId() ?
-                                        <span class="label label-success">
-                                                            <i class="fa fa-sign-in fa-fw" aria-hidden="true"></i>
-                                            &nbsp;
-                                            {Conf.tr("Debit")}
-                                                        </span>
-                                        :
-                                        <span class="label label-danger">
-                                                            <i class="fa fa-sign-out fa-fw" aria-hidden="true"></i>
-                                            &nbsp;
-                                            {Conf.tr("Credit")}
-                                                        </span>
-                                    }
-                                </td>
-                            </tr>
-                        })}
+                            {
+                            data.payments.map(function (payment) {
+                                var trans_link = payment._links.transaction.href;
+                                var trans_id = trans_link.substr(trans_link.lastIndexOf('/') + 1);
 
+                                switch (payment.type_i) { //check the type of the 1st op
+                                    case (StellarSdk.xdr.OperationType.externalPayment().value):
+                                    {
+                                        return <tr>
+                                            <td class="account-td"><span class="label label-primary">{Conf.tr('External payment')}</span>&nbsp;
+                                                <span class="account_overflow">{payment.destinationAccount}</span>
+                                            </td>
+                                            <td>{DateFormat(payment.closed_at, 'dd.mm.yyyy HH:MM:ss')}</td>
+                                            <td>{parseFloat(payment.amount).toFixed(2)} {payment.asset_code}</td>
+                                            <td>
+                                                <span class="label label-danger">
+                                                            <i class="fa fa-sign-out fa-fw" aria-hidden="true"></i>
+                                                    &nbsp;
+                                                    {Conf.tr("Credit")}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    }
+                                        break;
+                                    case (StellarSdk.xdr.OperationType.payment().value):
+                                    {
+                                        var accountId = payment.to == Auth.keypair().accountId() ? payment.from : payment.to
+                                        //The reason for send an amount and asset code instead of payment id is that there is
+                                        //no method in SDK to get payment by id.
+                                        var trans_url = '/transaction/' + trans_id + '/' + accountId + '/' + payment.amount + '/' + payment.asset_code;
+                                        return <tr>
+                                            <td class="account-td">
+                                                <a class="account_overflow" href={trans_url} config={m.route}>
+                                                    {accountId}
+                                                </a>
+                                            </td>
+                                            <td>{DateFormat(payment.closed_at, 'dd.mm.yyyy HH:MM:ss')}</td>
+                                            <td>{parseFloat(payment.amount).toFixed(2)} {payment.asset_code}</td>
+                                            <td>
+                                                {payment.to == Auth.keypair().accountId() ?
+                                                    <span class="label label-success">
+                                                            <i class="fa fa-sign-in fa-fw" aria-hidden="true"></i>
+                                                        &nbsp;
+                                                        {Conf.tr("Debit")}
+                                                        </span>
+                                                    :
+                                                    <span class="label label-danger">
+                                                            <i class="fa fa-sign-out fa-fw" aria-hidden="true"></i>
+                                                        &nbsp;
+                                                        {Conf.tr("Credit")}
+                                                        </span>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                        break;
+                                    default:
+                                    {
+                                        console.error("Wrong payment type");
+                                    }
+                                }
+                            })}
                         </tbody>
                     </table>
                 </div>

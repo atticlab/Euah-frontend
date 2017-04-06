@@ -7,6 +7,7 @@ var conf = {
     stellar_network: process.env.STELLAR_NETWORK,
     project_name: process.env.PROJECT_NAME,
     merchant_prefix: 'mo:',
+    opi_prefix: 'opi_',
     copyright_link: 'http://atticlab.net'
 };
 
