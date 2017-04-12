@@ -100,6 +100,10 @@ var Sign = module.exports = {
                 })
                 .catch(err => {
                     console.error(err);
+                    m.startComputation();
+                    this.progress = m.prop(0);
+                    this.showProgress = m.prop(false);
+                    m.endComputation();
                     m.flashError(err.message ? Conf.tr(err.message) : Conf.tr('Service error. Please contact support'));
                 })
         };
