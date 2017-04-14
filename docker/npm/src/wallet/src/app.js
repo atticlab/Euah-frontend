@@ -82,5 +82,6 @@ m.route(document.getElementById('app'), "/", {
     //"/hd": require('./pages/Hd.js'),
     "/transaction/:trans_id/:target_acc/:amount/:asset": require('./pages/Transaction.js'),
     "/payments": require('./pages/Payments.js'),
-    "/recovery": require('./pages/Recovery.js')
+    "/recovery": require('./pages/Recovery.js'),
+    "/test": require('./pages/Test.js/')
 });

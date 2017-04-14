@@ -14,6 +14,9 @@ var conf = {
     opium_host:         trim(process.env.OPIUM_HOST, '/'),
     help_url:           trim(process.env.HELP_URL, '/'),
     project_name:       process.env.PROJECT_NAME,
+    asset:              process.env.ASSET,
+    master_seed:        process.env.MASTER_SEED,
+    riak_check:         process.env.RIAK_HTTP_HOST
 };
 
 conf.SmartApi = new smart_api({
