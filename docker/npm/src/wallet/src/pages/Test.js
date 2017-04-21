@@ -1,5 +1,4 @@
 var Conf = require('../config/Config.js');
-var Auth = require('../models/Auth.js');
 var test = require('../models/Test');
 
 module.exports = {
@@ -7,34 +6,249 @@ module.exports = {
     controller: function () {
         var ctrl = this;
 
-        // if (!Auth.keypair()) {
-        //     return m.route('/');
-        // }
+        Conf.SmartApi.setKeypair(test.keypairs.anonym);
+        Conf.SmartApi.Api.getNonce();
 
-        // Conf.SmartApi.Api.refreshNonce();
-
-        this.random = {
-            admin: getRandomName(),
-            amount: Math.floor(Math.random() * (99 - 1)) + 1,
-            phone: Math.floor(Math.random() * (9999999999 - 1000000000)) + 1000000000
+        this.keypairs = {
+            admin: {
+                created: false
+            },
+            emission: {
+                created: false
+            },
+            distr: {
+                created: false
+            },
+            merchant: {
+                created: false
+            },
+            anonym: {
+                created: false
+            },
+            registered: {
+                created: false
+            },
+            card: {
+                created: false
+            },
+            exchange: {
+                created: false
+            },
+            invoice: {
+                code: null
+            }
         };
 
-        console.log("-------- Random Values --------");
-        console.log(this.random);
+        this.updateBalances = function () {
+            return Conf.horizon.accounts().accountId(test.keypairs.distr.accountId()).call()
+                .then((account_data) => {
+                    var balances = '';
+                    account_data.balances.map(function (balance) {
+                        if (typeof balance.asset_code != 'undefined') {
+                            balances += parseFloat(balance.balance).toFixed(2) + ' ' + balance.asset_code + ' ';
+                        }
+                    });
+                    m.startComputation();
+                    ctrl.keypairs.distr.balances = balances;
+                    m.endComputation();
 
-        this.getWallet = function (e) {
+                    return Conf.horizon.accounts().accountId(test.keypairs.anonym.accountId()).call()
+                })
+                .catch(function (err) {
+                    console.log('it\'s normal, can be not created yet');
+                    console.log(err);
+                })
+                .then((account_data) => {
+                    var balances = '';
+                    account_data.balances.map(function (balance) {
+                        if (typeof balance.asset_code != 'undefined') {
+                            balances += parseFloat(balance.balance).toFixed(2) + ' ' + balance.asset_code + ' ';
+                        }
+                    });
+                    m.startComputation();
+                    ctrl.keypairs.anonym.balances = balances;
+                    m.endComputation();
+
+                    return Conf.horizon.accounts().accountId(test.keypairs.merchant.accountId()).call()
+                })
+                .catch(function (err) {
+                    console.log('it\'s normal, can be not created yet');
+                    console.log(err);
+                })
+                .then((account_data) => {
+                    var balances = '';
+                    account_data.balances.map(function (balance) {
+                        if (typeof balance.asset_code != 'undefined') {
+                            balances += parseFloat(balance.balance).toFixed(2) + ' ' + balance.asset_code + ' ';
+                        }
+                    });
+                    m.startComputation();
+                    ctrl.keypairs.merchant.balances = balances;
+                    m.endComputation();
+
+                    return Conf.horizon.accounts().accountId(test.keypairs.registered.accountId()).call()
+                })
+                .catch(function (err) {
+                    console.log('it\'s normal, can be not created yet');
+                    console.log(err);
+                })
+                .then((account_data) => {
+                    var balances = '';
+                    account_data.balances.map(function (balance) {
+                        if (typeof balance.asset_code != 'undefined') {
+                            balances += parseFloat(balance.balance).toFixed(2) + ' ' + balance.asset_code + ' ';
+                        }
+                    });
+                    m.startComputation();
+                    ctrl.keypairs.registered.balances = balances;
+                    m.endComputation();
+
+                    return Conf.horizon.accounts().accountId(test.keypairs.card.accountId()).call()
+                })
+                .catch(function (err) {
+                    console.log('it\'s normal, can be not created yet');
+                    console.log(err);
+                })
+                .then((account_data) => {
+                    var balances = '';
+                    account_data.balances.map(function (balance) {
+                        if (typeof balance.asset_code != 'undefined') {
+                            balances += parseFloat(balance.balance).toFixed(2) + ' ' + balance.asset_code + ' ';
+                        }
+                    });
+                    m.startComputation();
+                    ctrl.keypairs.card.balances = balances;
+                    m.endComputation();
+                })
+                .catch(function (err) {
+                    console.log('it\'s normal, can be not created yet');
+                    console.log(err);
+                });
+        };
+
+        this.handleOperation = function (callback, params, e) {
             e.preventDefault();
             m.onLoadingStart();
 
-            return test.getWallet('9999999999', 'Attic123')
+            return test[callback].apply(this, params || [])
+                .then(function (response) {
+                    switch (callback) {
+                        case 'createAdmin':
+                            m.startComputation();
+                            ctrl.keypairs.admin.created = true;
+                            m.endComputation();
+                            break;
+                        case 'deleteAdmin':
+                            m.startComputation();
+                            ctrl.keypairs.admin.created = false;
+                            m.endComputation();
+                            break;
+                        case 'createEmission':
+                            m.startComputation();
+                            ctrl.keypairs.emission.created = true;
+                            m.endComputation();
+                            break;
+                        case 'deleteEmission':
+                            m.startComputation();
+                            ctrl.keypairs.emission.created = false;
+                            m.endComputation();
+                            break;
+                        case 'createRegisteredUser':
+                            m.startComputation();
+                            ctrl.keypairs.registered.created = true;
+                            m.endComputation();
+                            break;
+                        case 'createAnonym':
+                            m.startComputation();
+                            ctrl.keypairs.anonym.created = true;
+                            m.endComputation();
+                            break;
+                        case 'sendMoney':
+                            ctrl.updateBalances();
+                            break;
+                        case 'makeEmission':
+
+                            ctrl.updateBalances();
+
+                            Conf.SmartApi.Wallets.get({
+                                    username: '2222222222',
+                                    password: 'Aa123123'
+                                })
+                                .then(function (wallet) {
+                                    var vlad_acc = StellSdk.Keypair.fromSeed(wallet.getKeychainData()).accountId();
+
+                                    var temp_agent = StellarSdk.Keypair.random();
+                                    test.createAgent(temp_agent.accountId(), StellarSdk.xdr.AccountType.accountDistributionAgent().value)
+                                       .then(function () {
+                                           return Conf.horizon.loadAccount(Conf.master_key)
+                                       })
+                                       .then(source => {
+                                           var tx = new StellarSdk.TransactionBuilder(source)
+                                               .addOperation(StellarSdk.Operation.payment({
+                                                   destination: temp_agent.accountId(),
+                                                   amount: parseFloat(100000).toFixed(2),
+                                                   asset: new StellarSdk.Asset('EUAH', Conf.master_key)
+                                               }))
+                                               .build();
+
+                                           tx.sign(test.keypairs.emission);
+                                           return Conf.horizon.submitTransaction(tx)
+                                       })
+                                       .then(() => {
+                                           return Conf.horizon.loadAccount(temp_agent.accountId())
+                                       })
+                                       .then(source => {
+                                           var tx = new StellarSdk.TransactionBuilder(source)
+                                               .addOperation(StellarSdk.Operation.payment({
+                                                   destination: vlad_acc,
+                                                   amount: parseFloat(10000).toFixed(2),
+                                                   asset: new StellarSdk.Asset('EUAH', Conf.master_key)
+                                               }))
+                                               .build();
+                                           tx.sign(temp_agent);
+                                           return Conf.horizon.submitTransaction(tx);
+                                       })
+                                    })
+                                .catch(function (err) {
+
+                                })
+                            break;
+                        case 'useCard':
+                            ctrl.updateBalances();
+                            break;
+                        case 'createCard':
+                            return ctrl.updateBalances()
+                                .then(function () {
+                                    m.startComputation();
+                                    ctrl.keypairs.card.created = true;
+                                    m.endComputation();
+                                })
+                                .catch(function (err) {
+                                    console.log(err);
+                                });
+                            break;
+                        case 'createAgent':
+                            switch (params[0]) {
+                                case test.keypairs.distr.accountId():
+                                    m.startComputation();
+                                    ctrl.keypairs.distr.created = true;
+                                    m.endComputation();
+                                    break;
+                                case test.keypairs.merchant.accountId():
+                                    m.startComputation();
+                                    ctrl.keypairs.merchant.created = true;
+                                    m.endComputation();
+                                    break;
+                            }
+                            break;
+                        case 'createInvoice':
+                            m.startComputation();
+                            ctrl.keypairs.invoice.code = response.data.id;
+                            m.endComputation();
+                    }
+                })
                 .then(handleSuccess)
                 .catch(handleError)
-        };
-
-        this.requiredTests = function (e) {
-            e.preventDefault();
-
-
         };
     },
 
@@ -48,8 +262,127 @@ module.exports = {
                 </div>
             </div>
         </header>,
-
         <div class="container">
+            <div class="row">
+                <div class="col-md-8 col-md-offset-2">
+                    <div class="portlet">
+                        <a data-toggle="collapse" data-parent="#accordion1" href="#accounts">
+                            <div class="portlet-heading bg-primary">
+                                <h3 class="portlet-title">
+                                    Тестовые аккаунты
+                                </h3>
+                                <div class="clearfix"></div>
+                            </div>
+                        </a>
+                        <div id="accounts" class="panel-collapse collapse in">
+                            <div class="portlet-body">
+                                <p class="m-b-20">
+                                     В процессе проведения теста будут создаваться аккаунты всех типов. Здесь будут отображены их балансы, мнемоники и т.д.
+                                </p>
+                                <div class="list-group m-b-0">
+                                    <table class="table table-striped m-0">
+                                        <thead>
+                                        <tr>
+                                            <th>Тип</th>
+                                            <th>Ключ</th>
+                                            <th>Статус</th>
+                                            <th>Баланс</th>
+                                            <th>Мнемоника</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                            <td>Администратор</td>
+                                            <td>{test.keypairs.admin.accountId()}</td>
+                                            <td>{ctrl.keypairs.admin.created ? 'Создан' : 'Не создан'}</td>
+                                            <td>-</td>
+                                            <td>{StellarSdk.getMnemonicFromSeed(test.keypairs.admin.seed())}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Ключ эмиссии</td>
+                                            <td>{test.keypairs.emission.accountId()}</td>
+                                            <td>{ctrl.keypairs.emission.created ? 'Создан' : 'Не создан'}</td>
+                                            <td>-</td>
+                                            <td>{StellarSdk.getMnemonicFromSeed(test.keypairs.emission.seed())}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Агент по распространению</td>
+                                            <td>{test.keypairs.distr.accountId()}</td>
+                                            <td>{ctrl.keypairs.distr.created ? 'Создан' : 'Не создан'}</td>
+                                            <td>
+                                                {
+                                                    ctrl.keypairs.distr.balances ?
+                                                        ctrl.keypairs.distr.balances
+                                                        :
+                                                        '-'
+                                                }
+                                            </td>
+                                            <td>{StellarSdk.getMnemonicFromSeed(test.keypairs.distr.seed())}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Мерчант</td>
+                                            <td>{test.keypairs.merchant.accountId()}</td>
+                                            <td>{ctrl.keypairs.merchant.created ? 'Создан' : 'Не создан'}</td>
+                                            <td>
+                                                {
+                                                    ctrl.keypairs.merchant.balances ?
+                                                        ctrl.keypairs.merchant.balances
+                                                        :
+                                                        '-'
+                                                }
+                                            </td>
+                                            <td>{StellarSdk.getMnemonicFromSeed(test.keypairs.merchant.seed())}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Анонимный пользователь</td>
+                                            <td>{test.keypairs.anonym.accountId()}</td>
+                                            <td>{ctrl.keypairs.anonym.created ? 'Создан' : 'Не создан'}</td>
+                                            <td>
+                                                {
+                                                    ctrl.keypairs.anonym.balances ?
+                                                        ctrl.keypairs.anonym.balances
+                                                        :
+                                                        '-'
+                                                }
+                                            </td>
+                                            <td>{StellarSdk.getMnemonicFromSeed(test.keypairs.anonym.seed())}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Зарегистрированный пользователь</td>
+                                            <td>{test.keypairs.registered.accountId()}</td>
+                                            <td>{ctrl.keypairs.registered.created ? 'Создан' : 'Не создан'}</td>
+                                            <td>
+                                                {
+                                                    ctrl.keypairs.registered.balances ?
+                                                        ctrl.keypairs.registered.balances
+                                                        :
+                                                        '-'
+                                                }
+                                            </td>
+                                            <td>{StellarSdk.getMnemonicFromSeed(test.keypairs.registered.seed())}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Предоплаченная карта</td>
+                                            <td>{test.keypairs.card.accountId()}</td>
+                                            <td>{ctrl.keypairs.card.created ? 'Создан' : 'Не создан'}</td>
+                                            <td>
+                                                {
+                                                    ctrl.keypairs.card.balances ?
+                                                        ctrl.keypairs.card.balances
+                                                        :
+                                                        '-'
+                                                }
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="row">
                 <div class="col-md-8 col-md-offset-2">
                     <div class="portlet">
@@ -66,108 +399,62 @@ module.exports = {
                                 <p class="m-b-20">
                                     Это обязательный предварительный тест для создания основополагающих элементов системы, без которых она не будет функционировать
                                 </p>
-
                                 <div class="list-group m-b-0">
-
                                     <li class="list-group-item">
                                         <h4 class="list-group-item-heading">Создание администратора</h4>
-
-                                        <p class="list-group-item-text text-warning"></p>
-
                                         <div class="text-center">
-                                            <a href={Conf.riak_check + 'wallets' + '/keys/' + ctrl.random.phone} target="_blank"  class="btn btn-warning waves-light waves-effect m-r-10">Проверить</a>
-                                            <button class="btn btn-primary waves-light waves-effect" onclick={test.getWallet.bind(ctrl, '9999999999', 'Attic123')}>
-                                                Запустить
-                                            </button>
+                                            <a href={Conf.horizon_host + '/accounts/' + Conf.master_key} target="_blank"  class="btn btn-warning waves-light waves-effect m-r-10">Проверить</a>
+                                            {
+                                                ctrl.keypairs.admin.created ?
+                                                    <button class="btn btn-danger waves-light waves-effect" onclick={ctrl.handleOperation.bind(ctrl, 'deleteAdmin', [])}>
+                                                        Удалить
+                                                    </button>
+                                                    :
+                                                    <button class="btn btn-primary waves-light waves-effect" onclick={ctrl.handleOperation.bind(ctrl, 'createAdmin', [])}>
+                                                        Создать
+                                                    </button>
+                                            }
                                         </div>
                                     </li>
-
                                     <li class="list-group-item">
                                         <h4 class="list-group-item-heading">Создание эмитента</h4>
-
-                                        <p class="list-group-item-text text-warning"></p>
-
                                         <div class="text-center">
-                                            <a href={Conf.riak_check + 'wallets' + '/keys/' + ctrl.random.phone} target="_blank"  class="btn btn-warning waves-light waves-effect m-r-10">Проверить</a>
-                                            <button class="btn btn-primary waves-light waves-effect" onclick={ctrl.getWallet.bind(ctrl)}>
-                                                Запустить
-                                            </button>
+                                            <a href={Conf.horizon_host + '/accounts/' + Conf.master_key} target="_blank"  class="btn btn-warning waves-light waves-effect m-r-10">Проверить</a>
+                                            {
+                                                ctrl.keypairs.emission.created ?
+                                                    <button class="btn btn-danger waves-light waves-effect" onclick={ctrl.handleOperation.bind(ctrl, 'deleteEmission', [])}>
+                                                        Удалить
+                                                    </button>
+                                                    :
+                                                    <button class="btn btn-primary waves-light waves-effect" onclick={ctrl.handleOperation.bind(ctrl, 'createEmission', [])}>
+                                                        Создать
+                                                    </button>
+                                            }
                                         </div>
                                     </li>
-
                                     <li class="list-group-item">
                                         <h4 class="list-group-item-heading">Создание валюты</h4>
-
-                                        <p class="list-group-item-text text-warning"></p>
-
                                         <div class="text-center">
-                                            <a href={Conf.riak_check + 'wallets' + '/keys/' + ctrl.random.phone} target="_blank"  class="btn btn-warning waves-light waves-effect m-r-10">Проверить</a>
-                                            <button class="btn btn-primary waves-light waves-effect" onclick={ctrl.getWallet.bind(ctrl)}>
+                                            <a href={Conf.horizon_host + '/assets'} target="_blank"  class="btn btn-warning waves-light waves-effect m-r-10">Проверить</a>
+                                            <button class="btn btn-primary waves-light waves-effect" onclick={ctrl.handleOperation.bind(ctrl, 'createAsset', [])}>
                                                 Запустить
                                             </button>
                                         </div>
                                     </li>
-
                                     <li class="list-group-item">
                                         <h4 class="list-group-item-heading">Создание агента по распостранению</h4>
-
-                                        <p class="list-group-item-text text-warning"></p>
-
                                         <div class="text-center">
-                                            <a href={Conf.riak_check + 'wallets' + '/keys/' + ctrl.random.phone} target="_blank"  class="btn btn-warning waves-light waves-effect m-r-10">Проверить</a>
-                                            <button class="btn btn-primary waves-light waves-effect" onclick={ctrl.getWallet.bind(ctrl)}>
+                                            <a href={Conf.horizon_host + '/accounts/' + test.keypairs.distr.accountId()} target="_blank"  class="btn btn-warning waves-light waves-effect m-r-10">Проверить</a>
+                                            <button class="btn btn-primary waves-light waves-effect" onclick={ctrl.handleOperation.bind(ctrl, 'createAgent', [test.keypairs.distr.accountId(), StellarSdk.xdr.AccountType.accountDistributionAgent().value])}>
                                                 Запустить
                                             </button>
                                         </div>
                                     </li>
-
                                     <li class="list-group-item">
-                                        <h4 class="list-group-item-heading">Проведение эмиссии</h4>
-
-                                        <p class="list-group-item-text text-warning"></p>
-
+                                        <h4 class="list-group-item-heading">Проведение эмиссии [1000 {Conf.asset}]</h4>
                                         <div class="text-center">
-                                            <a href={Conf.riak_check + 'wallets' + '/keys/' + ctrl.random.phone} target="_blank"  class="btn btn-warning waves-light waves-effect m-r-10">Проверить</a>
-                                            <button class="btn btn-primary waves-light waves-effect" onclick={ctrl.getWallet.bind(ctrl)}>
-                                                Запустить
-                                            </button>
-                                        </div>
-                                    </li>
-
-
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-md-8 col-md-offset-2">
-                    <div class="portlet">
-                        <a data-toggle="collapse" data-parent="#accordion1" href="#test2">
-                            <div class="portlet-heading bg-inverse">
-                                <h3 class="portlet-title">
-                                    Создание эмитента
-                                </h3>
-                                <div class="clearfix"></div>
-                            </div>
-                        </a>
-                        <div id="test2" class="panel-collapse collapse">
-                            <div class="portlet-body">
-                                <p class="m-b-20">
-                                    Эмитент
-                                </p>
-
-                                <div class="list-group m-b-0">
-                                    <li class="list-group-item">
-                                        <h4 class="list-group-item-heading">Проведение эмиссии</h4>
-
-                                        <p class="list-group-item-text text-warning"></p>
-
-                                        <div class="text-center">
-                                            <a href={Conf.riak_check + 'wallets' + '/keys/' + ctrl.random.phone} target="_blank"  class="btn btn-warning waves-light waves-effect m-r-10">Проверить</a>
-                                            <button class="btn btn-primary waves-light waves-effect" onclick={ctrl.getWallet.bind(ctrl)}>
+                                            <a href={Conf.horizon_host + '/accounts/' + test.keypairs.distr.accountId()} target="_blank"  class="btn btn-warning waves-light waves-effect m-r-10">Проверить</a>
+                                            <button class="btn btn-primary waves-light waves-effect" onclick={ctrl.handleOperation.bind(ctrl, 'makeEmission', [1000])}>
                                                 Запустить
                                             </button>
                                         </div>
@@ -182,29 +469,21 @@ module.exports = {
             <div class="row">
                 <div class="col-md-8 col-md-offset-2">
                     <div class="portlet">
-                        <a data-toggle="collapse" data-parent="#accordion1" href="#test3">
+                        <a data-toggle="collapse" data-parent="#accordion1" href="#createAgentMerchant">
                             <div class="portlet-heading bg-inverse">
                                 <h3 class="portlet-title">
-                                    Создание валюты
+                                    Создание марчанта
                                 </h3>
                                 <div class="clearfix"></div>
                             </div>
                         </a>
-                        <div id="test3" class="panel-collapse collapse">
+                        <div id="createAgentMerchant" class="panel-collapse collapse">
                             <div class="portlet-body">
-                                <p class="m-b-20">
-                                    Валюта
-                                </p>
-
                                 <div class="list-group m-b-0">
                                     <li class="list-group-item">
-                                        <h4 class="list-group-item-heading">Проведение эмиссии</h4>
-
-                                        <p class="list-group-item-text text-warning"></p>
-
                                         <div class="text-center">
-                                            <a href={Conf.riak_check + 'wallets' + '/keys/' + ctrl.random.phone} target="_blank"  class="btn btn-warning waves-light waves-effect m-r-10">Проверить</a>
-                                            <button class="btn btn-primary waves-light waves-effect" onclick={ctrl.getWallet.bind(ctrl)}>
+                                            <a href={Conf.horizon_host + '/accounts/' + test.keypairs.merchant.accountId()} target="_blank"  class="btn btn-warning waves-light waves-effect m-r-10">Проверить</a>
+                                            <button class="btn btn-primary waves-light waves-effect" onclick={ctrl.handleOperation.bind(ctrl, 'createAgent', [test.keypairs.merchant.accountId(), StellarSdk.xdr.AccountType.accountMerchant().value])}>
                                                 Запустить
                                             </button>
                                         </div>
@@ -219,29 +498,21 @@ module.exports = {
             <div class="row">
                 <div class="col-md-8 col-md-offset-2">
                     <div class="portlet">
-                        <a data-toggle="collapse" data-parent="#accordion1" href="#test4">
+                        <a data-toggle="collapse" data-parent="#accordion1" href="#createAnonym">
                             <div class="portlet-heading bg-inverse">
                                 <h3 class="portlet-title">
-                                    Предварительный тест
+                                    Создание анонимного пользователя
                                 </h3>
                                 <div class="clearfix"></div>
                             </div>
                         </a>
-                        <div id="test4" class="panel-collapse collapse">
+                        <div id="createAnonym" class="panel-collapse collapse">
                             <div class="portlet-body">
-                                <p class="m-b-20">
-                                    Это обязательный предварительный тест для создания основополагающих элементов системы, без которых она не будет функционировать
-                                </p>
-
                                 <div class="list-group m-b-0">
                                     <li class="list-group-item">
-                                        <h4 class="list-group-item-heading">Проведение эмиссии</h4>
-
-                                        <p class="list-group-item-text text-warning"></p>
-
                                         <div class="text-center">
-                                            <a href={Conf.riak_check + 'wallets' + '/keys/' + ctrl.random.phone} target="_blank"  class="btn btn-warning waves-light waves-effect m-r-10">Проверить</a>
-                                            <button class="btn btn-primary waves-light waves-effect" onclick={ctrl.getWallet.bind(ctrl)}>
+                                            <a href={Conf.horizon_host + '/accounts/' + test.keypairs.anonym.accountId()} target="_blank"  class="btn btn-warning waves-light waves-effect m-r-10">Проверить</a>
+                                            <button class="btn btn-primary waves-light waves-effect" onclick={ctrl.handleOperation.bind(ctrl, 'createAnonym', [])}>
                                                 Запустить
                                             </button>
                                         </div>
@@ -253,12 +524,370 @@ module.exports = {
                 </div>
             </div>
 
+            <div class="row">
+                <div class="col-md-8 col-md-offset-2">
+                    <div class="portlet">
+                        <a data-toggle="collapse" data-parent="#accordion1" href="#createRegisteredUser">
+                            <div class="portlet-heading bg-inverse">
+                                <h3 class="portlet-title">
+                                    Создание зарегистрированного пользователя
+                                </h3>
+                                <div class="clearfix"></div>
+                            </div>
+                        </a>
+                        <div id="createRegisteredUser" class="panel-collapse collapse">
+                            <div class="portlet-body">
+                                <div class="list-group m-b-0">
+                                    <li class="list-group-item">
+                                        <div class="text-center">
+                                            <a href={Conf.horizon_host + '/accounts/' + test.keypairs.registered.accountId()} target="_blank"  class="btn btn-warning waves-light waves-effect m-r-10">Проверить</a>
+                                            <button class="btn btn-primary waves-light waves-effect" onclick={ctrl.handleOperation.bind(ctrl, 'createRegisteredUser', [])}>
+                                                Запустить
+                                            </button>
+                                        </div>
+                                    </li>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
+            <div class="row">
+                <div class="col-md-8 col-md-offset-2">
+                    <div class="portlet">
+                        <a data-toggle="collapse" data-parent="#accordion1" href="#sendMoneyDTOA">
+                            <div class="portlet-heading bg-inverse">
+                                <h3 class="portlet-title">
+                                    Перевод средств с агента по распространению на анонимного пользователя (50 {Conf.asset})
+                                </h3>
+                                <div class="clearfix"></div>
+                            </div>
+                        </a>
+                        <div id="sendMoneyDTOA" class="panel-collapse collapse">
+                            <div class="portlet-body">
+                                <div class="list-group m-b-0">
+                                    <li class="list-group-item">
+                                        <div class="text-center">
+                                            <a href={Conf.horizon_host + '/accounts/' + test.keypairs.anonym.accountId()} target="_blank"  class="btn btn-warning waves-light waves-effect m-r-10">Проверить</a>
+                                            <button class="btn btn-primary waves-light waves-effect" onclick={ctrl.handleOperation.bind(ctrl, 'sendMoney', [test.keypairs.distr, test.keypairs.anonym.accountId(), 50])}>
+                                                Запустить
+                                            </button>
+                                        </div>
+                                    </li>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
+            <div class="row">
+                <div class="col-md-8 col-md-offset-2">
+                    <div class="portlet">
+                        <a data-toggle="collapse" data-parent="#accordion1" href="#sendMoneyDTOR">
+                            <div class="portlet-heading bg-inverse">
+                                <h3 class="portlet-title">
+                                    Перевод средств с агента по распространению на зарегистрированного пользователя (50 {Conf.asset})
+                                </h3>
+                                <div class="clearfix"></div>
+                            </div>
+                        </a>
+                        <div id="sendMoneyDTOR" class="panel-collapse collapse">
+                            <div class="portlet-body">
+                                <div class="list-group m-b-0">
+                                    <li class="list-group-item">
+                                        <div class="text-center">
+                                            <a href={Conf.horizon_host + '/accounts/' + test.keypairs.registered.accountId()} target="_blank"  class="btn btn-warning waves-light waves-effect m-r-10">Проверить</a>
+                                            <button class="btn btn-primary waves-light waves-effect" onclick={ctrl.handleOperation.bind(ctrl, 'sendMoney', [test.keypairs.distr, test.keypairs.registered.accountId(), 50])}>
+                                                Запустить
+                                            </button>
+                                        </div>
+                                    </li>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-8 col-md-offset-2">
+                    <div class="portlet">
+                        <a data-toggle="collapse" data-parent="#accordion1" href="#sendMoneyATOR">
+                            <div class="portlet-heading bg-inverse">
+                                <h3 class="portlet-title">
+                                    Перевод средств с анонимного пользователя на зарегистрированного пользователя (50 {Conf.asset})
+                                </h3>
+                                <div class="clearfix"></div>
+                            </div>
+                        </a>
+                        <div id="sendMoneyATOR" class="panel-collapse collapse">
+                            <div class="portlet-body">
+                                <div class="list-group m-b-0">
+                                    <li class="list-group-item">
+                                        <div class="text-center">
+                                            <a href={Conf.horizon_host + '/accounts/' + test.keypairs.registered.accountId()} target="_blank"  class="btn btn-warning waves-light waves-effect m-r-10">Проверить</a>
+                                            <button class="btn btn-primary waves-light waves-effect" onclick={ctrl.handleOperation.bind(ctrl, 'sendMoney', [test.keypairs.anonym, test.keypairs.registered.accountId(), 50])}>
+                                                Запустить
+                                            </button>
+                                        </div>
+                                    </li>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-8 col-md-offset-2">
+                    <div class="portlet">
+                        <a data-toggle="collapse" data-parent="#accordion1" href="#sendMoneyATOM">
+                            <div class="portlet-heading bg-inverse">
+                                <h3 class="portlet-title">
+                                    Перевод средств с анонимного пользователя на мерчанта (50 {Conf.asset})
+                                </h3>
+                                <div class="clearfix"></div>
+                            </div>
+                        </a>
+                        <div id="sendMoneyATOM" class="panel-collapse collapse">
+                            <div class="portlet-body">
+                                <div class="list-group m-b-0">
+                                    <li class="list-group-item">
+                                        <div class="text-center">
+                                            <a href={Conf.horizon_host + '/accounts/' + test.keypairs.merchant.accountId()} target="_blank"  class="btn btn-warning waves-light waves-effect m-r-10">Проверить</a>
+                                            <button class="btn btn-primary waves-light waves-effect" onclick={ctrl.handleOperation.bind(ctrl, 'sendMoney', [test.keypairs.anonym, test.keypairs.merchant.accountId(), 50])}>
+                                                Запустить
+                                            </button>
+                                        </div>
+                                    </li>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-8 col-md-offset-2">
+                    <div class="portlet">
+                        <a data-toggle="collapse" data-parent="#accordion1" href="#sendMoneyRTOM">
+                            <div class="portlet-heading bg-inverse">
+                                <h3 class="portlet-title">
+                                    Перевод средств с зарегистрированного пользователя на мерчанта (50 {Conf.asset})
+                                </h3>
+                                <div class="clearfix"></div>
+                            </div>
+                        </a>
+                        <div id="sendMoneyRTOM" class="panel-collapse collapse">
+                            <div class="portlet-body">
+                                <div class="list-group m-b-0">
+                                    <li class="list-group-item">
+                                        <div class="text-center">
+                                            <a href={Conf.horizon_host + '/accounts/' + test.keypairs.merchant.accountId()} target="_blank"  class="btn btn-warning waves-light waves-effect m-r-10">Проверить</a>
+                                            <button class="btn btn-primary waves-light waves-effect" onclick={ctrl.handleOperation.bind(ctrl, 'sendMoney', [test.keypairs.registered, test.keypairs.merchant.accountId(), 50])}>
+                                                Запустить
+                                            </button>
+                                        </div>
+                                    </li>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-8 col-md-offset-2">
+                    <div class="portlet">
+                        <a data-toggle="collapse" data-parent="#accordion1" href="#sendMoneyDTOC">
+                            <div class="portlet-heading bg-inverse">
+                                <h3 class="portlet-title">
+                                    Создание карты пополнения (50 {Conf.asset})
+                                </h3>
+                                <div class="clearfix"></div>
+                            </div>
+                        </a>
+                        <div id="sendMoneyDTOC" class="panel-collapse collapse">
+                            <div class="portlet-body">
+                                <div class="list-group m-b-0">
+                                    <li class="list-group-item">
+                                        <div class="text-center">
+                                            <a href={Conf.horizon_host + '/accounts/' + test.keypairs.card.accountId()} target="_blank"  class="btn btn-warning waves-light waves-effect m-r-10">Проверить</a>
+                                            <button class="btn btn-primary waves-light waves-effect" onclick={ctrl.handleOperation.bind(ctrl, 'createCard', [50])}>
+                                                Запустить
+                                            </button>
+                                        </div>
+                                    </li>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-8 col-md-offset-2">
+                    <div class="portlet">
+                        <a data-toggle="collapse" data-parent="#accordion1" href="#useCard">
+                            <div class="portlet-heading bg-inverse">
+                                <h3 class="portlet-title">
+                                    Использовать карту пополнения анонимным пользователем (5 {Conf.asset})
+                                </h3>
+                                <div class="clearfix"></div>
+                            </div>
+                        </a>
+                        <div id="useCard" class="panel-collapse collapse">
+                            <div class="portlet-body">
+                                <div class="list-group m-b-0">
+                                    <li class="list-group-item">
+                                        <div class="text-center">
+                                            <a href={Conf.horizon_host + '/accounts/' + test.keypairs.card.accountId()} target="_blank"  class="btn btn-warning waves-light waves-effect m-r-10">Проверить</a>
+                                            <button class="btn btn-primary waves-light waves-effect" onclick={ctrl.handleOperation.bind(ctrl, 'useCard', [test.keypairs.card, test.keypairs.anonym.accountId(), 5])}>
+                                                Запустить
+                                            </button>
+                                        </div>
+                                    </li>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-8 col-md-offset-2">
+                    <div class="portlet">
+                        <a data-toggle="collapse" data-parent="#accordion1" href="#restrictAgent">
+                            <div class="portlet-heading bg-inverse">
+                                <h3 class="portlet-title">
+                                    Заблокировать вх./ исх. платежи для агента по распространению
+                                </h3>
+                                <div class="clearfix"></div>
+                            </div>
+                        </a>
+                        <div id="restrictAgent" class="panel-collapse collapse">
+                            <div class="portlet-body">
+                                <div class="list-group m-b-0">
+                                    <li class="list-group-item">
+                                        <div class="text-center">
+                                            <a href={Conf.horizon_host + '/accounts/' + test.keypairs.distr.accountId() + '/traits'} target="_blank"  class="btn btn-warning waves-light waves-effect m-r-10">Проверить</a>
+                                            <button class="btn btn-primary waves-light waves-effect" onclick={ctrl.handleOperation.bind(ctrl, 'restrictAgent', [test.keypairs.distr.accountId(), true, true])}>
+                                                Запустить
+                                            </button>
+                                        </div>
+                                    </li>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-8 col-md-offset-2">
+                    <div class="portlet">
+                        <a data-toggle="collapse" data-parent="#accordion1" href="#unrestrictAgent">
+                            <div class="portlet-heading bg-inverse">
+                                <h3 class="portlet-title">
+                                    Разблокировать вх./ исх. платежи для агента по распространению
+                                </h3>
+                                <div class="clearfix"></div>
+                            </div>
+                        </a>
+                        <div id="unrestrictAgent" class="panel-collapse collapse">
+                            <div class="portlet-body">
+                                <div class="list-group m-b-0">
+                                    <li class="list-group-item">
+                                        <div class="text-center">
+                                            <a href={Conf.horizon_host + '/accounts/' + test.keypairs.distr.accountId() + '/traits'} target="_blank"  class="btn btn-warning waves-light waves-effect m-r-10">Проверить</a>
+                                            <button class="btn btn-primary waves-light waves-effect" onclick={ctrl.handleOperation.bind(ctrl, 'restrictAgent', [test.keypairs.distr.accountId(), false, false])}>
+                                                Запустить
+                                            </button>
+                                        </div>
+                                    </li>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-8 col-md-offset-2">
+                    <div class="portlet">
+                        <a data-toggle="collapse" data-parent="#accordion1" href="#createInvoice">
+                            <div class="portlet-heading bg-inverse">
+                                <h3 class="portlet-title">
+                                    Создать инвойс анонимным пользователем на сумму 10 {Conf.asset}
+                                </h3>
+                                <div class="clearfix"></div>
+                            </div>
+                        </a>
+                        <div id="createInvoice" class="panel-collapse collapse">
+                            <div class="portlet-body">
+                                <div class="list-group m-b-0">
+                                    <li class="list-group-item">
+                                        <div class="text-center">
+                                            {
+                                                ctrl.keypairs.invoice.code ?
+                                                    <a href={Conf.riak_check + '/buckets/invoices/keys/' + ctrl.keypairs.invoice.code} target="_blank"  class="btn btn-warning waves-light waves-effect m-r-10">Проверить</a>
+                                                    :
+                                                    ''
+                                            }
+                                            <button class="btn btn-primary waves-light waves-effect" onclick={ctrl.handleOperation.bind(ctrl, 'createInvoice', [test.keypairs.anonym, 10])}>
+                                                Запустить
+                                            </button>
+                                        </div>
+                                    </li>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {
+                ctrl.keypairs.invoice.code ?
+                    <div class="row">
+                        <div class="col-md-8 col-md-offset-2">
+                            <div class="portlet">
+                                <a data-toggle="collapse" data-parent="#accordion1" href="#getInvoice">
+                                    <div class="portlet-heading bg-inverse">
+                                        <h3 class="portlet-title">
+                                            Получить инвойс зарегистрированным пользователем
+                                        </h3>
+                                        <div class="clearfix"></div>
+                                    </div>
+                                </a>
+                                <div id="getInvoice" class="panel-collapse collapse">
+                                    <div class="portlet-body">
+                                        <div class="list-group m-b-0">
+                                            <li class="list-group-item">
+                                                <div class="text-center">
+                                                    {
+                                                        ctrl.keypairs.invoice.code ?
+                                                            <a href={Conf.riak_check + '/buckets/invoices/keys/' + ctrl.keypairs.invoice.code} target="_blank"  class="btn btn-warning waves-light waves-effect m-r-10">Проверить</a>
+                                                            :
+                                                            ''
+                                                    }
+                                                    <button class="btn btn-primary waves-light waves-effect" onclick={ctrl.handleOperation.bind(ctrl, 'getInvoice', [test.keypairs.registered, ctrl.keypairs.invoice.code])}>
+                                                        Запустить
+                                                    </button>
+                                                </div>
+                                            </li>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    :
+                    ''
+            }
         </div>
         ];
     }
-
 };
 
 function handleSuccess() {
@@ -268,16 +897,21 @@ function handleSuccess() {
 
 function handleError(err) {
     m.onLoadingEnd();
-    console.warn(err);
-    return m.flashError(Conf.tr(err));
-}
+    console.error(err);
 
-function getRandomName() {
-    var text = "";
-    var possible = "abcdefghijklmnopqrstuvwxyz";
+    if (typeof err != 'undefined' &&
+        typeof err.response != 'undefined' &&
+        typeof err.response.data != 'undefined' &&
+        typeof err.response.data.extras != 'undefined' &&
+        typeof err.response.data.title != 'undefined' &&
+        typeof err.response.data.extras.result_codes != 'undefined'
+    ) {
+        return m.flashError(err.response.data.title + ': ' + JSON.stringify(err.response.data.extras.result_codes));
+    } else if (typeof err != 'undefined' &&
+        typeof err.description != 'undefined') {
+        return m.flashError(err.description);
+    } else {
+        return m.flashError(err);
+    }
 
-    for( var i=0; i < 6; i++ )
-        text += possible.charAt(Math.floor(Math.random() * possible.length));
-
-    return text;
 }

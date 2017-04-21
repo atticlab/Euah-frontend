@@ -307,7 +307,7 @@ class Test {
             .then(function (source) {
 
                 if (asset) {
-                    asset = new StellarSdk.Asset(Conf.asset, Conf.master_key);
+                    asset = new StellarSdk.Asset(asset.toString(), Conf.master_key);
                 } else {
                     asset = self.asset;
                 }
@@ -340,7 +340,7 @@ class Test {
             .then(function (source) {
 
                 if (asset) {
-                    asset = new StellarSdk.Asset(Conf.asset, Conf.master_key);
+                    asset = new StellarSdk.Asset(asset, Conf.master_key);
                 } else {
                     asset = self.asset;
                 }
@@ -673,10 +673,6 @@ class Test {
 
                 if (!card_balance) {
                     return Promise.reject('Can not get card balance');
-                }
-
-                if (card_balance != amount) {
-                    return Promise.reject('Card have unexpected balance');
                 }
 
                 return self.sendMoney(card_keypair, to, amount);
