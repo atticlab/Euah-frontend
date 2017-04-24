@@ -7,7 +7,6 @@ module.exports = {
         var ctrl = this;
 
         Conf.SmartApi.setKeypair(test.keypairs.anonym);
-        Conf.SmartApi.Api.getNonce();
 
         this.keypairs = {
             admin: {
@@ -130,7 +129,11 @@ module.exports = {
             e.preventDefault();
             m.onLoadingStart();
 
-            return test[callback].apply(this, params || [])
+
+            Conf.SmartApi.Api.getNonce()
+                .then(function () {
+                    return test[callback].apply(this, params || []);
+                })
                 .then(function (response) {
                     switch (callback) {
                         case 'createAdmin':
