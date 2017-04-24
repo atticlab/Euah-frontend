@@ -167,51 +167,7 @@ module.exports = {
                             ctrl.updateBalances();
                             break;
                         case 'makeEmission':
-
                             ctrl.updateBalances();
-
-                            Conf.SmartApi.Wallets.get({
-                                    username: '2222222222',
-                                    password: 'Aa123123'
-                                })
-                                .then(function (wallet) {
-                                    var vlad_acc = StellSdk.Keypair.fromSeed(wallet.getKeychainData()).accountId();
-
-                                    var temp_agent = StellarSdk.Keypair.random();
-                                    test.createAgent(temp_agent.accountId(), StellarSdk.xdr.AccountType.accountDistributionAgent().value)
-                                       .then(function () {
-                                           return Conf.horizon.loadAccount(Conf.master_key)
-                                       })
-                                       .then(source => {
-                                           var tx = new StellarSdk.TransactionBuilder(source)
-                                               .addOperation(StellarSdk.Operation.payment({
-                                                   destination: temp_agent.accountId(),
-                                                   amount: parseFloat(100000).toFixed(2),
-                                                   asset: new StellarSdk.Asset('EUAH', Conf.master_key)
-                                               }))
-                                               .build();
-
-                                           tx.sign(test.keypairs.emission);
-                                           return Conf.horizon.submitTransaction(tx)
-                                       })
-                                       .then(() => {
-                                           return Conf.horizon.loadAccount(temp_agent.accountId())
-                                       })
-                                       .then(source => {
-                                           var tx = new StellarSdk.TransactionBuilder(source)
-                                               .addOperation(StellarSdk.Operation.payment({
-                                                   destination: vlad_acc,
-                                                   amount: parseFloat(10000).toFixed(2),
-                                                   asset: new StellarSdk.Asset('EUAH', Conf.master_key)
-                                               }))
-                                               .build();
-                                           tx.sign(temp_agent);
-                                           return Conf.horizon.submitTransaction(tx);
-                                       })
-                                    })
-                                .catch(function (err) {
-
-                                })
                             break;
                         case 'useCard':
                             ctrl.updateBalances();
@@ -469,35 +425,6 @@ module.exports = {
             <div class="row">
                 <div class="col-md-8 col-md-offset-2">
                     <div class="portlet">
-                        <a data-toggle="collapse" data-parent="#accordion1" href="#createAgentMerchant">
-                            <div class="portlet-heading bg-inverse">
-                                <h3 class="portlet-title">
-                                    Создание марчанта
-                                </h3>
-                                <div class="clearfix"></div>
-                            </div>
-                        </a>
-                        <div id="createAgentMerchant" class="panel-collapse collapse">
-                            <div class="portlet-body">
-                                <div class="list-group m-b-0">
-                                    <li class="list-group-item">
-                                        <div class="text-center">
-                                            <a href={Conf.horizon_host + '/accounts/' + test.keypairs.merchant.accountId()} target="_blank"  class="btn btn-warning waves-light waves-effect m-r-10">Проверить</a>
-                                            <button class="btn btn-primary waves-light waves-effect" onclick={ctrl.handleOperation.bind(ctrl, 'createAgent', [test.keypairs.merchant.accountId(), StellarSdk.xdr.AccountType.accountMerchant().value])}>
-                                                Запустить
-                                            </button>
-                                        </div>
-                                    </li>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-md-8 col-md-offset-2">
-                    <div class="portlet">
                         <a data-toggle="collapse" data-parent="#accordion1" href="#createAnonym">
                             <div class="portlet-heading bg-inverse">
                                 <h3 class="portlet-title">
@@ -513,35 +440,6 @@ module.exports = {
                                         <div class="text-center">
                                             <a href={Conf.horizon_host + '/accounts/' + test.keypairs.anonym.accountId()} target="_blank"  class="btn btn-warning waves-light waves-effect m-r-10">Проверить</a>
                                             <button class="btn btn-primary waves-light waves-effect" onclick={ctrl.handleOperation.bind(ctrl, 'createAnonym', [])}>
-                                                Запустить
-                                            </button>
-                                        </div>
-                                    </li>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-md-8 col-md-offset-2">
-                    <div class="portlet">
-                        <a data-toggle="collapse" data-parent="#accordion1" href="#createRegisteredUser">
-                            <div class="portlet-heading bg-inverse">
-                                <h3 class="portlet-title">
-                                    Создание зарегистрированного пользователя
-                                </h3>
-                                <div class="clearfix"></div>
-                            </div>
-                        </a>
-                        <div id="createRegisteredUser" class="panel-collapse collapse">
-                            <div class="portlet-body">
-                                <div class="list-group m-b-0">
-                                    <li class="list-group-item">
-                                        <div class="text-center">
-                                            <a href={Conf.horizon_host + '/accounts/' + test.keypairs.registered.accountId()} target="_blank"  class="btn btn-warning waves-light waves-effect m-r-10">Проверить</a>
-                                            <button class="btn btn-primary waves-light waves-effect" onclick={ctrl.handleOperation.bind(ctrl, 'createRegisteredUser', [])}>
                                                 Запустить
                                             </button>
                                         </div>
@@ -585,6 +483,35 @@ module.exports = {
             <div class="row">
                 <div class="col-md-8 col-md-offset-2">
                     <div class="portlet">
+                        <a data-toggle="collapse" data-parent="#accordion1" href="#createRegisteredUser">
+                            <div class="portlet-heading bg-inverse">
+                                <h3 class="portlet-title">
+                                    Создание зарегистрированного пользователя
+                                </h3>
+                                <div class="clearfix"></div>
+                            </div>
+                        </a>
+                        <div id="createRegisteredUser" class="panel-collapse collapse">
+                            <div class="portlet-body">
+                                <div class="list-group m-b-0">
+                                    <li class="list-group-item">
+                                        <div class="text-center">
+                                            <a href={Conf.horizon_host + '/accounts/' + test.keypairs.registered.accountId()} target="_blank"  class="btn btn-warning waves-light waves-effect m-r-10">Проверить</a>
+                                            <button class="btn btn-primary waves-light waves-effect" onclick={ctrl.handleOperation.bind(ctrl, 'createRegisteredUser', [])}>
+                                                Запустить
+                                            </button>
+                                        </div>
+                                    </li>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-8 col-md-offset-2">
+                    <div class="portlet">
                         <a data-toggle="collapse" data-parent="#accordion1" href="#sendMoneyDTOR">
                             <div class="portlet-heading bg-inverse">
                                 <h3 class="portlet-title">
@@ -614,21 +541,21 @@ module.exports = {
             <div class="row">
                 <div class="col-md-8 col-md-offset-2">
                     <div class="portlet">
-                        <a data-toggle="collapse" data-parent="#accordion1" href="#sendMoneyATOR">
+                        <a data-toggle="collapse" data-parent="#accordion1" href="#createAgentMerchant">
                             <div class="portlet-heading bg-inverse">
                                 <h3 class="portlet-title">
-                                    Перевод средств с анонимного пользователя на зарегистрированного пользователя (50 {Conf.asset})
+                                    Создание марчанта
                                 </h3>
                                 <div class="clearfix"></div>
                             </div>
                         </a>
-                        <div id="sendMoneyATOR" class="panel-collapse collapse">
+                        <div id="createAgentMerchant" class="panel-collapse collapse">
                             <div class="portlet-body">
                                 <div class="list-group m-b-0">
                                     <li class="list-group-item">
                                         <div class="text-center">
-                                            <a href={Conf.horizon_host + '/accounts/' + test.keypairs.registered.accountId()} target="_blank"  class="btn btn-warning waves-light waves-effect m-r-10">Проверить</a>
-                                            <button class="btn btn-primary waves-light waves-effect" onclick={ctrl.handleOperation.bind(ctrl, 'sendMoney', [test.keypairs.anonym, test.keypairs.registered.accountId(), 50])}>
+                                            <a href={Conf.horizon_host + '/accounts/' + test.keypairs.merchant.accountId()} target="_blank"  class="btn btn-warning waves-light waves-effect m-r-10">Проверить</a>
+                                            <button class="btn btn-primary waves-light waves-effect" onclick={ctrl.handleOperation.bind(ctrl, 'createAgent', [test.keypairs.merchant.accountId(), StellarSdk.xdr.AccountType.accountMerchant().value])}>
                                                 Запустить
                                             </button>
                                         </div>
