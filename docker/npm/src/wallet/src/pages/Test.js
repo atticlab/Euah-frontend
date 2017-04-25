@@ -132,6 +132,45 @@ module.exports = {
 
             Conf.SmartApi.Api.getNonce()
                 .then(function () {
+                    switch (callback) {
+                        case 'sendMoney':
+                            return Conf.horizon.accounts()
+                                .accountId(params[1])
+                                .call();
+                            break;
+                        default:
+                            return; //return undefined
+                    }
+                })
+                .catch(function () {
+                    throw new Error('Account not created yet');
+                })
+                // .then(function (account_data) {
+                //     if (typeof account_data != 'undefined') {
+                //         var acc_not_created = false;
+                //         switch (params[1]) {
+                //             case test.keypairs.anonym.accountId():
+                //                 if (account_data.type_i != StellarSdk.xdr.AccountType.accountAnonymousUser().value) {
+                //                     acc_not_created = true;
+                //                 }
+                //                 break;
+                //             case test.keypairs.registered.accountId():
+                //                 if (account_data.type_i != StellarSdk.xdr.AccountType.accountRegisteredUser().value) {
+                //                     acc_not_created = true;
+                //                 }
+                //                 break;
+                //             case test.keypairs.merchant.accountId():
+                //                 if (account_data.type_i != StellarSdk.xdr.AccountType.accountMerchant().value) {
+                //                     acc_not_created = true;
+                //                 }
+                //                 break;
+                //         }
+                //         if (acc_not_created) {
+                //             throw new Error('Account not created yet');
+                //         }
+                //     }
+                // })
+                .then(function () {
                     return test[callback].apply(this, params || []);
                 })
                 .then(function (response) {
