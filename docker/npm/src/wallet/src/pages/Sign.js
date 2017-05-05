@@ -76,9 +76,14 @@ var Sign = module.exports = {
             var accountKeypair = StellarSdk.Keypair.random();
             var mnemonicPhrase = StellarSdk.getMnemonicFromSeed(accountKeypair.seed(), Conf.mnemonic.locale);
 
-            Auth.registration(accountKeypair, phoneNum, password)
+            Conf.SmartApi.Wallets.notExist({
+                    username: phoneNum
+                })
+                .then(() => {
+                    return Auth.registration(accountKeypair, phoneNum, password);
+                })
                 .then(function (wallet) {
-                    return Auth.loginByPasswordHash(phoneNum, wallet.passwordHash)
+                    return Auth.loginByPasswordHash(phoneNum, wallet.passwordHash);
                 })
                 .then(function () {
                     m.onLoadingEnd();
@@ -104,7 +109,20 @@ var Sign = module.exports = {
                     this.progress = m.prop(0);
                     this.showProgress = m.prop(false);
                     m.endComputation();
-                    m.flashError(err.message ? Conf.tr(err.message) : Conf.tr('Service error. Please contact support'));
+
+                    if (typeof err != 'undefined' && typeof err.name != 'undefined'
+                        && typeof err.message != 'undefined' && err.name == 'ApiError') {
+                        switch (err.message) {
+                            case 'ERR_ALREADY_EXISTS':
+                                return m.flashError(Conf.tr('Phone is already used'));
+                                break;
+                            //TODO: case another errors
+                            default:
+                                return m.flashError(Conf.tr('Can not register'));
+                        }
+                    }
+
+                    return m.flashError(err.message ? Conf.tr(err.message) : Conf.tr('Service error. Please contact support'));
                 })
         };
 
