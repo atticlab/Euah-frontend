@@ -100,22 +100,26 @@ var Auth = {
                 return Auth.loadAccountById(StellarSdk.Keypair.fromSeed(wallet_data.getKeychainData()).accountId());
             }).then(function (account_data) {
 
-                m.startComputation();
                 switch (account_data.type_i) {
                     case StellarSdk.xdr.AccountType.accountDistributionAgent().value:
+                        m.startComputation();
                         Auth.type('distribution');
+                        m.endComputation();
                         break;
                     case StellarSdk.xdr.AccountType.accountSettlementAgent().value:
+                        m.startComputation();
                         Auth.type('settlement');
+                        m.endComputation();
                         break;
                     default:
-                        m.endComputation();
+
                         return m.flashError(Conf.tr('Bad account type'));
                 }
-
+                m.startComputation();
                 Auth.wallet(wallet_data);
                 Auth.keypair(StellarSdk.Keypair.fromSeed(wallet_data.getKeychainData()));
                 Auth.username(wallet_data.username);
+                m.endComputation();
                 Conf.SmartApi.setKeypair(Auth.keypair());
                 Conf.SmartApi.Api.getNonce()
                     .then(() => {
@@ -125,7 +129,6 @@ var Auth = {
                         return Auth.initAgentBalances();
                     })
                     .then(() => {
-                        m.endComputation();
                         Conf.SmartApi.Api.on('tick', function (ttl) {
                             Auth.ttl(ttl);
                             if (Auth.ttl() <= 0) {
@@ -155,8 +158,13 @@ var Auth = {
 
     mnemonicLogin: function (mnemonic) {
         return new Promise(function (resolve, reject) {
+
             m.startComputation();
             Auth.wallet(null);
+            Auth.username(null);
+            Auth.keypair(null);
+            m.endComputation();
+
             var seed = null;
             for (var i = 0; i < Conf.mnemonic.langsList.length; i++) {
                 try {
@@ -191,8 +199,9 @@ var Auth = {
                     }
                 })
                 .then(function () {
+                    m.startComputation();
                     Auth.keypair(StellarSdk.Keypair.fromSeed(seed));
-                    Auth.username(null);
+                    m.endComputation();
                     Conf.SmartApi.setKeypair(Auth.keypair());
                     return Conf.SmartApi.Api.getNonce()
                         .then(() => {
@@ -202,7 +211,6 @@ var Auth = {
                             return Auth.initAgentBalances();
                         })
                         .then(() => {
-                            m.endComputation();
                             Conf.SmartApi.Api.on('tick', function (ttl) {
                                 Auth.ttl(ttl);
                                 if (Auth.ttl() <= 0) {

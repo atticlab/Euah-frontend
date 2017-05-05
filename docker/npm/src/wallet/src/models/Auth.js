@@ -160,10 +160,10 @@ var Auth = {
         Auth.wallet(wallet);
         Auth.keypair(StellarSdk.Keypair.fromSeed(wallet.getKeychainData()));
         Auth.username(wallet.username);
+        m.endComputation();
         Conf.SmartApi.setKeypair(Auth.keypair());
         return Conf.SmartApi.Api.getNonce()
             .then(() => {
-                m.endComputation();
                 Conf.SmartApi.Api.on('tick', function (ttl) {
                     Auth.ttl(ttl);
                     if (Auth.ttl() <= 0) {
@@ -180,6 +180,9 @@ var Auth = {
         return new Promise(function (resolve, reject) {
             m.startComputation();
             Auth.wallet(null);
+            Auth.keypair(null);
+            Auth.username(null);
+            m.endComputation();
             var seed = null;
             for (var i = 0; i < Conf.mnemonic.langsList.length; i++) {
                 try {
@@ -231,12 +234,12 @@ var Auth = {
                     }
                 })
                 .then(function() {
+                    m.startComputation();
                     Auth.keypair(StellarSdk.Keypair.fromSeed(seed));
-                    Auth.username(null);
+                    m.endComputation();
                     Conf.SmartApi.setKeypair(Auth.keypair());
                     return Conf.SmartApi.Api.getNonce()
                         .then(() => {
-                            m.endComputation();
                             Conf.SmartApi.Api.on('tick', function (ttl) {
                                 Auth.ttl(ttl);
                                 if (Auth.ttl() <= 0) {

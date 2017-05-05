@@ -23,7 +23,7 @@ var Recovery = module.exports = {
                 })
                 .catch(err => {
                     console.error(err);
-                    m.flashError(Conf.tr('Login/password combination is invalid'));
+                    return m.flashError(typeof err == 'string' ? Conf.tr(err) : Conf.tr('Service error. Please contact support'));
                 })
         };
 
