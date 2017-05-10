@@ -1,6 +1,7 @@
 var Localize = require('localize');
 var Locales = require('../locales/translations.js');
 var smart_api = require('smart-api-js');
+var _ = require('lodash');
 
 var conf = {
     master_key:         process.env.MASTER_KEY,
@@ -20,6 +21,7 @@ conf.phone = {
     prefix:     "+38"
 };
 
+StellarSdk.Network.use(new StellarSdk.Network(_.trim(process.env.STELLAR_NETWORK)));
 conf.horizon = new StellarSdk.Server(conf.horizon_host);
 
 conf.onpage = 10;

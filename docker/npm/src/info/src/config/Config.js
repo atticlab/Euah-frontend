@@ -1,10 +1,10 @@
 var Localize = require('localize');
 var Locales = require('../locales/translations.js');
+var _ = require('lodash');
 
 var conf = {
     horizon_host: process.env.HORIZON_HOST,
     master_public_key: process.env.MASTER_KEY,
-    stellar_network: process.env.STELLAR_NETWORK,
     project_name: process.env.PROJECT_NAME,
     merchant_prefix: 'mo:',
     opi_prefix: 'opi_',
@@ -15,7 +15,7 @@ conf.limit = 25;
 
 var resizefunc = [];
 
-StellarSdk.Network.use(new StellarSdk.Network(conf.stellar_network));
+StellarSdk.Network.use(new StellarSdk.Network(_.trim(process.env.STELLAR_NETWORK)));
 conf.horizon = new StellarSdk.Server(conf.horizon_host);
 
 conf.locales = Locales;

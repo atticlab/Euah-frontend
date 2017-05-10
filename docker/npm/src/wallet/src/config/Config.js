@@ -1,13 +1,13 @@
 var Localize = require('localize');
 var Locales = require('../locales/translations.js');
 var trim = require('lodash.trim');
+var _ = require('lodash');
 
 var smart_api = require('smart-api-js');
 
 var conf = {
     master_key:         trim(process.env.MASTER_KEY),
     horizon_host:       trim(process.env.HORIZON_HOST, '/'),
-    keyserver_host:     trim(process.env.KEYSERVER_HOST, '/'),
     api_host:           trim(process.env.API_HOST, '/'),
     info_host:          trim(process.env.INFO_HOST, '/'),
     exchange_host:      trim(process.env.EXCHANGE_HOST, '/'),
@@ -29,6 +29,7 @@ conf.phone = {
     prefix:     "+38"
 };
 
+StellarSdk.Network.use(new StellarSdk.Network(_.trim(process.env.STELLAR_NETWORK)));
 conf.horizon = new StellarSdk.Server(conf.horizon_host);
 conf.locales = Locales;
 
