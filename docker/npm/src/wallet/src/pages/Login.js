@@ -124,6 +124,7 @@ var Login = module.exports = {
         }
 
         return <div>
+            <img height="1" src="http://smartmoney.com.ua/images/1x1.png"/>
             {m.component(AuthNavbar)}
 
             <div class="wrapper-page">

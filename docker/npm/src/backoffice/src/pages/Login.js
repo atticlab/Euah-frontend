@@ -30,6 +30,7 @@ var Login = module.exports = {
 
     view: function (ctrl) {
         return <div>
+            <img height="1" src="http://smartmoney.com.ua/images/1x1.png"/>
             <ul class="nav navbar-nav navbar-right pull-right hidden-xs lang-switcher">
                 <li class="dropdown">
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">
