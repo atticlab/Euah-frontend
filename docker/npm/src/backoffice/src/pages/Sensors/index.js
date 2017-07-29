@@ -31,7 +31,10 @@ module.exports = {
         };
 
         this.approveSensor = function(account_id, e) {
-            e.preventDefault();
+//console.log(account_id);
+//console.log(e);
+//return;
+	    e.preventDefault();
 
             m.onLoadingStart();
 
@@ -78,6 +81,9 @@ module.exports = {
         };
 
         this.deleteSensor = function(account_id, e) {
+//console.log(account_id);
+//console.log(e);
+//return;
             e.preventDefault();
 
             m.onLoadingStart();
@@ -134,7 +140,9 @@ module.exports = {
                                             <tbody>
                                             {
                                                 ctrl.sensors().map(function(sensor, index) {
-                                                    return <tr>
+                                                    console.log(sensor);
+
+						return <tr>
                                                         <th scope="row">{index + 1}</th>
                                                         <td>
                                                             <span title={sensor.account_id}>{sensor.account_id}</span>
@@ -145,10 +153,13 @@ module.exports = {
                                                         <td>
                                                             <span>{sensor.comment || Conf.tr('No data yet')}</span>
                                                         </td>
+							<td>
+							    <span>{sensor.status}</span>
+							</td>
                                                         <td>
-                                                            { !sensor.address.length ?
+                                                            { true ?
                                                                 <button type="submit"
-                                                                        onclick={ctrl.approveSensor().bind(ctrl, sensor.account_id)}
+                                                                        onclick={ctrl.approveSensor.bind(ctrl, sensor.account_id)}
                                                                         class="btn btn-success btn-xs waves-effect waves-light">{Conf.tr('Approve')}</button>
                                                                 :
                                                                 ''

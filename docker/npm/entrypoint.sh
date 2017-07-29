@@ -33,3 +33,5 @@ do
       cd ${DIR} && ./node_modules/.bin/gulp js
     fi
 done
+
+tail -f /dev/null
