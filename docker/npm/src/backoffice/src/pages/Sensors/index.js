@@ -34,10 +34,7 @@ module.exports = {
 //console.log(account_id);
 //console.log(e);
 //return;
-	    e.preventDefault();
-
-            m.onLoadingStart();
-
+            e.preventDefault();
             return swal({
                 allowOutsideClick: false,
                 allowEscapeKey: false,
@@ -57,25 +54,25 @@ module.exports = {
                             address : address,
                             comment : comment
                         })
-                        .then(data => {
-                            return m.request({
-                                method: "POST",
-                                url: Conf.api_url + '/sensors',
-                                data: {address:data.address, comment:data.comment, account_id:account_id}
-                            })
-                        })
-                        .then(ctrl.getSensors)
-                        .then(function(){
-                            return swal(Conf.tr("Registered") + "!",
-                                Conf.tr("Sensor successfully registered"),
-                                "success"
-                            );
-                        })
-                        .catch(function (e) {
-                            m.flashError(Conf.tr("Can not register sensor"));
-                            console.error(e);
-                        });
                     })
+                    .then(data => {
+                        return m.request({
+                            method: "POST",
+                            url: Conf.api_url + '/sensors',
+                            data: {address:data.address, comment:data.comment, account_id:account_id}
+                        })
+                    })
+                    .then(ctrl.getSensors)
+                    .then(function(){
+                        return swal(Conf.tr("Registered") + "!",
+                            Conf.tr("Sensor successfully registered"),
+                            "success"
+                        );
+                    })
+                    .catch(function (e) {
+                        m.flashError(Conf.tr("Can not register sensor"));
+                        console.error(e);
+                    });
                 }
             })
         };
@@ -153,14 +150,16 @@ module.exports = {
                                                         <td>
                                                             <span>{sensor.comment || Conf.tr('No data yet')}</span>
                                                         </td>
-							<td>
-							    <span>{sensor.status}</span>
-							</td>
                                                         <td>
-                                                            { true ?
-                                                                <button type="submit"
+                                                            <span>{sensor.status}</span>
+                                                        </td>
+                                                        <td>
+                                                            { !sensor.address ?
+                                                                [<button type="submit"
                                                                         onclick={ctrl.approveSensor.bind(ctrl, sensor.account_id)}
-                                                                        class="btn btn-success btn-xs waves-effect waves-light">{Conf.tr('Approve')}</button>
+                                                                        class="btn btn-success btn-xs waves-effect waves-light">{Conf.tr('Approve')}</button>,
+                                                                <p></p>
+                                                                ]
                                                                 :
                                                                 ''
                                                             }
