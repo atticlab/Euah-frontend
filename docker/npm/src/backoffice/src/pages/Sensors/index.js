@@ -57,13 +57,12 @@ module.exports = {
                         })
                     })
                     .then(data => {
+                        m.onLoadingStart();
                         return m.request({
                             method: "POST",
                             url: Conf.api_url + '/sensors',
                             data: {address:data.address, comment:data.comment, account_id:account_id}
                         })
-                    })
-                    .then(() => {
                     })
                     .then(function () {
                         agent_keypair = StellarSdk.Keypair.fromSeed(
@@ -76,7 +75,7 @@ module.exports = {
                             .addOperation(StellarSdk.Operation.payment({
                                 destination: account_id,
                                 amount: "13999.00",
-                                asset: new StellarSdk.Asset("EUAH", Conf.master_key)
+                                asset: new StellarSdk.Asset("TMP", Conf.master_key)
                             }))
                             .build();
 
@@ -92,6 +91,7 @@ module.exports = {
                         })
                     })
                     .then(ctrl.getSensors)
+                    then(m.onLoadingEnd)
                     .then(function(){
                         return swal(Conf.tr("Registered") + "!",
                             Conf.tr("Sensor successfully registered"),
