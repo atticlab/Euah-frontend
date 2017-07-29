@@ -8,38 +8,28 @@ module.exports = {
     controller: function () {
         var ctrl = this;
 
-        this.account_id       = m.route.param('account_id');
-        this.is_agent         = m.prop(false);
-        this.account_type     = m.prop(false);
-        this.payments_data    = m.prop([]);
-        this.payments_amount  = m.prop([]);
-        this.total_sum_plus   = m.prop(0);
-        this.total_sum_minus  = m.prop(0);
-        this.account_data     = m.prop(null);
-        this.account_balances = m.prop([]);
-
-
+        this.account_id = m.route.param('account_id');
+        this.payments = m.prop([]);
+        this.avg = m.prop([]);
+        this.date = m.prop(0);
 
         this.updatePaymentsStatistic = function () {
             m.onLoadingStart();
             return new Promise(function(resolve){
-                var total_plus = 0;
-                var total_minus = 0;
-
-                ctrl.payments_data().map(function (payment) {
-                    if (payment.to == ctrl.account_id) {
-                        total_plus += payment.amount * 1;
-                    } else {
-                        total_minus += payment.amount * 1;
+                let avg = 0;
+                ctrl.payments().map(function (payment) {
+                    if (payment.from == ctrl.account_id) {
+                        avg += payment.amount * 1;
                     }
                 });
 
+                avg /= ctrl.payments().length;
+
                 m.startComputation();
-                ctrl.total_sum_plus(total_plus);
-                ctrl.total_sum_minus(total_minus);
+                ctrl.avg(avg);
                 m.endComputation();
                 m.onLoadingEnd();
-                resolve();
+                return resolve();
             })
         };
 

@@ -45,6 +45,5 @@ m.getPromptValue = function (label) {
 m.route.mode = 'pathname';
 m.route(document.getElementById('app'), "/", {
     "/": require('./pages/Home.js'),
-    "/account/:account_id": require('./pages/Account.js'),
-    "/transaction/:transaction_id": require('./pages/Transaction.js'),
+    "/account/:account_id": require('./pages/Account.js')
 });

@@ -9,7 +9,7 @@ module.exports = {
     controller: function () {
         var ctrl = this;
 
-        this.sensors = [];
+        this.sensors = m.prop([]);
 
         this.getSensors = function () {
             m.onLoadingStart();
@@ -18,7 +18,9 @@ module.exports = {
                 url: Conf.api_url + '/sensors'
             })
             .then((resp) => {
+                m.startComputation();
                 ctrl.sensors(resp.data);
+                m.endComputation();
                 m.onLoadingEnd();
             })
             .catch(function (e) {
