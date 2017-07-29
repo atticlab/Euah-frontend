@@ -100,7 +100,8 @@ module.exports = {
             .catch(function (e) {
                 m.flashError(Conf.tr("Can not delete sensor"));
                 console.error(e);
-            });
+            })
+	    .then(m.onLoadingEnd);
         };
 
         ctrl.getSensors();
