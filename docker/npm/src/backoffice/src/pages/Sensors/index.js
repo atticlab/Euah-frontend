@@ -91,7 +91,7 @@ module.exports = {
                         })
                     })
                     .then(ctrl.getSensors)
-                    then(m.onLoadingEnd)
+                    .then(m.onLoadingEnd)
                     .then(function(){
                         return swal(Conf.tr("Registered") + "!",
                             Conf.tr("Sensor successfully registered"),
