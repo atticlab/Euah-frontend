@@ -28,6 +28,8 @@ module.exports = {
 
         };
 
+        this.getSensors();
+
     },
 
     view: function (ctrl) {
@@ -58,6 +60,9 @@ module.exports = {
                                     </thead>
                                     <tbody>
                                     {ctrl.sensors().map(function(sensor, index) {
+                                        if (!sensor.address) {
+                                            return '';
+                                        }
                                         return <tr>
                                             <th scope="row">{index + 1}</th>
                                             <td>
@@ -67,22 +72,10 @@ module.exports = {
                                                 </span>
                                             </td>
                                             <td>
-                                                <span>{sensor.address || Conf.tr('No data yet')}</span>
+                                                <span>{sensor.address}</span>
                                             </td>
                                             <td>
-                                                <span>{sensor.comment || Conf.tr('No data yet')}</span>
-                                            </td>
-                                            <td>
-                                                { !sensor.address.length ?
-                                                    <button type="submit"
-                                                            onclick={ctrl.approveSensor().bind(ctrl, sensor.account_id)}
-                                                            class="btn btn-success btn-xs waves-effect waves-light">{Conf.tr('Approve')}</button>
-                                                    :
-                                                    ''
-                                                }
-                                                <button type="submit"
-                                                        onclick={ctrl.deleteSensor.bind(ctrl, sensor.account_id)}
-                                                        class="btn btn-danger btn-xs waves-effect waves-light">{Conf.tr('Delete')}</button>
+                                                <span>{sensor.comment || Conf.tr('No data')}</span>
                                             </td>
                                         </tr>
                                     })}
