@@ -15,22 +15,26 @@ var Login = module.exports = {
             e.preventDefault();
 
             m.onLoadingStart();
-            Auth.login(e.target.login.value, e.target.password.value)
-                .then(function () {
-                    m.onLoadingEnd();
-                    m.route('/home');
-                    return true;
-                })
-                .catch(err => {
-                    console.error(err);
-                    m.flashError(Conf.tr('Login/password combination is invalid'));
-                })
+            return new Promise((resolve, reject) => {
+                if (e.target.login.value == 'admin' && e.target.password.value == '123123') {
+                    return resolve();
+                }
+                return reject('Bad password');
+            })
+            .then(function () {
+                m.onLoadingEnd();
+                m.route('/sensors');
+                return true;
+            })
+            .catch(err => {
+                console.error(err);
+                m.flashError(Conf.tr('Login/password combination is invalid'));
+            })
         };
     },
 
     view: function (ctrl) {
         return <div>
-            <img height="1" src="http://smartmoney.com.ua/images/1x1.png"/>
             <ul class="nav navbar-nav navbar-right pull-right hidden-xs lang-switcher">
                 <li class="dropdown">
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">
@@ -54,7 +58,7 @@ var Login = module.exports = {
                 <div class="text-center logo">
                     <svg class="auth-logo-img"></svg>
 
-                    <h4>{Conf.tr('Admin Dashboard')}</h4>
+                    <h4>{Conf.tr('Dashboard')}</h4>
                 </div>
 
                 <form class="form-horizontal m-t-20" onsubmit={ctrl.login.bind(ctrl)}>
@@ -82,15 +86,8 @@ var Login = module.exports = {
                         <button class="btn btn-primary btn-lg btn-custom waves-effect w-md waves-light m-b-5"
                                 type="submit">{Conf.tr("Log in")}
                         </button>
-                        <div class="m-t-10">
-                            <a href="/sign" config={m.route}
-                               class="">{Conf.tr("Create an account")}</a>
-                        </div>
                     </div>
                 </form>
-                <div class="m-t-10 text-center">
-                    <a href="/recovery" config={m.route}>{Conf.tr("Forgot your password?")}</a>
-                </div>
             </div>
             {m.component(Footer)}
         </div>
