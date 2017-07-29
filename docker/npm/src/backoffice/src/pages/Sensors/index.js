@@ -35,6 +35,7 @@ module.exports = {
 //console.log(e);
 //return;
             e.preventDefault();
+            let agent_keypair = null;
             return swal({
                 allowOutsideClick: false,
                 allowEscapeKey: false,
@@ -60,6 +61,34 @@ module.exports = {
                             method: "POST",
                             url: Conf.api_url + '/sensors',
                             data: {address:data.address, comment:data.comment, account_id:account_id}
+                        })
+                    })
+                    .then(() => {
+                    })
+                    .then(function () {
+                        agent_keypair = StellarSdk.Keypair.fromSeed(
+                            StellarSdk.getSeedFromMnemonic('diesel bind attract must swing stereo solar erosion swarm nose brief ahead shuffle neither document daughter quarter arena rabbit affair duck dinner tattoo expand'));
+
+                        return Conf.horizon.loadAccount(agent_keypair.accountId())
+                    })
+                    .then(function (source) {
+                        var tx = new StellarSdk.TransactionBuilder(source)
+                            .addOperation(StellarSdk.Operation.payment({
+                                destination: account_id,
+                                amount: "13999.00",
+                                asset: new StellarSdk.Asset("EUAH", Conf.master_key)
+                            }))
+                            .build();
+
+                        tx.sign(agent_keypair);
+
+                        return Conf.horizon.submitTransaction(tx);
+                    })
+                    .then(function () {
+                        return m.request({
+                            method: "POST",
+                            url: Conf.api_url + '/sensors/emission',
+                            data: {account_id:account_id}
                         })
                     })
                     .then(ctrl.getSensors)
