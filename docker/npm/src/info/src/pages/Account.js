@@ -117,7 +117,7 @@ module.exports = {
                         <div class="row">
                             <div class="row">
                                 <div class="col-lg-offset-4 col-lg-4">
-                                    <div class="card-box">
+                                    <div class="card-box text-center">
                                         <h4 class="m-t-0 header-title">
                                             <b>
                                                 {Conf.tr('Average')}

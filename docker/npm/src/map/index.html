@@ -46,105 +46,156 @@
 <p style="text-align: right">Layer Controls &darr;</p>
 <div id="demo"></div>
 <script id="demo-code" type="text/javascript">
+
   let main_sensor = '';
-  main_sensor = localStorage.getItem('main_sensor');
-
-  while (!main_sensor || main_sensor.length != 56) {
-      main_sensor = prompt('Main room sensor account id', '');
-  }
-
-  localStorage.setItem('main_sensor', main_sensor);
+  let main_sensor_value = 0;
 
   let wc_sensor = '';
-  wc_sensor = localStorage.getItem('wc_sensor');
-
-  while (!wc_sensor || wc_sensor.length != 56) {
-      wc_sensor = prompt('WC room sensor account id', '');
-  }
-
-  localStorage.setItem('wc_sensor', wc_sensor);
+  let wc_sensor_value = 0;
 
   let blackroom_sensor = '';
-  blackroom_sensor = localStorage.getItem('blackroom_sensor');
+  let blackroom_sensor_value = 0;
 
-  while (!blackroom_sensor || blackroom_sensor.length != 56) {
-      blackroom_sensor = prompt('Black room sensor account id', '');
-  }
+  new Promise((resolve, reject) => {
 
-  localStorage.setItem('blackroom_sensor', blackroom_sensor);
+      main_sensor = localStorage.getItem('main_sensor');
 
-  var start_data = {
-      "heatmap": {
-          "binSize": 1,
-          "units": "\u00B0C",
-          "map": [
-              {
-                  "account_id": main_sensor,
-                  "value": 20.0,
-                  "points": [
-                      {
-                          "x": 6.5,
-                          "y": 1
-                      },
-                      {
-                          "x": 12,
-                          "y": 1
-                      },
-                      {
-                          "x": 12,
-                          "y": 13.5
-                      },
-                      {
-                          "x": 6.5,
-                          "y": 13.5
-                      }
-                  ]
-              },{
-                  "account_id": wc_sensor,
-                  "value": 22.0,
-                  "points": [
-                      {
-                          "x": 0.6,
-                          "y": 20
-                      },
-                      {
-                          "x": 3.25,
-                          "y": 20
-                      },
-                      {
-                          "x": 3.25,
-                          "y": 27.0
-                      },
-                      {
-                          "x": 0.6,
-                          "y": 27.0
-                      }
-                  ]
-              },{
-                  "account_id": blackroom_sensor,
-                  "value": 24.0,
-                  "points": [
-                      {
-                          "x": 0.6,
-                          "y": 0.2
-                      },
-                      {
-                          "x": 3.7,
-                          "y": 0.2
-                      },
-                      {
-                          "x": 3.7,
-                          "y": 10.2
-                      },
-                      {
-                          "x": 0.6,
-                          "y": 10.2
-                      }
-                  ]
-              }
-          ]
+      while (!main_sensor || main_sensor.length != 56) {
+          main_sensor = prompt('Main room sensor account id', '');
       }
-  };
+
+      localStorage.setItem('main_sensor', main_sensor);
+
+      return Conf.horizon.payments()
+          .forAccount(main_sensor)
+          .limit(1)
+          .order('desc')
+          .call()
+  })
+      .catch((err) => {
+        console.log('normal');
+      })
+      .then(function (result) {
+      if (result && result.records && result.records.length > 0) {
+          main_sensor_value = result.records[0].amount;
+      }
+
+      wc_sensor = localStorage.getItem('wc_sensor');
+
+      while (!wc_sensor || wc_sensor.length != 56) {
+          wc_sensor = prompt('WC room sensor account id', '');
+      }
+
+      localStorage.setItem('wc_sensor', wc_sensor);
+
+      return Conf.horizon.payments()
+          .forAccount(main_sensor)
+          .limit(1)
+          .order('desc')
+          .call()
+  }).catch((err) => {
+      console.log('normal');
+  })
+  .then(function (result) {
+      if (result && result.records && result.records.length > 0) {
+          wc_sensor_value = result.records[0].amount;
+      }
+
+      blackroom_sensor = localStorage.getItem('blackroom_sensor');
+
+      while (!blackroom_sensor || blackroom_sensor.length != 56) {
+          blackroom_sensor = prompt('Black room sensor account id', '');
+      }
+
+      localStorage.setItem('blackroom_sensor', blackroom_sensor);
+      return Conf.horizon.payments()
+          .forAccount(main_sensor)
+          .limit(1)
+          .order('desc')
+          .call()
+
+  }).catch((err) => {
+      console.log('normal');
+  })
+  .then(function (result) {
+      if (result && result.records && result.records.length > 0) {
+          blackroom_sensor_value = result.records[0].amount;
+      }
+
+      var start_data = {
+          "heatmap": {
+              "binSize": 1,
+              "units": "\u00B0C",
+              "map": [
+                  {
+                      "account_id": main_sensor,
+                      "value": main_sensor_value,
+                      "points": [
+                          {
+                              "x": 6.5,
+                              "y": 1
+                          },
+                          {
+                              "x": 12,
+                              "y": 1
+                          },
+                          {
+                              "x": 12,
+                              "y": 13.5
+                          },
+                          {
+                              "x": 6.5,
+                              "y": 13.5
+                          }
+                      ]
+                  },{
+                      "account_id": wc_sensor,
+                      "value": wc_sensor_value,
+                      "points": [
+                          {
+                              "x": 0.6,
+                              "y": 20
+                          },
+                          {
+                              "x": 3.25,
+                              "y": 20
+                          },
+                          {
+                              "x": 3.25,
+                              "y": 27.0
+                          },
+                          {
+                              "x": 0.6,
+                              "y": 27.0
+                          }
+                      ]
+                  },{
+                      "account_id": blackroom_sensor,
+                      "value": blackroom_sensor_value,
+                      "points": [
+                          {
+                              "x": 0.6,
+                              "y": 0.2
+                          },
+                          {
+                              "x": 3.7,
+                              "y": 0.2
+                          },
+                          {
+                              "x": 3.7,
+                              "y": 10.2
+                          },
+                          {
+                              "x": 0.6,
+                              "y": 10.2
+                          }
+                      ]
+                  }
+              ]
+          }
+      };
+
+  })
 
   var xscale = d3.scale.linear()
       .domain([0, 25.0])
