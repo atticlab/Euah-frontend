@@ -68,7 +68,8 @@
   let blackroom_sensor = '';
   let blackroom_sensor_value = 0;
 
-  new Promise((resolve, reject) => {
+  Promise.resolve()
+      .then(() => {
 
       main_sensor = localStorage.getItem('main_sensor');
 
@@ -85,6 +86,7 @@
           .call()
   })
       .catch((err) => {
+        console.error(err);
         console.log('normal');
       })
       .then(function (result) {
@@ -106,6 +108,7 @@
           .order('desc')
           .call()
   }).catch((err) => {
+      console.error(err);
       console.log('normal');
   })
   .then(function (result) {
@@ -127,6 +130,7 @@
           .call()
 
   }).catch((err) => {
+      console.error(err);
       console.log('normal');
   })
   .then(function (result) {
