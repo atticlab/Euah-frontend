@@ -18,13 +18,6 @@ module.exports = {
                 <div class="navbar navbar-default" role="navigation">
                     <div class="container">
                         <div class="">
-                            <div class="pull-left">
-                                <button class="button-menu-mobile open-left waves-effect">
-                                    <i class="md md-menu"></i>
-                                </button>
-                                <span class="clearfix"></span>
-                            </div>
-
                             <ul class="nav navbar-nav navbar-right pull-right hidden-xs">
                                 <li>
                                     <a href="#" onclick={Auth.logout}>
