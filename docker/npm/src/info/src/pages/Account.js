@@ -11,7 +11,7 @@ module.exports = {
         this.account_id = m.route.param('account_id');
         this.payments = m.prop([]);
         this.payments_amount = m.prop([]);
-        this.avg = m.prop([]);
+        this.avg = m.prop(null);
         this.date = m.prop(0);
 
         this.updatePaymentsStatistic = function () {
@@ -113,6 +113,23 @@ module.exports = {
                     <div class="container">
                         <div class="row">
                             <div class="row">
+                                <div class="col-lg-offset-4 col-lg-4">
+                                    <div class="card-box">
+                                        <h4 class="m-t-0 header-title">
+                                            <b>
+                                                {Conf.tr('Average')}
+                                            </b>
+                                        </h4>
+                                        <h1>
+                                            {
+                                                ctrl.avg() !== null ?
+                                                    ctrl.avg()
+                                                    :
+                                                    'Wait for data...'
+                                            }
+                                        </h1>
+                                    </div>
+                                </div>
                                 <div class="col-lg-12">
                                     <div class="card-box">
                                         <h4 class="m-t-0 header-title">
