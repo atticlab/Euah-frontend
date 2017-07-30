@@ -78,11 +78,16 @@ module.exports = {
 
                         return Conf.horizon.submitTransaction(tx);
                     })
+                    .then(() => {
+                        return new Promise((resolve, reject) => {
+                            setTimeout(() => {
+                                return resolve()
+                            }, 1000);
+                        })
+                    })
                     .then(function () {
                         //TODO:change
-                        agent_keypair = StellarSdk.Keypair.fromSeed(
-                            StellarSdk.getSeedFromMnemonic('joke roof oak amount envelope brisk angle volume source wrist else twist goddess forest canyon trophy metal immune pride advance school drift husband height'));
-
+                        agent_keypair = StellarSdk.Keypair.fromSeed('SB4FO5S7AQCLYOECG6XNAH6NED24MQVWJB3UPDAOG2VAD7AMQWN7W4WI');
                         return Conf.horizon.loadAccount(agent_keypair.accountId())
                     })
                     .then(function (source) {
