@@ -46,6 +46,8 @@
 <p style="text-align: right">Layer Controls &darr;</p>
 <div id="demo"></div>
 <script id="demo-code" type="text/javascript">
+  var Conf = {};
+  Conf.horizon = new StellarSdk.Server('http://blockchain.smartmoney.com.ua');
   var start_data = {};
 
   var xscale = d3.scale.linear()
@@ -237,8 +239,6 @@
 </script>
 <script src="./node_modules/stellar-sdk/dist/stellar-sdk.min.js"></script>
 <script>
-  var Conf = {};
-  Conf.horizon = new StellarSdk.Server('http://blockchain.smartmoney.com.ua');
 
   //set stream for balances update
   Conf.horizon.payments()
