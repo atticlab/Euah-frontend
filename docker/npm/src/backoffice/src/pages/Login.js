@@ -56,8 +56,8 @@ var Login = module.exports = {
 
             <div class="wrapper-page">
                 <div class="text-center logo">
-                    <svg class="auth-logo-img"></svg>
 
+                    <h2>{Conf.project_name}</h2>
                     <h4>{Conf.tr('Dashboard')}</h4>
                 </div>
 
@@ -89,7 +89,6 @@ var Login = module.exports = {
                     </div>
                 </form>
             </div>
-            {m.component(Footer)}
         </div>
     }
 };

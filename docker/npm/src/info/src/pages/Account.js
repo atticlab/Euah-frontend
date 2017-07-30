@@ -30,9 +30,8 @@ module.exports = {
                     m.startComputation();
                     ctrl.avg(avg);
                     m.endComputation();
-                    m.onLoadingEnd();
                 }
-
+                m.onLoadingEnd();
                 return resolve();
             })
         };

@@ -139,7 +139,6 @@ module.exports = {
     view: function (ctrl) {
         return <div id="wrapper">
             {m.component(Navbar)}
-            {m.component(Sidebar)}
             <div class="content-page">
                 <div class="content">
                     <div class="container">
@@ -208,7 +207,6 @@ module.exports = {
                     </div>
                 </div>
             </div>
-            {m.component(Footer)}
         </div>
     }
 };
