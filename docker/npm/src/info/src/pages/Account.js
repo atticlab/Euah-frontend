@@ -49,7 +49,7 @@ module.exports = {
 
                                 ctrl.payments().unshift(res);
                                 ctrl.payments_amount().unshift(res.amount);
-                                while (ctrl.payments_data().length > Conf.limit) {
+                                while (ctrl.payments().length > Conf.limit) {
                                     ctrl.payments().pop();
                                     ctrl.payments_amount().pop();
                                 }
