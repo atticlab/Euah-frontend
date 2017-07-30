@@ -160,16 +160,12 @@ module.exports = {
                                                 <th>{Conf.tr('Account ID')}</th>
                                                 <th>{Conf.tr('Address')}</th>
                                                 <th>{Conf.tr('Comment')}</th>
-                                                <th>{Conf.tr('Status')}</th>
-                                                <th>{Conf.tr('Actions')}</th>
                                             </tr>
                                             </thead>
                                             <tbody>
                                             {
                                                 ctrl.sensors().map(function(sensor, index) {
-                                                    console.log(sensor);
-
-						return <tr>
+						                            return <tr>
                                                         <th scope="row">{index + 1}</th>
                                                         <td>
                                                             <span title={sensor.account_id}>{sensor.account_id}</span>

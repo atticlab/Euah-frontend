@@ -39,22 +39,25 @@ module.exports = {
             return new Promise(function(resolve, reject) {
                 Conf.horizon.payments()
                     .forAccount(ctrl.account_id)
-                    .limit(Conf.limit)
+                    .limit(100)
                     .order('desc')
                     .call()
                     .then(function (result) {
                         if (!_.isEmpty(result.records)) {
                             _.each(result.records.reverse(), function (res) {
-                                m.startComputation();
+                                if (ctrl.account_id == res.from) {
+                                    m.startComputation();
 
-                                ctrl.payments().unshift(res);
-                                ctrl.payments_amount().unshift(res.amount);
-                                while (ctrl.payments().length > Conf.limit) {
-                                    ctrl.payments().pop();
-                                    ctrl.payments_amount().pop();
+                                    ctrl.payments().unshift(res);
+                                    ctrl.payments_amount().unshift(res.amount);
+                                    while (ctrl.payments().length > Conf.limit) {
+                                        ctrl.payments().pop();
+                                        ctrl.payments_amount().pop();
+                                    }
+
+                                    m.endComputation();
                                 }
 
-                                m.endComputation();
                             });
                             Helpers.buildPaymentsChart(ctrl.payments_amount());
                         };
@@ -65,19 +68,20 @@ module.exports = {
                             .stream({
                                 onmessage: function (message) {
                                     var res = message.data ? JSON.parse(message.data) : message;
+                                    if (ctrl.account_id == res.from) {
+                                        m.startComputation();
+                                        ctrl.payments().unshift(res);
+                                        ctrl.payments_amount().unshift(res.amount);
+                                        while (ctrl.payments().length > Conf.limit) {
+                                            ctrl.payments().pop();
+                                            ctrl.payments_amount().pop();
+                                        }
 
-                                    m.startComputation();
-                                    ctrl.payments().unshift(res);
-                                    ctrl.payments_amount().unshift(res.amount);
-                                    while (ctrl.payments().length > Conf.limit) {
-                                        ctrl.payments().pop();
-                                        ctrl.payments_amount().pop();
+                                        m.endComputation();
+
+                                        Helpers.buildPaymentsChart(ctrl.payments_amount());
+                                        ctrl.updatePaymentsStatistic();
                                     }
-
-                                    m.endComputation();
-
-                                    Helpers.buildPaymentsChart(ctrl.payments_amount());
-                                    ctrl.updatePaymentsStatistic();
                                 },
                                 onerror: function (error) {
                                 }
