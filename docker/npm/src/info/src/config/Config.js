@@ -6,6 +6,7 @@ var conf = {
     horizon_host: process.env.HORIZON_HOST,
     master_public_key: process.env.MASTER_KEY,
     project_name: process.env.PROJECT_NAME,
+    api_url: process.env.API_HOST,
     merchant_prefix: 'mo:',
     opi_prefix: 'opi_',
     copyright_link: 'http://atticlab.net'
