@@ -1,0 +1,28 @@
+/* map menu controls */
+.ui-active rect {fill: #212121}
+.ui-active text {fill: #fff}
+.ui-default rect {fill: #e6e6e6}
+.ui-default text {fill: #000}
+
+/* heatmap colors (courtesy of colorbrewer2.org) */
+.RdYlBu .d6-6 {transition: fill 1.5s ease; fill:#D73027;background-color:#D73027;color:#fff}
+.RdYlBu .d6-5 {transition: fill 1.5s ease; fill:#FC8D59;background-color:#FC8D59;color:#fff}
+.RdYlBu .d6-4 {transition: fill 1.5s ease; fill:#FEE090;background-color:#FEE090;color:#fff}
+.RdYlBu .d6-3 {transition: fill 1.5s ease; fill:#E0F3F8;background-color:#E0F3F8;color:#fff}
+.RdYlBu .d6-2 {transition: fill 1.5s ease; fill:#91BFDB;background-color:#91BFDB;color:#fff}
+.RdYlBu .d6-1 {transition: fill 1.5s ease; fill:#4575B4;background-color:#4575B4;color:#fff}
+
+text {
+    color:#fff;
+}
+
+/* overlays */
+.polygon {stroke:white;stroke-width:2px;fill-opacity:0.2}
+.vertex {stroke:lime;stroke-width:2px;fill:none}
+
+/* vector field */
+.vector {stroke-width:1px;stroke:lightsteelblue}
+
+/* path plot */
+.pathplot path {stroke-width:2px;stroke:steelblue}
+.planned {stroke-dasharray:9, 5}
