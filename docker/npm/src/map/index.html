@@ -63,13 +63,13 @@
       mapdata = {};
 
   let main_sensor = '';
-  let main_sensor_value = 0;
+  let main_sensor_value = null;
 
   let wc_sensor = '';
-  let wc_sensor_value = 0;
+  let wc_sensor_value = null;
 
   let blackroom_sensor = '';
-  let blackroom_sensor_value = 0;
+  let blackroom_sensor_value = null;
 
   Promise.resolve()
       .then(() => {
@@ -84,7 +84,7 @@
 
       return Conf.horizon.payments()
           .forAccount(main_sensor)
-          .limit(1)
+          .limit(10)
           .order('desc')
           .call()
   })
@@ -93,8 +93,18 @@
         console.log('normal');
       })
       .then(function (result) {
+
       if (result && result.records && result.records.length > 0) {
-          main_sensor_value = result.records[0].amount;
+          result.records.map(payment => {
+              if (main_sensor_value !== null && payment.from == main_sensor ) {
+                  main_sensor_value = payment.amount;
+              }
+
+          })
+      }
+
+      if (main_sensor_value == null) {
+          main_sensor_value = 0;
       }
 
       wc_sensor = localStorage.getItem('wc_sensor');
@@ -107,7 +117,7 @@
 
       return Conf.horizon.payments()
           .forAccount(wc_sensor)
-          .limit(1)
+          .limit(10)
           .order('desc')
           .call()
   }).catch((err) => {
@@ -116,7 +126,16 @@
   })
   .then(function (result) {
       if (result && result.records && result.records.length > 0) {
-          wc_sensor_value = result.records[0].amount;
+          result.records.map(payment => {
+              if (wc_sensor_value !== null && payment.from == wc_sensor ) {
+                  wc_sensor_value = payment.amount;
+              }
+
+          })
+      }
+
+      if (wc_sensor_value == null) {
+          wc_sensor_value = 0;
       }
 
       blackroom_sensor = localStorage.getItem('blackroom_sensor');
@@ -128,7 +147,7 @@
       localStorage.setItem('blackroom_sensor', blackroom_sensor);
       return Conf.horizon.payments()
           .forAccount(blackroom_sensor)
-          .limit(1)
+          .limit(10)
           .order('desc')
           .call()
 
@@ -138,7 +157,16 @@
   })
   .then(function (result) {
       if (result && result.records && result.records.length > 0) {
-          blackroom_sensor_value = result.records[0].amount;
+          result.records.map(payment => {
+              if (blackroom_sensor_value !== null && payment.from == blackroom_sensor ) {
+                  blackroom_sensor_value = payment.amount;
+              }
+
+          })
+      }
+
+      if (blackroom_sensor_value == null) {
+          blackroom_sensor_value = 0;
       }
 
       start_data = {
