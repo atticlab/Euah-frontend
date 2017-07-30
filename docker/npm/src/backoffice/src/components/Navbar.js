@@ -15,12 +15,6 @@ module.exports = {
     view: function (ctrl) {
         return <div>
             <div class="topbar">
-                <div class="topbar-left">
-                    <div class="text-center">
-                        <a href="/home" config={m.route} class="logo"><svg class="logo-img"></svg></a>
-                    </div>
-                </div>
-
                 <div class="navbar navbar-default" role="navigation">
                     <div class="container">
                         <div class="">
@@ -57,25 +51,6 @@ module.exports = {
                                                 src="/assets/img/flags/ru.png"/> Русский</a>
                                         </li>
                                     </ul>
-                                </li>
-                            </ul>
-                            <ul class="nav navbar-nav navbar-right pull-right hidden-xs">
-                                <li>
-                                    <a
-                                        href="#"
-                                        onclick={function(){return Conf.SmartApi.Api.refreshNonce()}}
-                                        title={Conf.tr('Time before the session close. Click to update session.')}
-                                    >
-                                        <span class="fa fa-clock-o m-r-5 align-middle f-s-20"></span>
-                                        <span class="align-middle" id="spinner-time">
-                                            {
-                                                !Auth.ttl() ?
-                                                    ''
-                                                    :
-                                                    Helpers.getTimeFromSeconds(Auth.ttl())
-                                            }
-                                            </span>
-                                    </a>
                                 </li>
                             </ul>
                             <ul class="nav navbar-nav navbar-right pull-right hidden-xs">
