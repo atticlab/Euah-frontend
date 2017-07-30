@@ -17,19 +17,22 @@ module.exports = {
         this.updatePaymentsStatistic = function () {
             m.onLoadingStart();
             return new Promise(function(resolve){
-                let avg = 0;
-                ctrl.payments().map(function (payment) {
-                    if (payment.from == ctrl.account_id) {
-                        avg += payment.amount * 1;
-                    }
-                });
+                if (ctrl.payments().length) {
+                    let avg = 0;
+                    ctrl.payments().map(function (payment) {
+                        if (payment.from == ctrl.account_id) {
+                            avg += payment.amount * 1;
+                        }
+                    });
 
-                avg /= ctrl.payments().length;
+                    avg /= ctrl.payments().length;
 
-                m.startComputation();
-                ctrl.avg(avg);
-                m.endComputation();
-                m.onLoadingEnd();
+                    m.startComputation();
+                    ctrl.avg(avg);
+                    m.endComputation();
+                    m.onLoadingEnd();
+                }
+
                 return resolve();
             })
         };
@@ -123,7 +126,7 @@ module.exports = {
                                         <h1>
                                             {
                                                 ctrl.avg() !== null ?
-                                                    ctrl.avg()
+                                                    parseFloat(ctrl.avg()).toFixed(2)
                                                     :
                                                     'Wait for data...'
                                             }

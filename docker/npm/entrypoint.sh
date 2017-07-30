@@ -23,14 +23,11 @@ do
       rm -rf ${DIR}/node_modules
       ln -s  /src/node_modules ${DIR}/node_modules
 
-      if [ "${DIR}" != "/src/offline" ]
+      if [ "${DIR}" != "/src/map" ]
       then
-        echo "copy logos..."
-        cp -rf /tmp/logo.svg ${DIR}/public/assets/img
-        cp -rf /tmp/logo-white.svg ${DIR}/public/assets/img
+          cd ${DIR} && ./node_modules/.bin/gulp js
       fi
 
-      cd ${DIR} && ./node_modules/.bin/gulp js
     fi
 done
 

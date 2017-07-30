@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Floor Plan - local coordinate map layers for D3.js</title>
+  <script type="text/javascript" src="lib/jquery/jquery-1.7.2.min.js"></script>
+  <script type="text/javascript" src="lib/jquery/jquery-ui-1.8.21.custom.min.js"></script>
+  <script type="text/javascript" src="lib/d3/d3.v2.min.js"></script>
+  <script type="text/javascript" src="d3.floorplan.min.js"></script>
+  <style type="text/css">
+    @import url('lib/jquery/jquery-ui.css');
+    @import url('d3.floorplan.css');
+
+    body {
+      font-size: 14px;
+      font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
+      margin: 25px auto 20px;
+      width: 1818px;
+      background: #fcfcfc;
+      line-height: 1.45em;
+    }
+
+    a {
+      color: #555;
+    }
+
+    a:hover {
+      color: #000;
+    }
+
+    ul {
+      margin: 0 20px;
+      padding: 0;
+    }
+
+    div.code {
+      border: 1px solid #ccc;
+      background: #eee;
+      margin: 10px 0 10px 0;
+      padding: 10px;
+      width: 1818px;
+    }
+  </style>
+</head>
+<body>
+<p style="text-align: right">Layer Controls &darr;</p>
+<div id="demo"></div>
+<script id="demo-code" type="text/javascript">
+  let main_sensor = '';
+  main_sensor = localStorage.getItem('main_sensor');
+
+  while (!main_sensor || main_sensor.length != 56) {
+      main_sensor = prompt('Main room sensor account id', '');
+  }
+
+  localStorage.setItem('main_sensor', main_sensor);
+
+  let wc_sensor = '';
+  wc_sensor = localStorage.getItem('wc_sensor');
+
+  while (!wc_sensor || wc_sensor.length != 56) {
+      wc_sensor = prompt('WC room sensor account id', '');
+  }
+
+  localStorage.setItem('wc_sensor', wc_sensor);
+
+  let blackroom_sensor = '';
+  blackroom_sensor = localStorage.getItem('blackroom_sensor');
+
+  while (!blackroom_sensor || blackroom_sensor.length != 56) {
+      blackroom_sensor = prompt('Black room sensor account id', '');
+  }
+
+  localStorage.setItem('blackroom_sensor', blackroom_sensor);
+
+  var start_data = {
+      "heatmap": {
+          "binSize": 1,
+          "units": "\u00B0C",
+          "map": [
+              {
+                  "account_id": main_sensor,
+                  "value": 20.0,
+                  "points": [
+                      {
+                          "x": 6.5,
+                          "y": 1
+                      },
+                      {
+                          "x": 12,
+                          "y": 1
+                      },
+                      {
+                          "x": 12,
+                          "y": 13.5
+                      },
+                      {
+                          "x": 6.5,
+                          "y": 13.5
+                      }
+                  ]
+              },{
+                  "account_id": wc_sensor,
+                  "value": 22.0,
+                  "points": [
+                      {
+                          "x": 0.6,
+                          "y": 20
+                      },
+                      {
+                          "x": 3.25,
+                          "y": 20
+                      },
+                      {
+                          "x": 3.25,
+                          "y": 27.0
+                      },
+                      {
+                          "x": 0.6,
+                          "y": 27.0
+                      }
+                  ]
+              },{
+                  "account_id": blackroom_sensor,
+                  "value": 24.0,
+                  "points": [
+                      {
+                          "x": 0.6,
+                          "y": 0.2
+                      },
+                      {
+                          "x": 3.7,
+                          "y": 0.2
+                      },
+                      {
+                          "x": 3.7,
+                          "y": 10.2
+                      },
+                      {
+                          "x": 0.6,
+                          "y": 10.2
+                      }
+                  ]
+              }
+          ]
+      }
+  };
+
+  var xscale = d3.scale.linear()
+      .domain([0, 25.0])
+      .range([0, 1818]),
+      yscale = d3.scale.linear()
+          .domain([0, 33.79])
+          .range([0, 737]),
+      map = d3.floorplan().xScale(xscale).yScale(yscale),
+      imagelayer = d3.floorplan.imagelayer(),
+      heatmap = d3.floorplan.heatmap(),
+      mapdata = {};
+
+  mapdata[imagelayer.id()] = [{
+    url: 'hachaton_plan.jpg',
+    x: 0,
+    y: 0,
+    height: 33.79,
+    width: 25.0
+  }];
+
+  map.addLayer(imagelayer)
+      .addLayer(heatmap)
+  ;
+
+  localStorage.setItem('data', JSON.stringify(start_data));
+  mapdata[heatmap.id()] = start_data.heatmap;
+
+  d3.select("#demo").append("svg")
+      .attr("height", 737).attr("width", 1818)
+      .datum(mapdata)
+      .call(map)
+  ;
+
+</script>
+<script src="./node_modules/stellar-sdk/dist/stellar-sdk.min.js"></script>
+<script>
+  var Conf = {};
+  Conf.horizon = new StellarSdk.Server('http://blockchain.smartmoney.com.ua');
+
+  //set stream for balances update
+  Conf.horizon.payments()
+      .cursor('now')
+      .stream({
+        onmessage: function (payment) {
+          console.log(payment);
+          let data = JSON.parse(localStorage.getItem('data'));
+
+          data.heatmap.map.map(sensor => {
+            if (sensor.account_id == payment.from) {
+
+              sensor.value = payment.amount;
+              localStorage.setItem('data', JSON.stringify(data));
+
+              mapdata[heatmap.id()] = data.heatmap;
+
+              d3.select("#demo")
+                  .datum(mapdata)
+                  .call(map)
+            }
+          });
+        },
+        onerror: function () {
+          console.log('Cannot get payment from stream');
+        }
+      });
+</script>
+</body>
+</html>
