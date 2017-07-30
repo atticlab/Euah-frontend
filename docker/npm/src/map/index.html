@@ -106,7 +106,7 @@
       localStorage.setItem('wc_sensor', wc_sensor);
 
       return Conf.horizon.payments()
-          .forAccount(main_sensor)
+          .forAccount(wc_sensor)
           .limit(1)
           .order('desc')
           .call()
@@ -127,7 +127,7 @@
 
       localStorage.setItem('blackroom_sensor', blackroom_sensor);
       return Conf.horizon.payments()
-          .forAccount(main_sensor)
+          .forAccount(blackroom_sensor)
           .limit(1)
           .order('desc')
           .call()
