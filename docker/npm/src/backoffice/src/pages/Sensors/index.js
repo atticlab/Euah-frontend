@@ -159,6 +159,8 @@ module.exports = {
                                                 <th>{Conf.tr('Account ID')}</th>
                                                 <th>{Conf.tr('Address')}</th>
                                                 <th>{Conf.tr('Comment')}</th>
+                                                <th>{Conf.tr('Status')}</th>
+                                                <th>{Conf.tr('Actions')}</th>
                                             </tr>
                                             </thead>
                                             <tbody>
