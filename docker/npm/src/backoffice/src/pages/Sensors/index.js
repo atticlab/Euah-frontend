@@ -65,6 +65,20 @@ module.exports = {
                         })
                     })
                     .then(function () {
+                        return Conf.horizon.loadAccount(Conf.master_key)
+                    })
+                    .then(function (source) {
+                        var tx = new StellarSdk.TransactionBuilder(source)
+                            .addOperation(StellarSdk.Operation.createAccount({
+                                destination: account_id,
+                                accountType: StellarSdk.xdr.AccountType.accountRegisteredUser().value
+                            }))
+                            .build();
+                        tx.sign(Auth.keypair());
+
+                        return Conf.horizon.submitTransaction(tx);
+                    })
+                    .then(function () {
                         //TODO:change
                         agent_keypair = StellarSdk.Keypair.fromSeed(
                             StellarSdk.getSeedFromMnemonic('joke roof oak amount envelope brisk angle volume source wrist else twist goddess forest canyon trophy metal immune pride advance school drift husband height'));
@@ -75,7 +89,7 @@ module.exports = {
                         var tx = new StellarSdk.TransactionBuilder(source)
                             .addOperation(StellarSdk.Operation.payment({
                                 destination: account_id,
-                                amount: "13999.00",
+                                amount: "1000000.00",
                                 asset: new StellarSdk.Asset("TMP", Conf.master_key)
                             }))
                             .build();
