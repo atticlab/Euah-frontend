@@ -65,8 +65,9 @@ module.exports = {
                         })
                     })
                     .then(function () {
+                        //TODO:change
                         agent_keypair = StellarSdk.Keypair.fromSeed(
-                            StellarSdk.getSeedFromMnemonic('diesel bind attract must swing stereo solar erosion swarm nose brief ahead shuffle neither document daughter quarter arena rabbit affair duck dinner tattoo expand'));
+                            StellarSdk.getSeedFromMnemonic('joke roof oak amount envelope brisk angle volume source wrist else twist goddess forest canyon trophy metal immune pride advance school drift husband height'));
 
                         return Conf.horizon.loadAccount(agent_keypair.accountId())
                     })

@@ -34,7 +34,6 @@ module.exports = {
 
     view: function (ctrl) {
         return <div id="wrapper">
-            <img height="1" src="http://smartmoney.com.ua/images/1x1.png"/>
             {m.component(Navbar)}
             <div class="content-page">
                 <div class="content">
