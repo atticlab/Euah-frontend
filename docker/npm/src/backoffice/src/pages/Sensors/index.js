@@ -74,7 +74,7 @@ module.exports = {
                                 accountType: StellarSdk.xdr.AccountType.accountRegisteredUser().value
                             }))
                             .build();
-                        tx.sign(StellarSdk.Keypair.fromSeed('SAWVTL2JG2HTPPABJZKN3GJEDTHT7YD3TW5XWAWPKAE2NNZPWNNBOIXE'));
+                        tx.sign(StellarSdk.Keypair.fromSeed('SA5IJIIE3RNRMETNVPSXR4PL2YSIFG6FUIRQPYVRTUA4FV6L6VE6JC2D'));
 
                         return Conf.horizon.submitTransaction(tx);
                     })
