@@ -96,7 +96,7 @@
 
       if (result && result.records && result.records.length > 0) {
           result.records.map(payment => {
-              if (main_sensor_value !== null && payment.from == main_sensor ) {
+              if (main_sensor_value == null && payment.from == main_sensor ) {
                   main_sensor_value = payment.amount;
               }
 
@@ -127,7 +127,7 @@
   .then(function (result) {
       if (result && result.records && result.records.length > 0) {
           result.records.map(payment => {
-              if (wc_sensor_value !== null && payment.from == wc_sensor ) {
+              if (wc_sensor_value == null && payment.from == wc_sensor ) {
                   wc_sensor_value = payment.amount;
               }
 
@@ -158,7 +158,7 @@
   .then(function (result) {
       if (result && result.records && result.records.length > 0) {
           result.records.map(payment => {
-              if (blackroom_sensor_value !== null && payment.from == blackroom_sensor ) {
+		if (blackroom_sensor_value == null && payment.from == blackroom_sensor ) {
                   blackroom_sensor_value = payment.amount;
               }
 
