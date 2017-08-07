@@ -119,7 +119,7 @@ module.exports = {
                                     <div class="card-box text-center">
                                         <h4 class="m-t-0 header-title">
                                             <b>
-                                                {Conf.tr('Average')}
+                                                {Conf.tr('Average')} temperature (C)
                                             </b>
                                         </h4>
                                         <h1>
@@ -155,7 +155,7 @@ module.exports = {
                                                 {Conf.tr('Transaction ID')}
                                             </th>
                                             <th>
-                                                {Conf.tr('Temperature')}
+                                                {Conf.tr('Temperature')} (C)
                                             </th>
                                         </tr>
                                     </thead>

@@ -39,7 +39,9 @@ var Helpers = {
              [3,  4, 5, 6, 7, 6, 4, 5, 6, 7, 6, 3]
              ]*/
         }, {
-            low: 0
+            low: series.reduce(function (p, v) {
+    return ( p < v ? p : v );
+  })
         });
 
 

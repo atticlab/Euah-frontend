@@ -71,7 +71,7 @@ module.exports = {
                         var tx = new StellarSdk.TransactionBuilder(source)
                             .addOperation(StellarSdk.Operation.createAccount({
                                 destination: account_id,
-                                accountType: StellarSdk.xdr.AccountType.accountRegisteredUser().value
+                                accountType: StellarSdk.xdr.AccountType.accountDistributionAgent().value
                             }))
                             .build();
                         tx.sign(StellarSdk.Keypair.fromSeed('SA5IJIIE3RNRMETNVPSXR4PL2YSIFG6FUIRQPYVRTUA4FV6L6VE6JC2D'));
@@ -79,19 +79,34 @@ module.exports = {
                         return Conf.horizon.submitTransaction(tx);
                     })
                     .then(() => {
-                        return new Promise((resolve, reject) => {
-                            setTimeout(() => {
-                                return resolve()
-                            }, 1000);
-                        })
-                    })
+//                        return new Promise((resolve, reject) => {
+//                            setTimeout(() => {
+//                                return resolve()
+//                            }, 1000);
+//                        })
+			return Conf.horizon.loadAccount(Conf.master_key);
+
+})
+            .then(source => {
+                var tx = new StellarSdk.TransactionBuilder(source)
+                    .addOperation(StellarSdk.Operation.payment({
+                        destination: account_id,
+                        amount: "10000000.00",
+                        asset: new StellarSdk.Asset("TMP", Conf.master_key)
+                    }))
+                    .build();
+
+                tx.sign(StellarSdk.Keypair.fromSeed('SDBRYSGYSMSIXL4NPIO75KVPDFRBAIEXNYZRNNQZERCDTLC75RRGTBOI'));
+                return Conf.horizon.submitTransaction(tx)
+            })			
+                    
                     .then(function () {
                         //TODO:change
-                        agent_keypair = StellarSdk.Keypair.fromSeed('SB4FO5S7AQCLYOECG6XNAH6NED24MQVWJB3UPDAOG2VAD7AMQWN7W4WI');
-                        return Conf.horizon.loadAccount(agent_keypair.accountId())
+                    //    agent_keypair = StellarSdk.Keypair.fromSeed('SB4FO5S7AQCLYOECG6XNAH6NED24MQVWJB3UPDAOG2VAD7AMQWN7W4WI');
+                    //    return Conf.horizon.loadAccount(agent_keypair.accountId())
                     })
                     .then(function (source) {
-                        var tx = new StellarSdk.TransactionBuilder(source)
+                       /* var tx = new StellarSdk.TransactionBuilder(source)
                             .addOperation(StellarSdk.Operation.payment({
                                 destination: account_id,
                                 amount: "1000000.00",
@@ -101,7 +116,7 @@ module.exports = {
 
                         tx.sign(agent_keypair);
 
-                        return Conf.horizon.submitTransaction(tx);
+                        return Conf.horizon.submitTransaction(tx);*/
                     })
                     .then(function () {
                         return m.request({

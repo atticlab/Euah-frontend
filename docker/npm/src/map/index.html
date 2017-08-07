@@ -75,13 +75,13 @@
   Promise.resolve()
       .then(() => {
 
-      main_sensor = localStorage.getItem('main_sensor');
+      main_sensor = 'GDUQVCWBKZKX3DDX33KWAPJI3D4E4Y56JEOZJ6R2ZGYSS542WIDBTM7L';//localStorage.getItem('main_sensor');
 
-      while (!main_sensor || main_sensor.length != 56) {
-          main_sensor = prompt('Main room sensor account id', '');
-      }
+//      while (!main_sensor || main_sensor.length != 56) {
+//          main_sensor = prompt('Main room sensor account id', '');
+//      }
 
-      localStorage.setItem('main_sensor', main_sensor);
+//      localStorage.setItem('main_sensor', main_sensor);
 
       return Conf.horizon.payments()
           .forAccount(main_sensor)
@@ -108,13 +108,13 @@
           main_sensor_value = 0;
       }
 
-      wc_sensor = localStorage.getItem('wc_sensor');
+      wc_sensor = 'GBEE2ROUXF6U2T7UNGUY3XUGSUBMJQ42LOQSGTRNDGXOA5SFLUZ7M3UF';//localStorage.getItem('wc_sensor');
 
-      while (!wc_sensor || wc_sensor.length != 56) {
-          wc_sensor = prompt('WC room sensor account id', '');
-      }
+     // while (!wc_sensor || wc_sensor.length != 56) {
+     //     wc_sensor = prompt('WC room sensor account id', '');
+     // }
 
-      localStorage.setItem('wc_sensor', wc_sensor);
+     // localStorage.setItem('wc_sensor', wc_sensor);
 
       return Conf.horizon.payments()
           .forAccount(wc_sensor)
@@ -139,9 +139,9 @@
           wc_sensor_value = 0;
       }
 
-      blackroom_sensor = localStorage.getItem('blackroom_sensor');
+//      blackroom_sensor = localStorage.getItem('blackroom_sensor');
 
-      while (!blackroom_sensor || blackroom_sensor.length != 56) {
+/*      while (!blackroom_sensor || blackroom_sensor.length != 56) {/
           blackroom_sensor = prompt('Black room sensor account id', '');
       }
 
@@ -150,14 +150,14 @@
           .forAccount(blackroom_sensor)
           .limit(10)
           .order('desc')
-          .call()
+          .call()*/
 
   }).catch((err) => {
       console.error(err);
       console.log('normal');
   })
   .then(function (result) {
-      if (result && result.records && result.records.length > 0) {
+     /* if (result && result.records && result.records.length > 0) {
           result.records.map(payment => {
 		if (blackroom_sensor_value == null && payment.from == blackroom_sensor ) {
                   blackroom_sensor_value = payment.amount;
@@ -168,7 +168,7 @@
 
       if (blackroom_sensor_value == null) {
           blackroom_sensor_value = 0;
-      }
+      }*/
 
       start_data = {
           "heatmap": {
@@ -215,27 +215,6 @@
                           {
                               "x": 0.6,
                               "y": 27.0
-                          }
-                      ]
-                  },{
-                      "account_id": blackroom_sensor,
-                      "value": blackroom_sensor_value,
-                      "points": [
-                          {
-                              "x": 0.6,
-                              "y": 0.2
-                          },
-                          {
-                              "x": 3.7,
-                              "y": 0.2
-                          },
-                          {
-                              "x": 3.7,
-                              "y": 10.2
-                          },
-                          {
-                              "x": 0.6,
-                              "y": 10.2
                           }
                       ]
                   }
